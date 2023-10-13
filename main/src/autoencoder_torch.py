@@ -1,3 +1,7 @@
+#畳み込みオートエンコーダー
+#torch.nn.Conv2d(in_channels, out_channels, kernel_size, stride=1, padding=0,)
+#torch.nn.ConvTranspose2d(in_channels, out_channels, kernel_size, stride=1, padding=0,)
+
 class ConvAutoEncoder(torch.nn.Module):
     def __init__(self):
         super(ConvAutoEncoder, self).__init__()
