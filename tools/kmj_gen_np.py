@@ -72,8 +72,8 @@ def encoder(x):
   for i in range(emb_dim):
     temp.append(np.dot(x[i], W_1[i]) + b_1[i])
   x = np.array(temp)
-  x = np.tanh(x)
   x = x.reshape(emb_dim, hid_dim)
+  x = np.tanh(x)
 
   x = x.T
   x = x.reshape(hid_dim, 1, emb_dim)
@@ -81,8 +81,8 @@ def encoder(x):
   for i in range(hid_dim):
     temp.append(np.dot(x[i], W_2[i]) + b_2[i])
   x = np.array(temp)
-  x = np.tanh(x)
   x = x.reshape(hid_dim, 1)
+  x = np.tanh(x)
 
   return x
 
@@ -99,10 +99,10 @@ def decoder(x):
   for i in range(N):
     temp.append(np.dot(x, W_1[i]) + b_1[i])
   x = np.array(temp)
-  x = np.tanh(x)
   x = x.reshape(N, hid_dim)
+  x = np.tanh(x)
 
-  x = np.matmul(x, W_out) + b_out
+  x = np.dot(x, W_out) + b_out
 
   return x
 
