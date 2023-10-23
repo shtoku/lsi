@@ -72,6 +72,7 @@ def encoder(x):
   for i in range(emb_dim):
     temp.append(np.dot(x[i], W_1[i]) + b_1[i])
   x = np.array(temp)
+  x = np.tanh(x)
   x = x.reshape(emb_dim, hid_dim)
 
   x = x.T
@@ -80,6 +81,7 @@ def encoder(x):
   for i in range(hid_dim):
     temp.append(np.dot(x[i], W_2[i]) + b_2[i])
   x = np.array(temp)
+  x = np.tanh(x)
   x = x.reshape(hid_dim, 1)
 
   return x
@@ -97,6 +99,7 @@ def decoder(x):
   for i in range(N):
     temp.append(np.dot(x, W_1[i]) + b_1[i])
   x = np.array(temp)
+  x = np.tanh(x)
   x = x.reshape(N, hid_dim)
 
   x = np.matmul(x, W_out) + b_out
@@ -104,11 +107,21 @@ def decoder(x):
   return x
 
 
+# One-hotベクトルを文字列に変換する関数
 def convert_str(x):
   x = np.array(char_list)[x.argmax(axis=1)]
   x = [c for c in x if c not in ['<PAD>', '<UNK>']]
 
   return ''.join(x)
+
+# データセットを読み込む関数
+def read_dataset(filename):
+  kmj_dataset = []
+  with open(filename, 'r', encoding='utf-8') as file:
+    for line in file:
+      kmj_dataset.append(line.replace('\n', ''))
+
+  return kmj_dataset
 
 
 if __name__ == '__main__':
@@ -123,3 +136,18 @@ if __name__ == '__main__':
     y = decoder(z)
     print('base     :', convert_str(x))
     print('generate :', convert_str(y))
+  
+  # データセットの読み込み
+  kmj_dataset = read_dataset('../data/dataset/kaomoji_MAX=10_DA.txt')
+
+  # データの前処理
+  kmj_num = 100
+  kmj_onehot = preprocess(kmj_dataset[:kmj_num])
+
+  # 正解率計算
+  acc_sum = 0
+  for x in kmj_onehot:
+    z = encoder(x)
+    y = decoder(z)
+    acc_sum += (y.argmax(axis=1) == x.argmax(axis=1)).sum()
+  print('Acc :', acc_sum / (kmj_num * N))
