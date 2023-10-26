@@ -24,7 +24,8 @@ module state_machine (
         `MIX3  : q <= `DENS;
         `DENS  : q <= `COMP;
         `COMP  : q <= `SEND;
-        `SEND  : q <= `IDLE;
+        `SEND  : q <= `FIN;
+        `FIN   : q <= `FIN;
         default: q <= `STATE_LEN'bX;
       endcase
     end
