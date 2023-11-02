@@ -33,20 +33,20 @@ output valid;
 output [`HID_LENGTH*`BIT_LENGTH-1:0] data_out;
 //output [`BIT_LENGTH-1:0] data_out;
 
-wire signed [`BIT_LENGTH:0] indata_array [0:`DATA_N-1];
-wire signed [`BIT_LENGTH:0] inweight_array [0:`DATA_N-1];
+wire signed [`BIT_LENGTH-1:0] indata_array [0:`DATA_N-1];
+wire signed [`BIT_LENGTH-1:0] inweight_array [0:`DATA_N-1];
 
 
-reg signed [`BIT_LENGTH:0] outdot_array [0:`DATA_N-1];
-reg signed [`BIT_LENGTH:0] add1_array [0:2];
+reg signed [`BIT_LENGTH-1:0] outdot_array [0:`DATA_N-1];
+reg signed [`BIT_LENGTH-1:0] add1_array [0:2];
 
-reg signed [`BIT_LENGTH:0] midrslt1_array[0:3];
-reg signed [`BIT_LENGTH:0] midrslt2_array[0:1];
-reg signed [`BIT_LENGTH:0] midrslt3_array;
-reg signed [`BIT_LENGTH:0] outrslt_array [0:`HID_LENGTH-1];
+reg signed [`BIT_LENGTH-1:0] midrslt1_array[0:3];
+reg signed [`BIT_LENGTH-1:0] midrslt2_array[0:1];
+reg signed [`BIT_LENGTH-1:0] midrslt3_array;
+reg signed [`BIT_LENGTH-1:0] outrslt_array [0:`HID_LENGTH-1];
 
 reg [3:0] cnt_1;
-reg [16:0] cnt_2, cnt_saved;
+reg [16:0] cnt_2, cnt_3, cnt_saved;
 
 reg valid;
 
@@ -157,6 +157,7 @@ end
 always @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
         cnt_2 <= 0;
+        cnt_3 <= 0;
         cnt_saved <= 0;
         valid <= 0;
         for(n=0; n<96; n=n+1) begin
@@ -167,20 +168,23 @@ always @(posedge clk, negedge rst_n) begin
     else if(run) begin
         if (cnt_2 == 101) begin
             cnt_2 <= 0;
+            cnt_3 <= 0;
             cnt_saved <= 0;
             valid <= 1;
         end else begin
             cnt_2 <= cnt_2 + 1;
         end
         
-        if (cnt_2 == (4*cnt_saved)+9)begin
-            cnt_saved <= cnt_saved + 1;
-            outrslt_array[cnt_saved] <= midrslt3_array;
+        if (cnt_2 == cnt_saved+8)begin
+            cnt_3 <= cnt_3 + 1;
+            cnt_saved <= cnt_saved + 4;
+            outrslt_array[cnt_3] <= midrslt3_array;
         end
     end
     
     else begin
         cnt_2 <= 0;
+        cnt_3 <= 0;
         cnt_saved <= 0;
         valid <= 0;
         for(n=0; n<96; n=n+1) begin

@@ -3,6 +3,9 @@
 `define clk_scale 1 //1clock = timescale*clk_scale
 `define all_clock 1000
 
+`define BIT_LENGTH 16
+`define HID_LENGTH 24
+`define DATA_N 6
 
 //////////////////////////////////////////////////////////////////////////////////
 // Company: 
@@ -35,9 +38,9 @@ wire valid;
 
 main_dotv2 main_dotv2(.clk(clk), .rst_n(rst_n), .run(run),.valid(valid), .data_in(data_in), .weight_in(weight_in), .data_out(data_out));
 
-initial begin
-    $monitor("%t: %b, %b, %b, %b, %d, %d, %d", $time, rst_n, run, clk, valid, data_in, weight_in, data_out);
-end
+// initial begin
+//     $monitor("%t: %b, %b, %b, %b, %d, %d, %d", $time, rst_n, run, clk, valid, data_in, weight_in, data_out);
+// end
 
 
 //クロック部
@@ -52,9 +55,17 @@ always #`clk_num begin
     clk <= ~clk;
 end
 
+initial begin
+    integer i;
+    for (i = 0; i < `DATA_N; i = i + 1) begin
+        $dumpvars(0, main_dotv2.outdot_array[i]);
+    end
+end
+
 
 //本体
 initial begin
+    $dumpvars;
         rst_n <= 1'b0;
         run <= 0;
         data_in <= 0;
@@ -72,7 +83,7 @@ initial begin
 */
 
 
-    #12
+    #11.5
         run <= 1;
         data_in <= {16'd3, 16'd5, 16'd1, 16'd5, 16'd8, 16'd9};
         weight_in <= {16'd2, 16'd5, 16'd9, 16'd2, 16'd3, 16'd5};
@@ -104,8 +115,9 @@ initial begin
     #`clk_scale
         data_in <= {16'd12, 16'd12, 16'd6, 16'd5, 16'd8, 16'd7};
         weight_in <= {16'd2, 16'd9, 16'd8, 16'd11, 16'd6, 16'd2};
-    
-    
+    #12
+    $display("%h\n", data_out);
+    $finish;
 
 end
 
