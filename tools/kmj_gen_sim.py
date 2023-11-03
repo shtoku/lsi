@@ -2,7 +2,8 @@ import numpy as np
 import kmj_gen as kg
 
 # パラメータファイルのパス
-PATH = '../data/parameter/hard/binary/'
+HARD_PATH = '../data/parameter/hard/binary/'
+TB_PATH   = '../data/tb/'
 
 
 N = 10              # 最大文字数
@@ -29,7 +30,7 @@ def read_param(filename):
 # emb_layer
 # 対応する重みを取り出すだけ
 def emb_layer(x):
-  W_emb = read_param(PATH + 'emb_layer_W_emb.txt').reshape(char_num, hid_dim)
+  W_emb = read_param(HARD_PATH + 'emb_layer_W_emb.txt').reshape(char_num, hid_dim)
 
   return W_emb[x]
 
@@ -37,8 +38,8 @@ def emb_layer(x):
 # mix_layer
 # ゼロパディングした入力を重み，バイアスを用いて常に同形上の計算を行う
 def mix_layer(layer, x):
-  W = read_param(PATH + 'mix_layer_W_' + str(layer) + '.txt').reshape(hid_dim, hid_dim, hid_dim)
-  b = read_param(PATH + 'mix_layer_b_' + str(layer) + '.txt').reshape(hid_dim, 1, hid_dim)
+  W = read_param(HARD_PATH + 'mix_layer_W_' + str(layer) + '.txt').reshape(hid_dim, hid_dim, hid_dim)
+  b = read_param(HARD_PATH + 'mix_layer_b_' + str(layer) + '.txt').reshape(hid_dim, 1, hid_dim)
 
   x = x.T
   x = x.reshape(hid_dim, 1, hid_dim)
@@ -58,8 +59,8 @@ def mix_layer(layer, x):
 # dense_layer
 # 行列積+バイアスのみ．バイアスは無くても良いかもしれない
 def dense_layer(x):
-  W_out = read_param(PATH + 'dense_layer_W_out.txt').reshape(hid_dim, char_num)
-  b_out = read_param(PATH + 'dense_layer_b_out.txt').reshape(N, char_num)
+  W_out = read_param(HARD_PATH + 'dense_layer_W_out.txt').reshape(hid_dim, char_num)
+  b_out = read_param(HARD_PATH + 'dense_layer_b_out.txt').reshape(N, char_num)
 
   x = kg.dot(x, W_out)
   for i in range(N):
@@ -86,6 +87,14 @@ def convert_str(x):
   x = [c for c in x if c not in ['<PAD>', '<UNK>']]
 
   return ''.join(x)
+
+
+def output_file(x, filename):
+  with open(filename, 'w') as file:
+    for value in x.flatten():
+      if isinstance(value, np.int64):
+        value = format(value, '08b')
+      file.write(value + '\n')
 
 
 if __name__ == '__main__':
@@ -115,10 +124,12 @@ if __name__ == '__main__':
   o_mix3 = mix_layer(3, i_mix3)
 
   # dense_layer
-  o_dens = dense_layer(o_mix3)
+  o_dens = dense_layer(o_mix3[:N, :])
 
   # comp_layer
+  output_file(o_dens, TB_PATH + 'comp_layer_in_tb.txt')
   o_comp = comp_layer(o_dens)
+  output_file(o_comp, TB_PATH + 'comp_layer_out_tb.txt')
 
   print('base     :', convert_str(x))
   print('generate :', convert_str(o_comp))
