@@ -37,13 +37,13 @@ wire signed [`BIT_LENGTH-1:0] indata_array [0:`DATA_N-1];
 wire signed [`BIT_LENGTH-1:0] inweight_array [0:`DATA_N-1];
 
 
-reg signed [`BIT_LENGTH-1:0] outdot_array [0:`DATA_N-1];
-reg signed [`BIT_LENGTH-1:0] add1_array [0:2];
+reg [`BIT_LENGTH-1:0] outdot_array [0:`DATA_N-1];
+reg [`BIT_LENGTH-1:0] add1_array [0:2];
 
-reg signed [`BIT_LENGTH-1:0] midrslt1_array[0:3];
-reg signed [`BIT_LENGTH-1:0] midrslt2_array[0:1];
-reg signed [`BIT_LENGTH-1:0] midrslt3_array;
-reg signed [`BIT_LENGTH-1:0] outrslt_array [0:`HID_LENGTH-1];
+reg [`BIT_LENGTH-1:0] midrslt1_array[0:3];
+reg [`BIT_LENGTH-1:0] midrslt2_array[0:1];
+reg [`BIT_LENGTH-1:0] midrslt3_array;
+reg [`BIT_LENGTH-1:0] outrslt_array [0:`HID_LENGTH-1];
 
 reg [3:0] cnt_1;
 reg [16:0] cnt_2, cnt_3, cnt_saved;
