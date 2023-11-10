@@ -1,2 +1,0 @@
-Username was changed.
-Use [git remote set-url https://github.com/shtoku/lsi.git], change local repos URL.
