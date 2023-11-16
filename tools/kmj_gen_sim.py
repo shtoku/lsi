@@ -53,7 +53,7 @@ def mix_layer(layer, x):
       rows.append(kg.add(mat[0][j], b[i][0][j]))
     temp.append(rows)
   x = np.array(temp)
-  x = kg.tanh(x)
+  # x = kg.tanh(x)
 
   return x
 
@@ -109,24 +109,35 @@ if __name__ == '__main__':
   x = kmj_onehot[0].argmax(axis=1)
   
   # emb_layer
+  output_file(x, TB_PATH + 'emb_layer_in_tb.txt')
   o_emb = emb_layer(x)
+  output_file(o_emb, TB_PATH + 'emb_layer_out_tb.txt')
 
   # mix_layer1
   # 入力のゼロパディング
   z_mix1 = np.full((hid_dim-N, hid_dim), format(0, '0' + str(n_len) + 'b'))
   i_mix1 = np.concatenate([o_emb, z_mix1], axis=0)
+  output_file(i_mix1, TB_PATH + 'mix_layer1_in_tb.txt')
   o_mix1 = mix_layer(1, i_mix1)
+  output_file(o_mix1, TB_PATH + 'mix_layer1_out_tb.txt')
 
   # mix_layer2
+  output_file(o_mix1, TB_PATH + 'mix_layer2_in_tb.txt')
   o_mix2 = mix_layer(2, o_mix1)
+  output_file(o_mix2, TB_PATH + 'mix_layer2_out_tb.txt')
   
   # mix_layer3
   # 入力を複製
   i_mix3 = np.full((hid_dim, hid_dim), o_mix2[:, 0]).T
+  output_file(i_mix3, TB_PATH + 'mix_layer3_in_tb.txt')
   o_mix3 = mix_layer(3, i_mix3)
+  output_file(o_mix3, TB_PATH + 'mix_layer3_out_tb.txt')
 
   # dense_layer
-  o_dens = dense_layer(o_mix3[:N, :])
+  i_dens = o_mix3[:N, :]
+  output_file(i_dens, TB_PATH + 'dense_layer_in_tb.txt')
+  o_dens = dense_layer(i_dens)
+  output_file(o_dens, TB_PATH + 'dense_layer_out_tb.txt')
 
   # comp_layer
   output_file(o_dens, TB_PATH + 'comp_layer_in_tb.txt')
