@@ -3,7 +3,7 @@ import kmj_gen_sim as kgs
 
 # パラメータファイルのパス
 BIN_PATH  = '../data/parameter/soft/binary/'
-HARD_PATH = '../data/parameter/hard/binary/'
+HARD_PATH = '../data/parameter/hard/binary16/'
 
 
 N = 10              # 最大文字数

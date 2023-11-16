@@ -2,7 +2,7 @@ import numpy as np
 import kmj_gen as kg
 
 # パラメータファイルのパス
-HARD_PATH = '../data/parameter/hard/binary/'
+HARD_PATH = '../data/parameter/hard/binary16/'
 TB_PATH   = '../data/tb/'
 
 
