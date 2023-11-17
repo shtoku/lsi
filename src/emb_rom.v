@@ -1,10 +1,10 @@
 `include "consts.vh"
 
-module rom #(
+module emb_rom #(
     parameter filename = "../data/parameter/hard/binary/emb_layer_W_emb.txt",
-    parameter integer dwidth = `N_LEN,
+    parameter integer dwidth = `N_LEN,//consts needs `,16
     parameter integer awidth = 13,
-    parameter integer words = `EMB_DIM*`CHAR_NUM
+    parameter integer words = `EMB_DIM*`CHAR_NUM//24*200=4800
   ) (
     input wire clk,
     input wire [awidth-1:0] addr,//4800<2^13
