@@ -40,7 +40,12 @@ def emb_layer(x):
 # mix_layer
 # ゼロパディングした入力を重み，バイアスを用いて常に同形上の計算を行う
 def mix_layer(layer, x):
-  W = read_param(HARD96_PATH + 'mix_layer_W_' + str(layer) + '.txt').reshape(hid_dim, hid_dim, hid_dim)
+  PATH = HARD96_PATH + 'mix_layer_W_' + str(layer) + '/'
+  W = []
+  for i in range(hid_dim):
+    temp = read_param(PATH + 'mix_layer_W_' + str(layer)  + '_' + format(i, '02') + '.txt').reshape(hid_dim, hid_dim).T
+    W.append(temp)
+  W = np.array(W)
   b = read_param(HARD16_PATH + 'mix_layer_b_' + str(layer) + '.txt').reshape(hid_dim, 1, hid_dim)
 
   x = x.T

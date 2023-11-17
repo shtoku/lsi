@@ -26,17 +26,20 @@ def convert_dec_to_bin():
 
 # 1行1データ(16bit)から1行6データ(96bit)に変換する関数
 def convert_16_to_96(filename):
-  param = kgs.read_param(HARD16_PATH + filename).reshape(-1, 6)
-  with open(HARD96_PATH + filename, 'w') as file:
-    for data in param:
-      temp = ''.join(list(reversed(data)))
-      file.write(temp + '\n')
+  PATH = HARD96_PATH + filename + '/'
+  param = kgs.read_param(HARD16_PATH + filename + '.txt').reshape(24, 24, 24)
+  for i, mat in enumerate(param):
+    mat = mat.T.reshape(-1, 6)
+    with open(PATH + filename + '_' + format(i, '02') + '.txt', 'w') as file:
+      for data in mat:
+        temp = ''.join(list(reversed(data)))
+        file.write(temp + '\n')
 
 
 
 if __name__ == '__main__':
   convert_dec_to_bin()
 
-  file_list = ['mix_layer_W_1.txt', 'mix_layer_W_2.txt', 'mix_layer_W_3.txt', 'dense_layer_W_out.txt']
+  file_list = ['mix_layer_W_1', 'mix_layer_W_2', 'mix_layer_W_3']
   for filename in file_list:
     convert_16_to_96(filename)
