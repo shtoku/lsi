@@ -1,7 +1,7 @@
 `include "consts.vh"
 
 module emb_rom #(
-    parameter filename = "../data/parameter/hard/binary/emb_layer_W_emb.txt",
+    parameter filename = "../data/parameter/hard/binary16/emb_layer_W_emb.txt",
     parameter integer dwidth = `N_LEN,//consts needs `,16
     parameter integer awidth = 13,
     parameter integer words = `EMB_DIM*`CHAR_NUM//24*200=4800

@@ -11,6 +11,7 @@ module emb_block (
 
 
   genvar i;
+  integer j;
 
   // reg/wire rom
   reg  [13-1:0] addr;//2^13>4800
@@ -26,7 +27,7 @@ module emb_block (
   // convert shape (EMB_DIM*N_LEN, ) <- (EMB_DIM, N_LEN)
   generate
     for (i = 0; i < `EMB_DIM; i = i + 1) begin
-      assign q[i*`N_LEN +: `N_LEN] = q_buf[i];//0~15 <- mem[0] , q[0:16]==q_buf[0]
+      assign q[i*`N_LEN +: `N_LEN] = q_buf[i];//0~15 <- mem[0] , q[16:0]==q_buf[0]
     end
   endgenerate
 
@@ -35,6 +36,9 @@ module emb_block (
     if (~rst_n) begin
       count <= 0;
       addr  <= 0;
+      for (j = 0; j < `EMB_DIM; j = j + 1) begin
+        q_buf[j] <= 0;
+      end
     end else if (run & count == 0) begin
       count <= count + 1;
       addr  <= addr  + 1;
