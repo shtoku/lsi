@@ -71,12 +71,12 @@ def mix_layer(layer, x):
 # 行列積+バイアスのみ．バイアスは無くても良いかもしれない
 def dense_layer(x):
   W_out = read_param(HARD16_PATH + 'dense_layer_W_out.txt').reshape(char_num, hid_dim).T
-  b_out = read_param(HARD16_PATH + 'dense_layer_b_out.txt').reshape(N, char_num)
+  # b_out = read_param(HARD16_PATH + 'dense_layer_b_out.txt').reshape(N, char_num)
 
   x = kg.dot(x, W_out)
-  for i in range(N):
-    for j in range(char_num):
-      x[i][j] = kg.add(x[i][j], b_out[i][j])
+  # for i in range(N):
+  #   for j in range(char_num):
+  #     x[i][j] = kg.add(x[i][j], b_out[i][j])
   
   return x
 
