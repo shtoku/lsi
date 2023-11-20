@@ -87,9 +87,9 @@ def generate_hard():
   generate_mix2()
   generate_mix3()
 
-  W_out = kgs.read_param(BIN_PATH + 'decoder_W_out.txt')
+  W_out = kgs.read_param(BIN_PATH + 'decoder_W_out.txt').reshape(hid_dim, char_num).T
   with open(HARD_PATH + 'dense_layer_W_out.txt', 'w') as file:
-    for value in W_out:
+    for value in W_out.flatten():
       file.write(value + '\n')
   
   b_out = kgs.read_param(BIN_PATH + 'decoder_b_out.txt')

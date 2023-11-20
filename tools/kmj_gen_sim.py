@@ -40,13 +40,17 @@ def emb_layer(x):
 # mix_layer
 # ゼロパディングした入力を重み，バイアスを用いて常に同形上の計算を行う
 def mix_layer(layer, x):
-  PATH = HARD96_PATH + 'mix_layer_W_' + str(layer) + '/'
+  W_PATH = HARD96_PATH + 'mix_layer_W_' + str(layer) + '/'
+  B_PATH = HARD16_PATH + 'mix_layer_b_' + str(layer) + '/'
   W = []
+  b = []
   for i in range(hid_dim):
-    temp = read_param(PATH + 'mix_layer_W_' + str(layer)  + '_' + format(i, '02') + '.txt').reshape(hid_dim, hid_dim).T
-    W.append(temp)
+    W_temp = read_param(W_PATH + 'mix_layer_W_' + str(layer) + '_' + format(i, '02') + '.txt').reshape(hid_dim, hid_dim).T
+    b_temp = read_param(B_PATH + 'mix_layer_b_' + str(layer) + '_' + format(i, '02') + '.txt').reshape(1, hid_dim)
+    W.append(W_temp)
+    b.append(b_temp)
   W = np.array(W)
-  b = read_param(HARD16_PATH + 'mix_layer_b_' + str(layer) + '.txt').reshape(hid_dim, 1, hid_dim)
+  b = np.array(b)
 
   x = x.T
   x = x.reshape(hid_dim, 1, hid_dim)
@@ -66,13 +70,13 @@ def mix_layer(layer, x):
 # dense_layer
 # 行列積+バイアスのみ．バイアスは無くても良いかもしれない
 def dense_layer(x):
-  W_out = read_param(HARD96_PATH + 'dense_layer_W_out.txt').reshape(hid_dim, char_num)
-  b_out = read_param(HARD16_PATH + 'dense_layer_b_out.txt').reshape(N, char_num)
+  W_out = read_param(HARD16_PATH + 'dense_layer_W_out.txt').reshape(char_num, hid_dim).T
+  # b_out = read_param(HARD16_PATH + 'dense_layer_b_out.txt').reshape(N, char_num)
 
   x = kg.dot(x, W_out)
-  for i in range(N):
-    for j in range(char_num):
-      x[i][j] = kg.add(x[i][j], b_out[i][j])
+  # for i in range(N):
+  #   for j in range(char_num):
+  #     x[i][j] = kg.add(x[i][j], b_out[i][j])
   
   return x
 
