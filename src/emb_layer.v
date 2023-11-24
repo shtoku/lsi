@@ -14,7 +14,7 @@ module emb_layer (
 
   wire [`CHAR_LEN-1:0] d_buf [0:`N-1];//ここはwireでいい。`CHAR_LENビットの数字が`N個あるイメージ
   wire [`EMB_DIM*`N_LEN-1:0] q_buf [0:`N-1];
-  wire [0:`N-1] valid_buf ;
+  wire [`N-1:0] valid_buf ;
 
 
   assign valid = &valid_buf;
