@@ -1,4 +1,4 @@
-`timescale 1ns / 1ps
+// `timescale 1ns / 1ps
 `define BIT_LENGTH 16
 `define HID_LENGTH 24
 `define DATA_N 6
