@@ -21,9 +21,9 @@ wire [`HID_LENGTH*`HID_LENGTH*`BIT_LENGTH-1:0] output_data;
 genvar x, y;
 
 //デバック用
-reg [`BIT_LENGTH-1:0] input_data_array_1[0:`HID_LENGTH*`HID_LENGTH];
-reg [`BIT_LENGTH-1:0] input_data_array_2[0:`HID_LENGTH*`HID_LENGTH];
-reg [`BIT_LENGTH-1:0] input_data_array_3[0:`HID_LENGTH*`HID_LENGTH];
+reg [`BIT_LENGTH-1:0] input_data_array_1[0:`HID_LENGTH*`HID_LENGTH-1];
+reg [`BIT_LENGTH-1:0] input_data_array_2[0:`HID_LENGTH*`HID_LENGTH-1];
+reg [`BIT_LENGTH-1:0] input_data_array_3[0:`HID_LENGTH*`HID_LENGTH-1];
 wire [`BIT_LENGTH-1:0] output_data_array [0:`HID_LENGTH-1][0:`HID_LENGTH-1];
 
 reg [15:0] cnt;
@@ -89,15 +89,15 @@ endgenerate
 
 //レジスタにデータをセット
 initial begin
-    $readmemb("/home/hirahara/lsi_data/full_test/input/mix_layer1_in_tb.txt", input_data_array_1);
+    $readmemb("../../data/tb/mix_layer1_in_tb.txt", input_data_array_1);
 end
 
 initial begin
-    $readmemb("/home/hirahara/lsi_data/full_test/input/mix_layer2_in_tb.txt", input_data_array_2);
+    $readmemb("../../data/tb/mix_layer2_in_tb.txt", input_data_array_2);
 end
 
 initial begin
-    $readmemb("/home/hirahara/lsi_data/full_test/input/mix_layer3_in_tb.txt", input_data_array_3);
+    $readmemb("../../data/tb/mix_layer3_in_tb.txt", input_data_array_3);
 end
 
 

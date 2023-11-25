@@ -21,15 +21,15 @@ end
 
 
 initial begin
-    $readmemb($sformatf("/home/hirahara/lsi_data/full_test/rom/mix_layer_b_1_%02d.txt", filenum), mem, 0, 23);
+    $readmemb($sformatf("../../data/parameter/hard/binary16/mix_layer_b_1/mix_layer_b_1_%02d.txt", filenum), mem, 0, 23);
 end
 
 initial begin
-    $readmemb($sformatf("/home/hirahara/lsi_data/full_test/rom/mix_layer_b_2_%02d.txt", filenum), mem, 24, 47);
+    $readmemb($sformatf("../../data/parameter/hard/binary16/mix_layer_b_2/mix_layer_b_2_%02d.txt", filenum), mem, 24, 47);
 end
 
 initial begin
-    $readmemb($sformatf("/home/hirahara/lsi_data/full_test/rom/mix_layer_b_3_%02d.txt", filenum), mem, 48, 71);
+    $readmemb($sformatf("../../data/parameter/hard/binary16/mix_layer_b_3/mix_layer_b_3_%02d.txt", filenum), mem, 48, 71);
 end
 
 endmodule
