@@ -71,6 +71,13 @@ module top # (
   wire axis_in_valid;
   wire [`N*`CHAR_LEN-1:0] axis_in_q;
 
+  // wire emb_layer
+  wire emb_run;
+  wire [`N*`CHAR_LEN-1:0] emb_d;
+  wire emb_valid;
+  wire [`N*`EMB_DIM*`N_LEN-1:0] emb_q;
+
+
   // wire AXI Stream Controller (output)
   wire axis_out_run;
   wire [`N*`CHAR_LEN-1:0] axis_out_d;
@@ -84,7 +91,7 @@ module top # (
   // assign state machine
   assign state_run = (state_q == `IDLE) ? axi_lite_run   :
                      (state_q == `RECV) ? axis_in_valid  :
-                     (state_q == `EMB ) ? 1'b1           :
+                     (state_q == `EMB ) ? emb_valid      :
                      (state_q == `MIX1) ? 1'b1           :
                      (state_q == `MIX2) ? 1'b1           :
                      (state_q == `MIX3) ? 1'b1           :
@@ -98,6 +105,9 @@ module top # (
   // assign AXI Stream Controller (input)
   assign axis_in_run = (state_q == `RECV);
 
+  // assign emb_layer
+  assign emb_run   = (state_q == `EMB);
+  assign emb_d     = axis_in_q;
 
 
   // assign AXI Stream Controller (output)
@@ -164,6 +174,15 @@ module top # (
     .q(axis_in_q)
   );
 
+  // emb_layer
+  emb_layer emb_layer_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .run(emb_run),
+    .d(emb_d),
+    .valid(emb_valid),
+    .q(emb_q)
+  );
 
 
   // AXI Stream Controller (output)
