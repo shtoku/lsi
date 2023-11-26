@@ -51,7 +51,31 @@ module top_tb ();
 
   top top_inst (.*);
 
-  integer i;
+
+  genvar i;
+  integer j;
+
+  reg  [`CHAR_LEN-1:0] d_mem [0:`N-1];
+  reg  [`CHAR_LEN-1:0] q_mem [0:`N-1];
+  reg  [`CHAR_LEN-1:0] q_buf [0:`N-1];
+  wire [`N*`CHAR_LEN-1:0] q_ans;
+  wire [`N*`CHAR_LEN-1:0] q;
+  wire correct;
+
+  assign correct = (q == q_ans);
+
+  generate
+    for (i = 0; i < `N; i = i + 1) begin
+      assign q_ans[i*`CHAR_LEN +: `CHAR_LEN] = q_mem[i];
+      assign     q[i*`CHAR_LEN +: `CHAR_LEN] = q_buf[i];
+    end
+  endgenerate
+
+  initial begin
+    $readmemb("../data/tb/emb_layer_in_tb.txt", d_mem);
+    $readmemb("../data/tb/emb_layer_in_tb.txt", q_mem);
+  end
+
 
   initial ACLK = 0;
   always #5 ACLK = ~ACLK;
@@ -73,10 +97,10 @@ module top_tb ();
     ARESETN=1; #10
 
     // send data to AXI Stream Controller (input)
-    for (i = 0; i < `N-1; i = i + 1) begin
-      S_AXIS_TDATA=`CHAR_LEN'h01; S_AXIS_TVALID=1; #10;
+    for (j = 0; j < `N-1; j = j + 1) begin
+      S_AXIS_TDATA=d_mem[j]; S_AXIS_TVALID=1; #10;
     end
-    S_AXIS_TDATA=`CHAR_LEN'hff; S_AXIS_TLAST=1; #10
+    S_AXIS_TDATA=d_mem[`N-1]; S_AXIS_TLAST=1; #10
     S_AXIS_TLAST=0; S_AXIS_TVALID=0; #10
     #10
 
@@ -97,8 +121,11 @@ module top_tb ();
     #10
 
     // recieve data from AXI Stream Controller (output)
-    M_AXIS_TREADY=1; #10
-    wait(M_AXIS_TLAST == 1); #5
+    M_AXIS_TREADY=1; #5
+    for (j = 0; M_AXIS_TLAST != 1; j = j + 1) begin
+      q_buf[j] = M_AXIS_TDATA; #10;
+    end
+    q_buf[j] = M_AXIS_TDATA; #10;
     #30   
 
     $finish;
