@@ -1,11 +1,11 @@
 `include "consts.vh"
 
 module top # (
-		// Width of S_AXI data bus
-		parameter integer C_S_AXI_DATA_WIDTH	= 32,
-		// Width of S_AXI address bus
-		parameter integer C_S_AXI_ADDR_WIDTH	= 4
-	) (
+    // Width of S_AXI data bus
+    parameter integer C_S_AXI_DATA_WIDTH = 32,
+    // Width of S_AXI address bus
+    parameter integer C_S_AXI_ADDR_WIDTH = 4
+  ) (
     // output for led
     output wire [3:0] led_out,
 
@@ -15,24 +15,24 @@ module top # (
 
     // AXI LITE interface
     input  wire [C_S_AXI_ADDR_WIDTH-1 : 0] S_AXI_AWADDR,
-		input  wire [2 : 0] S_AXI_AWPROT,
-		input  wire  S_AXI_AWVALID,
-		output wire  S_AXI_AWREADY,
-		input  wire [C_S_AXI_DATA_WIDTH-1 : 0] S_AXI_WDATA,
-		input  wire [(C_S_AXI_DATA_WIDTH/8)-1 : 0] S_AXI_WSTRB,
-		input  wire  S_AXI_WVALID,
-		output wire  S_AXI_WREADY,
-		output wire [1 : 0] S_AXI_BRESP,
-		output wire  S_AXI_BVALID,
-		input  wire  S_AXI_BREADY,
-		input  wire [C_S_AXI_ADDR_WIDTH-1 : 0] S_AXI_ARADDR,
-		input  wire [2 : 0] S_AXI_ARPROT,
-		input  wire  S_AXI_ARVALID,
-		output wire  S_AXI_ARREADY,
-		output wire [C_S_AXI_DATA_WIDTH-1 : 0] S_AXI_RDATA,
-		output wire [1 : 0] S_AXI_RRESP,
-		output wire  S_AXI_RVALID,
-		input  wire  S_AXI_RREADY,
+    input  wire [2 : 0] S_AXI_AWPROT,
+    input  wire  S_AXI_AWVALID,
+    output wire  S_AXI_AWREADY,
+    input  wire [C_S_AXI_DATA_WIDTH-1 : 0] S_AXI_WDATA,
+    input  wire [(C_S_AXI_DATA_WIDTH/8)-1 : 0] S_AXI_WSTRB,
+    input  wire  S_AXI_WVALID,
+    output wire  S_AXI_WREADY,
+    output wire [1 : 0] S_AXI_BRESP,
+    output wire  S_AXI_BVALID,
+    input  wire  S_AXI_BREADY,
+    input  wire [C_S_AXI_ADDR_WIDTH-1 : 0] S_AXI_ARADDR,
+    input  wire [2 : 0] S_AXI_ARPROT,
+    input  wire  S_AXI_ARVALID,
+    output wire  S_AXI_ARREADY,
+    output wire [C_S_AXI_DATA_WIDTH-1 : 0] S_AXI_RDATA,
+    output wire [1 : 0] S_AXI_RRESP,
+    output wire  S_AXI_RVALID,
+    input  wire  S_AXI_RREADY,
     // AXI LITE interface end
 
     // AXI Stream interface (input)
@@ -165,36 +165,36 @@ module top # (
   // AXI LITE Controller
   axi_lite_controller #(
     .C_S_AXI_DATA_WIDTH(C_S_AXI_DATA_WIDTH),
-		.C_S_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH)
+    .C_S_AXI_ADDR_WIDTH(C_S_AXI_ADDR_WIDTH)
   ) axi_lite_controller_inst (
-		.clk(clk),
-		.rst_n(rst_n),
-		.run(axi_lite_run),
-		.set(axi_lite_set),
+    .clk(clk),
+    .rst_n(rst_n),
+    .run(axi_lite_run),
+    .set(axi_lite_set),
     .finish(axi_lite_finish),
-		.mode(axi_lite_mode),
-		.led_out(led_out),
+    .mode(axi_lite_mode),
+    .led_out(led_out),
     .S_AXI_ACLK(ACLK),
     .S_AXI_ARESETN(ARESETN),
     .S_AXI_AWADDR(S_AXI_AWADDR),
-		.S_AXI_AWPROT(S_AXI_AWPROT),
-		.S_AXI_AWVALID(S_AXI_AWVALID),
-		.S_AXI_AWREADY(S_AXI_AWREADY),
-		.S_AXI_WDATA(S_AXI_WDATA),
-		.S_AXI_WSTRB(S_AXI_WSTRB),
-		.S_AXI_WVALID(S_AXI_WVALID),
-		.S_AXI_WREADY(S_AXI_WREADY),
-		.S_AXI_BRESP(S_AXI_BRESP),
-		.S_AXI_BVALID(S_AXI_BVALID),
-		.S_AXI_BREADY(S_AXI_BREADY),
-		.S_AXI_ARADDR(S_AXI_ARADDR),
-		.S_AXI_ARPROT(S_AXI_ARPROT),
-		.S_AXI_ARVALID(S_AXI_ARVALID),
-		.S_AXI_ARREADY(S_AXI_ARREADY),
-		.S_AXI_RDATA(S_AXI_RDATA),
-		.S_AXI_RRESP(S_AXI_RRESP),
-		.S_AXI_RVALID(S_AXI_RVALID),
-		.S_AXI_RREADY(S_AXI_RREADY)
+    .S_AXI_AWPROT(S_AXI_AWPROT),
+    .S_AXI_AWVALID(S_AXI_AWVALID),
+    .S_AXI_AWREADY(S_AXI_AWREADY),
+    .S_AXI_WDATA(S_AXI_WDATA),
+    .S_AXI_WSTRB(S_AXI_WSTRB),
+    .S_AXI_WVALID(S_AXI_WVALID),
+    .S_AXI_WREADY(S_AXI_WREADY),
+    .S_AXI_BRESP(S_AXI_BRESP),
+    .S_AXI_BVALID(S_AXI_BVALID),
+    .S_AXI_BREADY(S_AXI_BREADY),
+    .S_AXI_ARADDR(S_AXI_ARADDR),
+    .S_AXI_ARPROT(S_AXI_ARPROT),
+    .S_AXI_ARVALID(S_AXI_ARVALID),
+    .S_AXI_ARREADY(S_AXI_ARREADY),
+    .S_AXI_RDATA(S_AXI_RDATA),
+    .S_AXI_RRESP(S_AXI_RRESP),
+    .S_AXI_RVALID(S_AXI_RVALID),
+    .S_AXI_RREADY(S_AXI_RREADY)
   );
 
   // state machine
@@ -286,7 +286,5 @@ module top # (
     .d(axis_out_d),
     .valid(axis_out_valid)
   );
-
-
 
 endmodule
