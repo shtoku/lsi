@@ -9,4 +9,5 @@ iverilog -W all ^
          -y ../src/emb_layer ^
          -y ../src/mix_layer ^
          -y ../src/dense_layer ^
+         -y ../src/comp_layer ^
          %1

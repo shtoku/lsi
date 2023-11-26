@@ -99,6 +99,11 @@ module top # (
   wire dense_valid;
   wire [`N*`CHAR_NUM*`N_LEN-1:0] dense_q;
 
+  // wire comp_layer
+  wire comp_run;
+  wire [`N*`CHAR_NUM*`N_LEN-1:0] comp_d;
+  wire comp_valid;
+  wire [`N*`CHAR_LEN-1:0] comp_q;
 
   // wire AXI Stream Controller (output)
   wire axis_out_run;
@@ -118,7 +123,7 @@ module top # (
                      (state_q == `MIX2) ? mix_valid      :
                      (state_q == `MIX3) ? mix_valid      :
                      (state_q == `DENS) ? dense_valid    :
-                     (state_q == `COMP) ? 1'b1           :
+                     (state_q == `COMP) ? comp_valid     :
                      (state_q == `SEND) ? axis_out_valid :
                      (state_q == `FIN ) ? 1'b0           : 1'b0;
   assign state_set = axi_lite_set;
@@ -147,10 +152,13 @@ module top # (
   assign dense_run   = (state_q == `DENS);
   assign dense_d     = mix_q[`N*`HID_DIM*`N_LEN-1:0];
 
+  // assign comp_layer
+  assign comp_run = (state_q == `COMP);
+  assign comp_d   = dense_q;
 
   // assign AXI Stream Controller (output)
   assign axis_out_run = (state_q == `SEND);
-  assign axis_out_d   = axis_in_q;
+  assign axis_out_d   = comp_q;
 
   
   // ----------------------------------------
@@ -256,6 +264,15 @@ module top # (
     .q(dense_q)
   );
 
+  // comp_layer
+  comp_layer comp_layer_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .run(comp_run),
+    .d(comp_d),
+    .valid(comp_valid),
+    .q(comp_q)
+  );
 
   // AXI Stream Controller (output)
   axi_stream_output axi_stream_output_inst (

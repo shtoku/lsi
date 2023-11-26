@@ -59,22 +59,22 @@ module top_tb ();
   reg  [`CHAR_LEN-1:0] q_buf [0:`N-1];
   wire [`N*`CHAR_LEN-1:0] q;
 
-  reg  [`N_LEN-1:0] q_mem [0:`N*`CHAR_NUM-1];
-  wire [`N*`CHAR_NUM*`N_LEN-1:0] q_ans;
+  reg  [`CHAR_LEN-1:0] q_mem [0:`N-1];
+  wire [`N*`CHAR_LEN-1:0] q_ans;
   wire correct;
 
-  assign correct = (top_inst.dense_q == q_ans);
+  assign correct = (q == q_ans);
 
   generate
-    for (i = 0; i < `N*`CHAR_NUM; i = i + 1) begin
-      assign q_ans[i*`N_LEN +: `N_LEN] = q_mem[i];
-      // assign     q[i*`CHAR_LEN +: `CHAR_LEN] = q_buf[i];
+    for (i = 0; i < `N; i = i + 1) begin
+      assign q_ans[i*`CHAR_LEN +: `CHAR_LEN] = q_mem[i];
+      assign     q[i*`CHAR_LEN +: `CHAR_LEN] = q_buf[i];
     end
   endgenerate
 
   initial begin
-    $readmemb("../data/tb/emb_layer_in_tb.txt",    d_mem);
-    $readmemb("../data/tb/dense_layer_out_tb.txt", q_mem);
+    $readmemb("../data/tb/emb_layer_in_tb.txt",   d_mem);
+    $readmemb("../data/tb/comp_layer_out_tb.txt", q_mem);
   end
 
 
