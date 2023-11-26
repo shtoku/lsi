@@ -77,6 +77,22 @@ module top # (
   wire emb_valid;
   wire [`N*`EMB_DIM*`N_LEN-1:0] emb_q;
 
+  // wire mix_layer input controller
+  wire [`STATE_LEN-1:0] mix_ctrl_state;
+  wire [`N*`EMB_DIM*`N_LEN-1:0] mix_ctrl_d_emb;
+  wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] mix_ctrl_d_mix;
+  wire mix_ctrl_valid_emb;
+  wire mix_ctrl_valid_mix;
+  wire mix_ctrl_valid;
+  wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] mix_ctrl_q;
+
+  // wire mix_layer
+  wire mix_run;
+  wire [`STATE_LEN-1:0] mix_state;
+  wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] mix_d;
+  wire mix_valid;
+  wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] mix_q;
+
 
   // wire AXI Stream Controller (output)
   wire axis_out_run;
@@ -92,9 +108,9 @@ module top # (
   assign state_run = (state_q == `IDLE) ? axi_lite_run   :
                      (state_q == `RECV) ? axis_in_valid  :
                      (state_q == `EMB ) ? emb_valid      :
-                     (state_q == `MIX1) ? 1'b1           :
-                     (state_q == `MIX2) ? 1'b1           :
-                     (state_q == `MIX3) ? 1'b1           :
+                     (state_q == `MIX1) ? mix_valid      :
+                     (state_q == `MIX2) ? mix_valid      :
+                     (state_q == `MIX3) ? mix_valid      :
                      (state_q == `DENS) ? 1'b1           :
                      (state_q == `COMP) ? 1'b1           :
                      (state_q == `SEND) ? axis_out_valid :
@@ -108,6 +124,18 @@ module top # (
   // assign emb_layer
   assign emb_run   = (state_q == `EMB);
   assign emb_d     = axis_in_q;
+
+  // assign mix_layer input controller
+  assign mix_ctrl_state     = state_q;
+  assign mix_ctrl_d_emb     = emb_q;
+  assign mix_ctrl_d_mix     = mix_q;
+  assign mix_ctrl_valid_emb = emb_valid;
+  assign mix_ctrl_valid_mix = mix_valid;
+
+  // assign mix_layer
+  assign mix_run   = mix_ctrl_valid;
+  assign mix_state = state_q;
+  assign mix_d     = mix_ctrl_q;
 
 
   // assign AXI Stream Controller (output)
@@ -182,6 +210,30 @@ module top # (
     .d(emb_d),
     .valid(emb_valid),
     .q(emb_q)
+  );
+
+  // mix_layer input controller
+  mix_input_controller mix_ctrl_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .state(mix_ctrl_state),
+    .d_emb(mix_ctrl_d_emb),
+    .d_mix(mix_ctrl_d_mix),
+    .valid_emb(mix_ctrl_valid_emb),
+    .valid_mix(mix_ctrl_valid_mix),
+    .valid(mix_ctrl_valid),
+    .q(mix_ctrl_q)
+  );
+
+  // mix_layer
+  mix_layer mix_layer_isnt (
+    .clk(clk),
+    .rst_n(rst_n),
+    .run(mix_run),
+    .state(mix_state),
+    .data_in(mix_d),
+    .valid(mix_valid),
+    .data_out(mix_q)
   );
 
 
