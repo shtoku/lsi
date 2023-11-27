@@ -22,3 +22,5 @@
 `define COMP        `STATE_LEN'd7     // comp_layer
 `define SEND        `STATE_LEN'd8     // send
 `define FIN         `STATE_LEN'd9
+
+`define DATA_N      6
