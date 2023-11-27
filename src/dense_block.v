@@ -1,12 +1,14 @@
 `include "consts.vh"
 
-module dense_block (
+module dense_block # (
+    parameter integer HID_PARA = 6
+  ) (
     input  wire clk,
     input  wire rst_n,
     input  wire run,//ここらへんは決まってる
     input  wire [`CHAR_LEN-1:0] d,//8,2^8>200であるため8bit用意
     output wire valid,
-    output reg  [`HID_DIM*`N_LEN-1:0] q//24*16
+    output wire  [`HID_DIM*`N_LEN-1:0] q//24*16
   ); 
 
 
@@ -28,6 +30,7 @@ module dense_block (
   generate
     for (i = 0; i < `HID_DIM; i = i + 1) begin
       assign q[i*`N_LEN +: `N_LEN] = q_buf[i];//0~15 <- mem[0] , q[16:0]==q_buf[0]
+      assign q[i*`N_LEN +: `N_LEN] = q_buf[i+1];
     end
   endgenerate
 

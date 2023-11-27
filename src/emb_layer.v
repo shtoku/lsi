@@ -6,7 +6,7 @@ module emb_layer (
     input  wire run,//ここらへんは決まってる
     input  wire [`N*`CHAR_LEN-1:0] d,//10*8,dには1~200の数字が入る
     output wire valid,
-    output reg  [`N*`EMB_DIM*`N_LEN-1:0] q//10*24*16,縦10個、横24*16
+    output wire  [`N*`EMB_DIM*`N_LEN-1:0] q//10*24*16,縦10個、横24*16
   ); 
 
 
