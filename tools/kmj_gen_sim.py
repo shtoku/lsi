@@ -71,7 +71,7 @@ def mix_layer(layer, x):
 # dense_layer
 # 行列積+バイアスのみ．バイアスは無くても良いかもしれない
 def dense_layer(x):
-  W_out = read_param(HARD16_PATH + 'dense_layer_W_out.txt').reshape(char_num, hid_dim).T
+  W_out = read_param(HARD96_PATH + 'dense_layer_W_out.txt').reshape(char_num, hid_dim).T
   # b_out = read_param(HARD16_PATH + 'dense_layer_b_out.txt').reshape(N, char_num)
 
   x = kg.dot(x, W_out)

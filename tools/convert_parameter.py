@@ -31,7 +31,7 @@ def convert_dec_to_bin():
 
 # mix_layerの重みを24に分割して,
 # 1行1データ(16bit)から1行6データ(96bit)に変換する関数
-def convert_16_to_96(filename):
+def convert_16_to_96_mix(filename):
   PATH = HARD96_PATH + filename + '/'
   param = kgs.read_param(HARD16_PATH + filename + '.txt').reshape(hid_dim, hid_dim, hid_dim)
   for i, mat in enumerate(param):
@@ -43,7 +43,7 @@ def convert_16_to_96(filename):
 
 
 # mix_layerのバイアスを24個に分ける
-def split_bias_24(filename):
+def split_bias_24_mix(filename):
   PATH = HARD16_PATH + filename + '/'
   param = kgs.read_param(HARD16_PATH + filename + '.txt').reshape(hid_dim, hid_dim)
   for i, vec in enumerate(param):
@@ -51,10 +51,24 @@ def split_bias_24(filename):
       for data in vec:
         file.write(data + '\n')
 
+
+
+# dense_layerの重みを24に分割して,
+# 1行1データ(16bit)から1行6データ(96bit)に変換する関数
+def convert_16_to_96_dense(filename):
+  param = kgs.read_param(HARD16_PATH + filename + '.txt').reshape(hid_dim, char_num)
+  param = param.reshape(-1, 6)
+  with open(HARD96_PATH + filename + '.txt', 'w') as file:
+    for data in param:
+      temp = ''.join(list(reversed(data)))
+      file.write(temp + '\n')
+
+
 if __name__ == '__main__':
   convert_dec_to_bin()
 
-  mix = 'mix_layer'
   for i in range(1, 4):
-    convert_16_to_96('mix_layer_W_' + str(i))
-    split_bias_24('mix_layer_b_' + str(i))
+    convert_16_to_96_mix('mix_layer_W_' + str(i))
+    split_bias_24_mix('mix_layer_b_' + str(i))
+  
+convert_16_to_96_dense('dense_layer_W_out')
