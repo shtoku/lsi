@@ -239,12 +239,12 @@ if __name__ == '__main__':
   kmj_dataset = read_dataset('../data/dataset/kaomoji_MAX=10_DA.txt')
 
   # データの前処理
-  kmj_num = 100
+  kmj_num = 1000
   kmj_onehot = preprocess(kmj_dataset[:kmj_num])
 
   # 正解率計算
   acc_sum = 0
-  for x in kmj_onehot:
+  for n, onehot in enumerate(kmj_onehot):
 
     # 固定小数点に変換
     x = []
@@ -264,5 +264,11 @@ if __name__ == '__main__':
       for j in range(char_num):        
         X[i][j] = str_to_int(x[i][j])
         Y[i][j] = str_to_int(y[i][j])
+    print('base     :', convert_str(np.array(X)))
+    print('generate :', convert_str(np.array(Y)))
     acc_sum += (Y.argmax(axis=1) == X.argmax(axis=1)).sum()
+
+    if (n+1) % 10 == 0:
+      print(n+1, 'Acc :', acc_sum / ((n+1) * N))
+
   print('Acc :', acc_sum / (kmj_num * N))

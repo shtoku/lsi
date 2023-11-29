@@ -141,7 +141,7 @@ if __name__ == '__main__':
   kmj_dataset = read_dataset('../data/dataset/kaomoji_MAX=10_DA.txt')
 
   # データの前処理
-  kmj_num = 100
+  kmj_num = 1000
   kmj_onehot = preprocess(kmj_dataset[:kmj_num])
 
   # 正解率計算
