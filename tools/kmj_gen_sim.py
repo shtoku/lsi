@@ -161,23 +161,25 @@ if __name__ == '__main__':
   # 類似生成・新規生成テスト
   xors = xorshift.XorShift(5671)
   
-  z = np.empty_like(o_mix2[:, 0])
-  for i in range(hid_dim):
-    # z[i] = kg.add(o_mix2[:, 0][i], xors())  # 類似生成
-    z[i] = xors()                           # 新規生成
+  for _ in range(100):
+    z = np.empty_like(o_mix2[:, 0])
+    for i in range(hid_dim):
+      rand = xors()
+      # z[i] = kg.add(o_mix2[:, 0][i], rand[0] + rand[:-1])  # 類似生成
+      z[i] = rand                           # 新規生成
 
-  output_file(z, TB_PATH + 'rand_layer_out_tb.txt')
+    # output_file(z, TB_PATH + 'rand_layer_out_tb.txt')
 
-  # mix_layer3
-  # 入力を複製
-  i_mix3 = np.full((hid_dim, hid_dim), z).T
-  o_mix3 = mix_layer(3, i_mix3)
+    # mix_layer3
+    # 入力を複製
+    i_mix3 = np.full((hid_dim, hid_dim), z).T
+    o_mix3 = mix_layer(3, i_mix3)
 
-  # dense_layer
-  i_dens = o_mix3[:N, :]
-  o_dens = dense_layer(i_dens)
+    # dense_layer
+    i_dens = o_mix3[:N, :]
+    o_dens = dense_layer(i_dens)
 
-  # comp_layer
-  o_comp = comp_layer(o_dens)
+    # comp_layer
+    o_comp = comp_layer(o_dens)
 
-  print('generate :', convert_str(o_comp))
+    print('generate :', convert_str(o_comp))
