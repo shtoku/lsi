@@ -21,4 +21,7 @@
 `define DENS        `STATE_LEN'd6     // dense_layer
 `define COMP        `STATE_LEN'd7     // comp_layer
 `define SEND        `STATE_LEN'd8     // send
-`define FIN         `STATE_LEN'd9
+`define FIN         `STATE_LEN'd9     // finish
+
+
+`define DATA_N      6                 // read 1 time, read 6 data.
