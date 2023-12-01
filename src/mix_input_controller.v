@@ -44,7 +44,7 @@ module mix_input_controller (
     for (i = 0; i < `HID_DIM; i = i + 1) begin
       assign hid_vec[i] = (mode == `FORWARD ) ? d_mix_buf[i*`HID_DIM*`N_LEN +: `N_LEN] :
                           (mode == `BACKWARD) ? d_mix_buf[i*`HID_DIM*`N_LEN +: `N_LEN] :
-                          (mode == `GEN_SIMI) ? d_mix_buf[i*`HID_DIM*`N_LEN +: `N_LEN] + d_rand[i*`N_LEN +: `N_LEN] :
+                          (mode == `GEN_SIMI) ? d_mix_buf[i*`HID_DIM*`N_LEN +: `N_LEN] + {d_rand[(i+1)*`N_LEN-1], d_rand[(i+1)*`N_LEN-1 : i*`N_LEN+1]} :
                           (mode == `GEN_NEW ) ? d_rand[i*`N_LEN +: `N_LEN] :
                           d_mix_buf[i*`HID_DIM*`N_LEN +: `N_LEN];
     end

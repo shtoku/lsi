@@ -56,9 +56,9 @@ module mix_input_controller_tb ();
 
   initial begin
     $dumpvars;
-    rst_n=0; state=`IDLE; mode=`GEN_NEW;
+    rst_n=0; state=`IDLE; mode=`GEN_SIMI;
     valid_emb=0; valid_mix=0; valid_rand=1;
-    d_rand={`HID_DIM{`N_LEN'b1}}; #6
+    d_rand={`HID_DIM{`N_LEN'hfffc}}; #6
     
     rst_n=1; state=`EMB; #10
     #30
