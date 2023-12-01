@@ -37,7 +37,9 @@ module mix_input_controller (
 
   // ----------------------------------------
   // assign load
-  assign load = ((state == `MIX1) | (state == `MIX2) | (state == `MIX3)) & ~valid_mix & valid_rand;
+  assign load = (state == `MIX1) ? ~valid_mix :
+                (state == `MIX2) ? ~valid_mix :
+                (state == `MIX3) ? ~valid_mix & valid_rand : 1'b0;
 
   // assign hid_vec
   generate

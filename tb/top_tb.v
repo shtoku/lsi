@@ -73,8 +73,8 @@ module top_tb ();
   endgenerate
 
   initial begin
-    $readmemb("../data/tb/emb_layer_in_tb.txt",   d_mem);
-    $readmemb("../data/tb/comp_layer_out_tb.txt", q_mem);
+    $readmemb("../data/tb/gen_simi_in_tb.txt",   d_mem);
+    $readmemb("../data/tb/gen_simi_out_tb.txt", q_mem);
   end
 
 
@@ -105,9 +105,9 @@ module top_tb ();
     S_AXIS_TLAST=0; S_AXIS_TVALID=0; #10
     #10
 
-    // write data to slv_reg1. mode=`GEN_NEW.
+    // write data to slv_reg1. mode=`GEN_SIMI.
     S_AXI_AWADDR=4'b0100; S_AXI_AWVALID=1;
-    S_AXI_WDATA={{(C_S_AXI_DATA_WIDTH-`MODE_LEN){1'b0}}, `GEN_NEW}; S_AXI_WVALID=1;
+    S_AXI_WDATA={{(C_S_AXI_DATA_WIDTH-`MODE_LEN){1'b0}}, `GEN_SIMI}; S_AXI_WVALID=1;
     #20
     S_AXI_AWVALID=0;
     S_AXI_WVALID=0;

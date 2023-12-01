@@ -77,12 +77,20 @@ module top # (
   wire emb_valid;
   wire [`N*`EMB_DIM*`N_LEN-1:0] emb_q;
 
+  // wire rand_layer
+  wire rand_run;
+  wire rand_valid;
+  wire [`HID_DIM*`N_LEN-1:0] rand_q;
+
   // wire mix_layer input controller
   wire [`STATE_LEN-1:0] mix_ctrl_state;
+  wire [`MODE_LEN-1:0] mix_ctrl_mode;
   wire [`N*`EMB_DIM*`N_LEN-1:0] mix_ctrl_d_emb;
   wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] mix_ctrl_d_mix;
+  wire [`HID_DIM*`N_LEN-1:0] mix_ctrl_d_rand;
   wire mix_ctrl_valid_emb;
   wire mix_ctrl_valid_mix;
+  wire mix_ctrl_valid_rand;
   wire mix_ctrl_valid;
   wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] mix_ctrl_q;
 
@@ -139,12 +147,18 @@ module top # (
   assign emb_run   = (state_q == `EMB);
   assign emb_d     = axis_in_q;
 
+  // assign rand_layer
+  assign rand_run = (state_q == `MIX3);
+
   // assign mix_layer input controller
-  assign mix_ctrl_state     = state_q;
-  assign mix_ctrl_d_emb     = emb_q;
-  assign mix_ctrl_d_mix     = mix_q;
-  assign mix_ctrl_valid_emb = emb_valid;
-  assign mix_ctrl_valid_mix = mix_valid;
+  assign mix_ctrl_state      = state_q;
+  assign mix_ctrl_mode       = axi_lite_mode;
+  assign mix_ctrl_d_emb      = emb_q;
+  assign mix_ctrl_d_mix      = mix_q;
+  assign mix_ctrl_d_rand     = rand_q;
+  assign mix_ctrl_valid_emb  = emb_valid;
+  assign mix_ctrl_valid_mix  = mix_valid;
+  assign mix_ctrl_valid_rand = rand_valid;
 
   // assign mix_layer
   assign mix_run   = mix_ctrl_valid;
@@ -233,15 +247,27 @@ module top # (
     .q(emb_q)
   );
 
+  // rand_layer
+  rand_layer rand_layer_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .run(rand_run),
+    .valid(rand_valid),
+    .q(rand_q)
+  );
+
   // mix_layer input controller
   mix_input_controller mix_ctrl_inst (
     .clk(clk),
     .rst_n(rst_n),
     .state(mix_ctrl_state),
+    .mode(mix_ctrl_mode),
     .d_emb(mix_ctrl_d_emb),
     .d_mix(mix_ctrl_d_mix),
+    .d_rand(mix_ctrl_d_rand),
     .valid_emb(mix_ctrl_valid_emb),
     .valid_mix(mix_ctrl_valid_mix),
+    .valid_rand(mix_ctrl_valid_rand),
     .valid(mix_ctrl_valid),
     .q(mix_ctrl_q)
   );
