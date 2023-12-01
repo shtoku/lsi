@@ -19,7 +19,7 @@ module axi_lite_controller #
 		output wire run,
 		output wire set,
 		input  wire finish,
-		output wire [1:0] mode,
+		output wire [`MODE_LEN-1:0] mode,
 		output wire [3:0] led_out,
 
 		// User ports ends
@@ -417,7 +417,7 @@ module axi_lite_controller #
 	// divider
 	reg [3:0] divide_cnt;
 	always @(posedge S_AXI_ACLK) begin
-		if (~rst_n)
+		if (~S_AXI_ARESETN)
 			divide_cnt <= 4'b0;
 		else
 			divide_cnt <= divide_cnt + 4'b1;
@@ -427,7 +427,7 @@ module axi_lite_controller #
 	assign rst_n   = slv_reg0[0];
 	assign run 	   = slv_reg0[1];
 	assign set     = slv_reg0[2];
-	assign mode    = slv_reg1[1:0];
+	assign mode    = slv_reg1[`MODE_LEN-1:0];
 	assign led_out = {finish, set, run, rst_n};
 
 	// User logic ends

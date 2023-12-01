@@ -23,5 +23,11 @@
 `define SEND        `STATE_LEN'd8     // send
 `define FIN         `STATE_LEN'd9     // finish
 
+// define mode
+`define MODE_LEN    2
+`define FORWARD     `MODE_LEN'd0      // calculate forward
+`define BACKWARD    `MODE_LEN'd1      // calculate backward
+`define GEN_SIMI    `MODE_LEN'd2      // generate similar one
+`define GEN_NEW     `MODE_LEN'd3      // generate new one
 
 `define DATA_N      6                 // read 1 time, read 6 data.

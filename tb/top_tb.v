@@ -87,7 +87,7 @@ module top_tb ();
     // AXI LITE Controller
     S_AXI_AWADDR=4'b0000; S_AXI_AWPROT=3'b000; S_AXI_AWVALID=0;
     S_AXI_WDATA=32'b0; S_AXI_WSTRB=4'b1111; S_AXI_WVALID=0;
-    S_AXI_BREADY=0;
+    S_AXI_BREADY=1;
     S_AXI_ARADDR=4'b0000; S_AXI_ARPROT=3'b000; S_AXI_ARVALID=0;
     S_AXI_RREADY=0;
     // AXI Stream Controller (input/output)
@@ -105,7 +105,23 @@ module top_tb ();
     S_AXIS_TLAST=0; S_AXIS_TVALID=0; #10
     #10
 
-    // write data to slv_reg0. rst_n=1, run=1.
+    // write data to slv_reg1. mode=`GEN_NEW.
+    S_AXI_AWADDR=4'b0100; S_AXI_AWVALID=1;
+    S_AXI_WDATA={{(C_S_AXI_DATA_WIDTH-`MODE_LEN){1'b0}}, `GEN_NEW}; S_AXI_WVALID=1;
+    #20
+    S_AXI_AWVALID=0;
+    S_AXI_WVALID=0;
+    #10
+
+    // write data to slv_reg0. set=1, run=0, rst_n=1.
+    S_AXI_AWADDR=4'b0000; S_AXI_AWVALID=1;
+    S_AXI_WDATA=32'h00000005; S_AXI_WVALID=1;
+    #20
+    S_AXI_AWVALID=0;
+    S_AXI_WVALID=0;
+    #200
+
+    // write data to slv_reg0. set=0, run=1, rst_n=1.
     S_AXI_AWADDR=4'b0000; S_AXI_AWVALID=1;
     S_AXI_WDATA=32'h00000003; S_AXI_WVALID=1;
     #20

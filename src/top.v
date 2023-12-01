@@ -58,7 +58,7 @@ module top # (
   wire axi_lite_run;
   wire axi_lite_set;
   wire axi_lite_finish;
-  wire [1:0] axi_lite_mode;
+  wire [`MODE_LEN-1:0] axi_lite_mode;
 
   // wire state machine
   wire state_run;
@@ -127,7 +127,10 @@ module top # (
                      (state_q == `SEND) ? axis_out_valid :
                      (state_q == `FIN ) ? 1'b0           : 1'b0;
   assign state_set = axi_lite_set;
-  assign state_d   = `IDLE;
+  assign state_d   = (axi_lite_mode == `FORWARD ) ? `IDLE :
+                     (axi_lite_mode == `BACKWARD) ? `IDLE :
+                     (axi_lite_mode == `GEN_SIMI) ? `IDLE :
+                     (axi_lite_mode == `GEN_NEW ) ? `MIX3 : `IDLE;
 
   // assign AXI Stream Controller (input)
   assign axis_in_run = (state_q == `RECV);
