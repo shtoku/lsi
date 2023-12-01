@@ -109,7 +109,8 @@ def output_file(x, filename):
       file.write(value + '\n')
 
 
-if __name__ == '__main__':
+# 順伝播用の入出力サンプルを作成する関数
+def generate_inout_sample_forward():
   kmj = ['(　́ω`)ノ']
 
   # データの前処理
@@ -158,28 +159,91 @@ if __name__ == '__main__':
   print('generate :', convert_str(o_comp))
 
 
-  # 類似生成・新規生成テスト
+# 類似生成・新規生成テスト用の入出力サンプルを作成する関数
+def generate_inout_sample_simi_and_new():
+  kmj = ['ヾ(*　∀́　*)ノ']
+
+  kmj_onehot = kg.preprocess(kmj)
+  x = kmj_onehot[0].argmax(axis=1)
+  output_file(x, TB_PATH + 'gen_simi_in_tb.txt')
+  print('base     :', convert_str(x))
+
+  o_emb = emb_layer(x)
+  z_mix1 = np.full((hid_dim-N, hid_dim), format(0, '0' + str(n_len) + 'b'))
+  i_mix1 = np.concatenate([o_emb, z_mix1], axis=0)
+  o_mix1 = mix_layer(1, i_mix1)
+  o_mix2 = mix_layer(2, o_mix1)
+
+  xors = xorshift.XorShift(5671)
+  z_simi = np.empty_like(o_mix2[:, 0])
+  z_new = np.empty_like(o_mix2[:, 0])
+  for i in range(hid_dim):
+    rand = xors()
+    z_simi[i] = kg.add(o_mix2[:, 0][i], rand[0] + rand[:-1])  # 類似生成
+    z_new[i]  = rand                                          # 新規生成
+
+  # 類似生成
+  i_mix3 = np.full((hid_dim, hid_dim), z_simi).T
+  o_mix3 = mix_layer(3, i_mix3)
+  i_dens = o_mix3[:N, :]
+  o_dens = dense_layer(i_dens)
+  o_comp = comp_layer(o_dens)
+
+  output_file(o_comp, TB_PATH + 'gen_simi_out_tb.txt')
+  print('gen_simi :', convert_str(o_comp))
+
+  # 新規生成
+  i_mix3 = np.full((hid_dim, hid_dim), z_new).T
+  o_mix3 = mix_layer(3, i_mix3)
+  i_dens = o_mix3[:N, :]
+  o_dens = dense_layer(i_dens)
+  o_comp = comp_layer(o_dens)
+
+  output_file(o_comp, TB_PATH + 'gen_new_out_tb.txt')
+  print('gen_new  :', convert_str(o_comp))
+
+
+# 類似生成・新規生成テストを行う関数
+def generate_sample(mode=0, num=100):
+  kmj = ['ヾ(*　∀́　*)ノ']
+
+  kmj_onehot = kg.preprocess(kmj)
+  x = kmj_onehot[0].argmax(axis=1)
+  
+  if mode == 0: # 類似生成
+    print('base     :', convert_str(x))
+
+  o_emb = emb_layer(x)
+  z_mix1 = np.full((hid_dim-N, hid_dim), format(0, '0' + str(n_len) + 'b'))
+  i_mix1 = np.concatenate([o_emb, z_mix1], axis=0)
+  o_mix1 = mix_layer(1, i_mix1)
+  o_mix2 = mix_layer(2, o_mix1)
+
   xors = xorshift.XorShift(5671)
   
-  for _ in range(100):
+  for _ in range(num):
     z = np.empty_like(o_mix2[:, 0])
     for i in range(hid_dim):
       rand = xors()
-      # z[i] = kg.add(o_mix2[:, 0][i], rand[0] + rand[:-1])  # 類似生成
-      z[i] = rand                           # 新規生成
+      if mode == 0:   # 類似生成
+        z[i] = kg.add(o_mix2[:, 0][i], rand[0] + rand[:-1])
+      elif mode == 1: # 新規生成
+        z[i] = rand
 
     # output_file(z, TB_PATH + 'rand_layer_out_tb.txt')
 
-    # mix_layer3
-    # 入力を複製
     i_mix3 = np.full((hid_dim, hid_dim), z).T
     o_mix3 = mix_layer(3, i_mix3)
-
-    # dense_layer
     i_dens = o_mix3[:N, :]
     o_dens = dense_layer(i_dens)
-
-    # comp_layer
     o_comp = comp_layer(o_dens)
 
     print('generate :', convert_str(o_comp))
+
+
+if __name__ == '__main__':
+  generate_inout_sample_forward()
+
+  generate_inout_sample_simi_and_new()  
+
+  generate_sample(mode=1, num=10)
