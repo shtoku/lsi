@@ -10,4 +10,5 @@ iverilog -W all ^
          -y ../src/mix_layer ^
          -y ../src/dense_layer ^
          -y ../src/comp_layer ^
+         -y ../src/rand_layer ^
          %1

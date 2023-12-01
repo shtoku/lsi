@@ -5,10 +5,13 @@ module mix_input_controller_tb ();
   reg  clk;
   reg  rst_n;
   reg  [`STATE_LEN-1:0] state;
+  reg  [`MODE_LEN-1:0] mode;
   wire [`N*`EMB_DIM*`N_LEN-1:0] d_emb;
   wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] d_mix;
+  reg  [`HID_DIM*`N_LEN-1:0] d_rand;
   reg  valid_emb;
   reg  valid_mix;
+  reg  valid_rand;
   wire valid;
   wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] q;
 
@@ -53,7 +56,10 @@ module mix_input_controller_tb ();
 
   initial begin
     $dumpvars;
-    rst_n=0; state=`IDLE; valid_emb=0; valid_mix=0; #6
+    rst_n=0; state=`IDLE; mode=`GEN_NEW;
+    valid_emb=0; valid_mix=0; valid_rand=1;
+    d_rand={`HID_DIM{`N_LEN'b1}}; #6
+    
     rst_n=1; state=`EMB; #10
     #30
     valid_emb=1; #10

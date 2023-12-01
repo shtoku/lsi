@@ -4,10 +4,13 @@ module mix_input_controller (
     input  wire clk,
     input  wire rst_n,
     input  wire [`STATE_LEN-1:0] state,
+    input  wire [`MODE_LEN-1:0] mode,
     input  wire [`N*`EMB_DIM*`N_LEN-1:0] d_emb,
     input  wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] d_mix,
+    input  wire [`HID_DIM*`N_LEN-1:0] d_rand,
     input  wire valid_emb,
     input  wire valid_mix,
+    input  wire valid_rand,
     output reg  valid,
     output wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] q
   );
@@ -34,12 +37,16 @@ module mix_input_controller (
 
   // ----------------------------------------
   // assign load
-  assign load = ((state == `MIX1) | (state == `MIX2) | (state == `MIX3)) & ~valid_mix;
+  assign load = ((state == `MIX1) | (state == `MIX2) | (state == `MIX3)) & ~valid_mix & valid_rand;
 
   // assign hid_vec
   generate
     for (i = 0; i < `HID_DIM; i = i + 1) begin
-      assign hid_vec[i] = d_mix_buf[i*`HID_DIM*`N_LEN +: `N_LEN];
+      assign hid_vec[i] = (mode == `FORWARD ) ? d_mix_buf[i*`HID_DIM*`N_LEN +: `N_LEN] :
+                          (mode == `BACKWARD) ? d_mix_buf[i*`HID_DIM*`N_LEN +: `N_LEN] :
+                          (mode == `GEN_SIMI) ? d_mix_buf[i*`HID_DIM*`N_LEN +: `N_LEN] + d_rand[i*`N_LEN +: `N_LEN] :
+                          (mode == `GEN_NEW ) ? d_rand[i*`N_LEN +: `N_LEN] :
+                          d_mix_buf[i*`HID_DIM*`N_LEN +: `N_LEN];
     end
   endgenerate
 
