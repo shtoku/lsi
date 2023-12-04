@@ -11,7 +11,7 @@ hid_dim = 24        # 潜在ベクトルの次元
 
 
 
-batch_size = 256    # ミニバッチサイズ
+batch_size = 32     # ミニバッチサイズ
 n_epochs = 100      # エポック数
 lr = 5e-4           # 学習率
 

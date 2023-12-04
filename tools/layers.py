@@ -48,7 +48,7 @@ class Mix_Layer:
     dout = np.expand_dims(dout, -2)
     dx = np.matmul(dout, self.W.transpose(0, 2, 1))
     if self.is_hid:
-      dx = dx.mean(axis=1)
+      dx = dx.sum(axis=1)
     else:
       dx = dx.squeeze(-2)
     dx = dx.transpose(0, 2, 1)
