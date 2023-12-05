@@ -6,7 +6,7 @@ module emb_block (
     input  wire run,//ここらへんは決まってる
     input  wire [`CHAR_LEN-1:0] d,//8
     output wire valid,
-    output reg  [`EMB_DIM*`N_LEN-1:0] q//24*16
+    output wire  [`EMB_DIM*`N_LEN-1:0] q//24*16
   ); 
 
 

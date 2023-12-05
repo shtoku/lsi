@@ -16,6 +16,9 @@ wire [24*16-1:0] output_array [0:24-1];
 wire [24*24*16:0] output_line;
 
 genvar x, y;
+wire [`HID_LENGTH-1:0] valid_buf;
+
+assign valid = &valid_buf;
 
 
 //入力データを並び替える回路
@@ -46,7 +49,7 @@ generate
                 .clk(clk), 
                 .rst_n(rst_n), 
                 .run(run), 
-                .valid(valid), 
+                .valid(valid_buf[x]), 
                 .data_in(input_array[x]), 
                 .state(state), 
                 .data_out(output_array[x])
