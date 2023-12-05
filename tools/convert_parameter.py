@@ -40,6 +40,10 @@ def convert_16_to_96_mix(filename):
       for data in mat:
         temp = ''.join(list(reversed(data)))
         file.write(temp + '\n')
+    with open(PATH + filename + '_' + format(i) + '.txt', 'w') as file:
+      for data in mat:
+        temp = ''.join(list(reversed(data)))
+        file.write(temp + '\n')
 
 
 # mix_layerのバイアスを24個に分ける
@@ -48,6 +52,9 @@ def split_bias_24_mix(filename):
   param = kgs.read_param(HARD16_PATH + filename + '.txt').reshape(hid_dim, hid_dim)
   for i, vec in enumerate(param):
     with open(PATH + filename + '_' + format(i, '02') + '.txt', 'w') as file:
+      for data in vec:
+        file.write(data + '\n')
+    with open(PATH + filename + '_' + format(i) + '.txt', 'w') as file:
       for data in vec:
         file.write(data + '\n')
 
