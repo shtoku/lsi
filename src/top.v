@@ -148,7 +148,7 @@ module top # (
   assign emb_d     = axis_in_q;
 
   // assign rand_layer
-  assign rand_run = (state_q == `MIX3);
+  assign rand_run = (state_q == `MIX1) | (state_q == `MIX2) | (state_q == `MIX3);
 
   // assign mix_layer input controller
   assign mix_ctrl_state      = state_q;
