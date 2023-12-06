@@ -278,9 +278,9 @@ module top # (
     .rst_n(rst_n),
     .run(mix_run),
     .state(mix_state),
-    .data_in(mix_d),
+    .d(mix_d),
     .valid(mix_valid),
-    .data_out(mix_q)
+    .q(mix_q)
   );
 
   // dense_layer

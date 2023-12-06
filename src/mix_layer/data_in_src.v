@@ -1,62 +1,65 @@
-`include "num_data.v"
+`include "consts.vh"
 
 module data_in_src(
-    input wire clk, 
-    input wire rst_n, 
-    input wire run, 
-    input wire [4*`BIT_LENGTH*`DATA_N-1:0] input_data, 
-    output reg [`BIT_LENGTH*`DATA_N-1:0] output_data
-);
+    input  wire clk, 
+    input  wire rst_n, 
+    input  wire run, 
+    input  wire [`HID_DIM*`N_LEN-1:0] input_data, 
+    output reg  [`DATA_N*`N_LEN-1:0] output_data
+  );
 
-reg [15:0] cnt_1, cnt_2;
+  // reg [7:0] cnt_1;
+  reg [1:0] cnt_2;
 
 
 
-function [`BIT_LENGTH*`DATA_N-1:0] outdata_selecter;
-    input [4*`BIT_LENGTH*`DATA_N-1:0] fn_input_data;
-    input [`BIT_LENGTH*`DATA_N-1:0] selecter;
+  function [`DATA_N*`N_LEN-1:0] outdata_selecter;
+    input [`HID_DIM*`N_LEN-1:0] fn_input_data;
+    input [1:0] selecter;
     
     case (selecter)
-        0: outdata_selecter = fn_input_data[`BIT_LENGTH*`DATA_N-1:0];
-        1: outdata_selecter = fn_input_data[2*`BIT_LENGTH*`DATA_N-1:`BIT_LENGTH*`DATA_N];
-        2: outdata_selecter = fn_input_data[3*`BIT_LENGTH*`DATA_N-1:2*`BIT_LENGTH*`DATA_N];
-        3: outdata_selecter = fn_input_data[4*`BIT_LENGTH*`DATA_N-1:3*`BIT_LENGTH*`DATA_N];
-        default: outdata_selecter = 16'hxx;
+      0: outdata_selecter = fn_input_data[0*`DATA_N*`N_LEN +: `DATA_N*`N_LEN];
+      1: outdata_selecter = fn_input_data[1*`DATA_N*`N_LEN +: `DATA_N*`N_LEN];
+      2: outdata_selecter = fn_input_data[2*`DATA_N*`N_LEN +: `DATA_N*`N_LEN];
+      3: outdata_selecter = fn_input_data[3*`DATA_N*`N_LEN +: `DATA_N*`N_LEN];
+      // default: outdata_selecter = 16'hxx;
     endcase
-endfunction
+  endfunction
 
 
 
-always @(posedge clk, negedge rst_n) begin
+  always @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
-        cnt_1 <= 0;
-        cnt_2 <= 0;
-        output_data <= 0;
+      // cnt_1 <= 0;
+      cnt_2 <= 0;
+      output_data <= 0;
     end
     
     else if(run) begin
-        if (cnt_1 == 101) begin
-            cnt_1 <= 0;
-            cnt_2 <= 0;
-        end else begin
-            cnt_1 <= cnt_1 + 1;
-            
-            if (cnt_2 == 3) begin
-                cnt_2 <= 0;
-            end else begin
-                cnt_2 <= cnt_2 + 1;
-            end
-                        
-        end
-        output_data <= outdata_selecter(input_data, cnt_2);
+      // 101の理由はmain_logic.vに書いた
+      // if (cnt_1 == 101) begin
+      //   cnt_1 <= 0;
+      //   cnt_2 <= 0;
+      // end else begin
+      //   cnt_1 <= cnt_1 + 1;
+      
+      //   if (cnt_2 == 3) begin
+      //     cnt_2 <= 0;
+      //   end else begin
+      //     cnt_2 <= cnt_2 + 1;
+      //   end
+                      
+      // end
+      cnt_2 <= cnt_2 + 1;
+      output_data <= outdata_selecter(input_data, cnt_2);
     end 
     
     else begin
-        cnt_1 <= 0;
-        cnt_2 <= 0;
-        output_data <= 0;
+      // cnt_1 <= 0;
+      cnt_2 <= 0;
+      output_data <= 0;
     end
-end
+  end
 
 
 endmodule
