@@ -160,7 +160,8 @@ def generate_inout_sample_forward():
 
 
 # 類似生成・新規生成テスト用の入出力サンプルを作成する関数
-def generate_inout_sample_simi_and_new():
+# num回生成目の乱数を使ったサンプルになる
+def generate_inout_sample_simi_and_new(num=1):
   kmj = ['ヾ(*　∀́　*)ノ']
 
   kmj_onehot = kg.preprocess(kmj)
@@ -177,6 +178,12 @@ def generate_inout_sample_simi_and_new():
   xors = xorshift.XorShift(5671)
   z_simi = np.empty_like(o_mix2[:, 0])
   z_new = np.empty_like(o_mix2[:, 0])
+
+  # num-1回空生成
+  for _ in range(num-1):
+    for _ in range(hid_dim):
+      rand = xors()
+
   for i in range(hid_dim):
     rand = xors()
     z_simi[i] = kg.add(o_mix2[:, 0][i], rand[0] + rand[:-1])  # 類似生成
@@ -244,6 +251,6 @@ def generate_sample(mode=0, num=100):
 if __name__ == '__main__':
   generate_inout_sample_forward()
 
-  generate_inout_sample_simi_and_new()  
+  generate_inout_sample_simi_and_new(num=3)  
 
   generate_sample(mode=1, num=10)

@@ -33,7 +33,7 @@ module dense_layer (
   assign d_block = (valid_block) ? d_block_delay + 1 : d_block_delay;
   
   // assign output
-  assign valid = (count == 0) & (d_block_delay == `CHAR_NUM);
+  assign valid = run & (count == 0) & (d_block_delay == `CHAR_NUM);
 
 //q_bufを横並びにする
   generate
@@ -56,8 +56,12 @@ module dense_layer (
   always @(posedge clk, negedge rst_n) begin
     if (~rst_n) begin
       d_block_delay <= 0;
-    end else if (valid_block) begin
+    end else if (run & valid_block) begin
       d_block_delay <= d_block_delay + 1;
+    end else if (run) begin
+      d_block_delay <= d_block_delay;
+    end else begin
+      d_block_delay <= 0;
     end
   end
 
@@ -65,9 +69,9 @@ module dense_layer (
   always @(posedge clk, negedge rst_n) begin
     if (~rst_n) begin
       count <= 0;
-    end else if (valid_block) begin
+    end else if (run & valid_block) begin
       count <= 1;
-    end else if (count != 0 & count != 4) begin
+    end else if (run & count != 0 & count != 4) begin
       count <= count + 1;
     end else begin
       count <= 0;
@@ -82,7 +86,7 @@ module dense_layer (
           q_buf[m][n] <= 0;
         end
       end
-    end else if (count == 4) begin
+    end else if (run & count == 4) begin
       for (n = 0 ; n < `N; n = n + 1) begin
         q_buf[n][d_block-1] <= q_inner_buf[n];
       end
