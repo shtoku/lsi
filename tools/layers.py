@@ -70,7 +70,7 @@ class Tanh_Layer:
   def forward(self, x):
     out = np.tanh(x)
     self.out = out
-    
+
     return out
   
   def backward(self, dout):
@@ -97,7 +97,7 @@ class Dense_Layer:
   
   def backward(self, dout):
     dx = np.matmul(dout, self.W.T)
-    self.dW = np.matmul(self.x.transpose(0, 2, 1), dout).mean(axis=0)
+    self.dW = np.matmul(self.x.transpose(0, 2, 1), dout).sum(axis=0)
 
     return dx
 
@@ -150,3 +150,24 @@ class Adam:
       self.v[key] += (1 - self.beta2) * (grads[key]**2 - self.v[key])
       
       params[key] -= lr_t * self.m[key] / (np.sqrt(self.v[key]) + 1e-7)
+
+
+# optimizer Momentum
+class Momentum:
+
+    """Momentum SGD"""
+
+    def __init__(self, lr=0.01, momentum=0.9):
+        self.lr = lr
+        self.momentum = momentum
+        self.v = None
+        
+    def update(self, params, grads):
+        if self.v is None:
+            self.v = {}
+            for key, val in params.items():                                
+                self.v[key] = np.zeros_like(val)
+                
+        for key in params.keys():
+            self.v[key] = self.momentum*self.v[key] - self.lr*grads[key] 
+            params[key] += self.v[key]
