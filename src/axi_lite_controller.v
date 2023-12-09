@@ -1,3 +1,5 @@
+`include "consts.vh"
+
 module axi_lite_controller #
 	(
 		// Users to add parameters here
