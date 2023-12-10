@@ -1,6 +1,6 @@
 import numpy as np
 import kmj_gen_np as kgn
-from layers import *
+from layers_np import *
 from collections import OrderedDict
 
 
