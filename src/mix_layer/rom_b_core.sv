@@ -21,9 +21,9 @@ module rom_b_core#(
 
 
   initial begin
-    $readmemb($sformatf("../data/parameter/hard/binary16/mix_layer_b_1/mix_layer_b_1_%02d.txt", filenum), mem, 0*`HID_DIM, 1*`HID_DIM-1);
-    $readmemb($sformatf("../data/parameter/hard/binary16/mix_layer_b_2/mix_layer_b_2_%02d.txt", filenum), mem, 1*`HID_DIM, 2*`HID_DIM-1);
-    $readmemb($sformatf("../data/parameter/hard/binary16/mix_layer_b_3/mix_layer_b_3_%02d.txt", filenum), mem, 2*`HID_DIM, 3*`HID_DIM-1);
+    $readmemb($sformatf("../data/parameter/trained/hard/binary16/mix_layer_b_1/mix_layer_b_1_%02d.txt", filenum), mem, 0*`HID_DIM, 1*`HID_DIM-1);
+    $readmemb($sformatf("../data/parameter/trained/hard/binary16/mix_layer_b_2/mix_layer_b_2_%02d.txt", filenum), mem, 1*`HID_DIM, 2*`HID_DIM-1);
+    $readmemb($sformatf("../data/parameter/trained/hard/binary16/mix_layer_b_3/mix_layer_b_3_%02d.txt", filenum), mem, 2*`HID_DIM, 3*`HID_DIM-1);
   end
 
 endmodule

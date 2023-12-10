@@ -3,8 +3,8 @@ import kmj_gen as kg
 import xorshift
 
 # パラメータファイルのパス
-HARD16_PATH = '../data/parameter/hard/binary16/'
-HARD96_PATH = '../data/parameter/hard/binary96/'
+HARD16_PATH = '../data/parameter/trained/hard/binary16/'
+HARD96_PATH = '../data/parameter/trained/hard/binary96/'
 TB_PATH     = '../data/tb/'
 
 

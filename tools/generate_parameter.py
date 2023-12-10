@@ -2,8 +2,8 @@ import numpy as np
 import kmj_gen_sim as kgs
 
 # パラメータファイルのパス
-BIN_PATH  = '../data/parameter/soft/binary/'
-HARD_PATH = '../data/parameter/hard/binary16/'
+BIN_PATH  = '../data/parameter/trained/soft/binary/'
+HARD_PATH = '../data/parameter/trained/hard/binary16/'
 
 
 N = 10              # 最大文字数

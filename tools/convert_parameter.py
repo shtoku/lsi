@@ -2,11 +2,11 @@ import kmj_gen as kg
 import kmj_gen_sim as kgs
 
 # パラメータファイルのパス
-DEC_PATH  = '../data/parameter/soft/decimal/'
-BIN_PATH  = '../data/parameter/soft/binary/'
+DEC_PATH  = '../data/parameter/trained/soft/decimal/'
+BIN_PATH  = '../data/parameter/trained/soft/binary/'
 
-HARD16_PATH = '../data/parameter/hard/binary16/'
-HARD96_PATH = '../data/parameter/hard/binary96/'
+HARD16_PATH = '../data/parameter/trained/hard/binary16/'
+HARD96_PATH = '../data/parameter/trained/hard/binary96/'
 
 N = 10              # 最大文字数
 char_num = 200      # 文字種数

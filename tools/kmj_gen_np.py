@@ -2,7 +2,7 @@ import numpy as np
 
 
 # パラメータファイルのパス
-PATH = '../data/parameter/soft/decimal/'
+PATH = '../data/parameter/trained/soft/decimal/'
 
 
 N = 10              # 最大文字数

@@ -22,9 +22,9 @@ end
 
 //memというレジスタに重みを格納している
 initial begin
-  $readmemb($sformatf("../data/parameter/hard/binary96/mix_layer_W_1/mix_layer_W_1_%02d.txt", filenum), mem, 0*(`HID_DIM*`HID_DIM/`DATA_N), 1*(`HID_DIM*`HID_DIM/`DATA_N)-1);
-  $readmemb($sformatf("../data/parameter/hard/binary96/mix_layer_W_2/mix_layer_W_2_%02d.txt", filenum), mem, 1*(`HID_DIM*`HID_DIM/`DATA_N), 2*(`HID_DIM*`HID_DIM/`DATA_N)-1);
-  $readmemb($sformatf("../data/parameter/hard/binary96/mix_layer_W_3/mix_layer_W_3_%02d.txt", filenum), mem, 2*(`HID_DIM*`HID_DIM/`DATA_N), 3*(`HID_DIM*`HID_DIM/`DATA_N)-1);
+  $readmemb($sformatf("../data/parameter/trained/hard/binary96/mix_layer_W_1/mix_layer_W_1_%02d.txt", filenum), mem, 0*(`HID_DIM*`HID_DIM/`DATA_N), 1*(`HID_DIM*`HID_DIM/`DATA_N)-1);
+  $readmemb($sformatf("../data/parameter/trained/hard/binary96/mix_layer_W_2/mix_layer_W_2_%02d.txt", filenum), mem, 1*(`HID_DIM*`HID_DIM/`DATA_N), 2*(`HID_DIM*`HID_DIM/`DATA_N)-1);
+  $readmemb($sformatf("../data/parameter/trained/hard/binary96/mix_layer_W_3/mix_layer_W_3_%02d.txt", filenum), mem, 2*(`HID_DIM*`HID_DIM/`DATA_N), 3*(`HID_DIM*`HID_DIM/`DATA_N)-1);
 end
 
 endmodule
