@@ -2,6 +2,10 @@
 import numpy as np
 
 
+# 固定小数点の桁数
+i_len = 8           # 整数部の桁数
+
+
 # emb_layer
 class Emb_Layer:
   def __init__(self, W):
@@ -79,8 +83,6 @@ class Tanh_Layer:
     return dx
 
 
-
-
 # dense_layer
 class Dense_Layer:
   def __init__(self, W):
@@ -155,19 +157,24 @@ class Adam:
 # optimizer Momentum
 class Momentum:
 
-    """Momentum SGD"""
+  """Momentum SGD"""
 
-    def __init__(self, lr=0.01, momentum=0.9):
-        self.lr = lr
-        self.momentum = momentum
-        self.v = None
-        
-    def update(self, params, grads):
-        if self.v is None:
-            self.v = {}
-            for key, val in params.items():                                
-                self.v[key] = np.zeros_like(val)
-                
-        for key in params.keys():
-            self.v[key] = self.momentum*self.v[key] - self.lr*grads[key] 
-            params[key] += self.v[key]
+  def __init__(self, lr=0.01, momentum=0.9):
+    self.lr = lr
+    self.momentum = momentum
+    self.v = None
+      
+  def update(self, params, grads):
+    if self.v is None:
+      self.v = {}
+      for key, val in params.items():                                
+        self.v[key] = np.zeros_like(val)
+            
+    for key in params.keys():
+      self.v[key] = self.momentum*self.v[key] - self.lr*grads[key] 
+      params[key] += self.v[key]
+
+      if params[key].max() > 2**(i_len-1) or params[key].min() < -2**(i_len-1):
+        print(params[key].max(), params[key].min(), key)
+      if grads[key].max() > 2**(i_len-1) or grads[key].min() < -2**(i_len-1):
+        print(grads[key].max(), grads[key].min(), key)

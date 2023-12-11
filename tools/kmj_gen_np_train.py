@@ -4,6 +4,9 @@ from layers_np import *
 from collections import OrderedDict
 
 
+PATH_DEC = '../data/parameter/train/decimal/'
+
+
 N = 10              # 最大文字数
 char_num = 200      # 文字種数
 emb_dim = 24        # 文字ベクトルの次元
@@ -12,46 +15,54 @@ hid_dim = 24        # 潜在ベクトルの次元
 
 
 batch_size = 8      # ミニバッチサイズ
-n_epochs = 100      # エポック数
+n_epochs = 20       # エポック数
 lr = 1e-3           # 学習率
 
 
 class Network:
   def __init__(self):
     self.params = {}
+    self.params['W_emb'] = kgn.read_param(PATH_DEC + 'emb_layer_W_emb.txt').reshape(char_num, emb_dim)
+    self.params['W_1'] = kgn.read_param(PATH_DEC + 'mix_layer_W_1.txt').reshape(emb_dim, N, hid_dim)
+    self.params['b_1'] = kgn.read_param(PATH_DEC + 'mix_layer_b_1.txt').reshape(emb_dim, 1, hid_dim)
+    self.params['W_2'] = kgn.read_param(PATH_DEC + 'mix_layer_W_2.txt').reshape(hid_dim, emb_dim, 1)
+    self.params['b_2'] = kgn.read_param(PATH_DEC + 'mix_layer_b_2.txt').reshape(hid_dim, 1, 1)
+    self.params['W_3'] = kgn.read_param(PATH_DEC + 'mix_layer_W_3.txt').reshape(N, hid_dim, hid_dim)
+    self.params['b_3'] = kgn.read_param(PATH_DEC + 'mix_layer_b_3.txt').reshape(N, 1, hid_dim)
+    self.params['W_out'] = kgn.read_param(PATH_DEC + 'dense_layer_W_out.txt').reshape(hid_dim, char_num)
 
-    self.params['W_emb'] = np.random.uniform(
-                             low=-np.sqrt(6 / (char_num + emb_dim)),
-                             high=np.sqrt(6 / (char_num + emb_dim)),
-                             size=(char_num, emb_dim)
-                           )
+    # self.params['W_emb'] = np.random.uniform(
+    #                          low=-np.sqrt(6 / (char_num + emb_dim)),
+    #                          high=np.sqrt(6 / (char_num + emb_dim)),
+    #                          size=(char_num, emb_dim)
+    #                        )
     
-    self.params['W_1'] = np.random.uniform(
-                           low=-np.sqrt(6 / (N + hid_dim)),
-                           high=np.sqrt(6 / (N + hid_dim)),
-                           size=(emb_dim, N, hid_dim)
-                         )
-    self.params['b_1'] = np.zeros((emb_dim, 1, hid_dim))
+    # self.params['W_1'] = np.random.uniform(
+    #                        low=-np.sqrt(6 / (N + hid_dim)),
+    #                        high=np.sqrt(6 / (N + hid_dim)),
+    #                        size=(emb_dim, N, hid_dim)
+    #                      )
+    # self.params['b_1'] = np.zeros((emb_dim, 1, hid_dim))
 
-    self.params['W_2'] = np.random.uniform(
-                           low=-np.sqrt(6 / (emb_dim + 1)),
-                           high=np.sqrt(6 / (emb_dim + 1)),
-                           size=(hid_dim, emb_dim, 1)
-                         )
-    self.params['b_2'] = np.zeros((hid_dim, 1, 1))
+    # self.params['W_2'] = np.random.uniform(
+    #                        low=-np.sqrt(6 / (emb_dim + 1)),
+    #                        high=np.sqrt(6 / (emb_dim + 1)),
+    #                        size=(hid_dim, emb_dim, 1)
+    #                      )
+    # self.params['b_2'] = np.zeros((hid_dim, 1, 1))
 
-    self.params['W_3'] = np.random.uniform(
-                           low=-np.sqrt(6 / (hid_dim + N)),
-                           high=np.sqrt(6 / (hid_dim + N)),
-                           size=(N, hid_dim, hid_dim)
-                         )
-    self.params['b_3'] = np.zeros((N, 1, hid_dim))
+    # self.params['W_3'] = np.random.uniform(
+    #                        low=-np.sqrt(6 / (hid_dim + N)),
+    #                        high=np.sqrt(6 / (hid_dim + N)),
+    #                        size=(N, hid_dim, hid_dim)
+    #                      )
+    # self.params['b_3'] = np.zeros((N, 1, hid_dim))
 
-    self.params['W_out'] = np.random.uniform(
-                             low=-np.sqrt(6 / (hid_dim + char_num)),
-                             high=np.sqrt(6 / (hid_dim + char_num)),
-                             size=(hid_dim, char_num)
-                           )
+    # self.params['W_out'] = np.random.uniform(
+    #                          low=-np.sqrt(6 / (hid_dim + char_num)),
+    #                          high=np.sqrt(6 / (hid_dim + char_num)),
+    #                          size=(hid_dim, char_num)
+    #                        )
 
     self.layers = OrderedDict()
     self.layers['Emb_Layer'] = Emb_Layer(self.params['W_emb'])
@@ -64,8 +75,10 @@ class Network:
     self.layers['Dense_Layer'] = Dense_Layer(self.params['W_out'])
   
   def forward(self, x):
-    for layer in self.layers.values():
+    for key, layer in self.layers.items():
       x = layer.forward(x)
+      if x.max() > 2**(i_len-1) or x.min() < -2**(i_len-1):
+        print(x.max(), x.min(), key)
     
     return x
 
@@ -75,10 +88,12 @@ class Network:
     y =  np.exp(y) / np.sum(np.exp(y), axis=-1, keepdims=True)
     dout = (y - t) / y.shape[0]
 
-    layers = list(self.layers.values())
+    layers = list(self.layers.items())
     layers.reverse()
-    for layer in layers:
+    for key, layer in layers:
       dout = layer.backward(dout)
+      if dout.max() > 2**(i_len-1) or dout.min() < -2**(i_len-1):
+        print(dout.max(), dout.min(), key)
     
     grads = {}
     grads['W_emb'] = self.layers['Emb_Layer'].dW
@@ -119,8 +134,8 @@ if __name__ == '__main__':
   dataloader_train = [dataset_train[i*batch_size:(i+1)*batch_size] for i in range(n_train)]
   dataloader_valid = [dataset_valid[i*batch_size:(i+1)*batch_size] for i in range(n_valid)]
   
-  dataloader_train.append(dataset_train[n_train*batch_size:])
-  dataloader_valid.append(dataset_valid[n_valid*batch_size:])
+  # dataloader_train.append(dataset_train[n_train*batch_size:])
+  # dataloader_valid.append(dataset_valid[n_valid*batch_size:])
 
   # モデルの定義
   net = Network()
@@ -128,7 +143,8 @@ if __name__ == '__main__':
   optim = Momentum(lr=lr)
 
   # 学習
-  print('batch_size: {:}, lr: {:}'.format(batch_size, lr))
+  print('float ver')
+  print('batch_size: {:}, lr: {:}, i_len:{:}'.format(batch_size, lr, i_len))
   for epoch in range(n_epochs):
     losses_train = []
     losses_valid = []
@@ -153,7 +169,7 @@ if __name__ == '__main__':
       acc_valid += (y.argmax(axis=-1) == x.argmax(axis=-1)).sum()
     
       
-    if (epoch+1) % 5 == 0:
+    if (epoch+1) % 1 == 0:
       print('EPOCH: {:>3}, Train Loss: {:>8.5f}  Acc: {:>.3f}, Valid Loss: {:>8.5f}  Acc: {:>.3f}'.format(
           epoch+1,
           np.mean(losses_train),
@@ -180,164 +196,165 @@ if __name__ == '__main__':
     print('new_gen  :', kgn.convert_str(y[0]))
 
 
-# batch_size: 8, lr: 0.001
-# EPOCH:   5, Train Loss: 18.51250  Acc: 0.588, Valid Loss: 17.57885  Acc: 0.610
-# EPOCH:  10, Train Loss: 11.86244  Acc: 0.735, Valid Loss: 11.59037  Acc: 0.741
-# EPOCH:  15, Train Loss:  9.02389  Acc: 0.802, Valid Loss:  9.01679  Acc: 0.801
-# EPOCH:  20, Train Loss:  7.57755  Acc: 0.832, Valid Loss:  7.71806  Acc: 0.827
-# EPOCH:  25, Train Loss:  6.69192  Acc: 0.850, Valid Loss:  6.91968  Acc: 0.846
-# EPOCH:  30, Train Loss:  6.04742  Acc: 0.862, Valid Loss:  6.34696  Acc: 0.857
-# EPOCH:  35, Train Loss:  5.54058  Acc: 0.873, Valid Loss:  5.90647  Acc: 0.867
-# EPOCH:  40, Train Loss:  5.12889  Acc: 0.882, Valid Loss:  5.55518  Acc: 0.875
-# EPOCH:  45, Train Loss:  4.78700  Acc: 0.890, Valid Loss:  5.26692  Acc: 0.883
-# EPOCH:  50, Train Loss:  4.49772  Acc: 0.897, Valid Loss:  5.02603  Acc: 0.886
-# EPOCH:  55, Train Loss:  4.24898  Acc: 0.903, Valid Loss:  4.82226  Acc: 0.890
-# EPOCH:  60, Train Loss:  4.03198  Acc: 0.908, Valid Loss:  4.64771  Acc: 0.894
-# EPOCH:  65, Train Loss:  3.84020  Acc: 0.912, Valid Loss:  4.49577  Acc: 0.896
-# EPOCH:  70, Train Loss:  3.66872  Acc: 0.916, Valid Loss:  4.36148  Acc: 0.899
-# EPOCH:  75, Train Loss:  3.51389  Acc: 0.920, Valid Loss:  4.24156  Acc: 0.901
-# EPOCH:  80, Train Loss:  3.37299  Acc: 0.923, Valid Loss:  4.13385  Acc: 0.902
-# EPOCH:  85, Train Loss:  3.24398  Acc: 0.926, Valid Loss:  4.03662  Acc: 0.903
-# EPOCH:  90, Train Loss:  3.12539  Acc: 0.929, Valid Loss:  3.94840  Acc: 0.906
-# EPOCH:  95, Train Loss:  3.01607  Acc: 0.931, Valid Loss:  3.86798  Acc: 0.909
-# EPOCH: 100, Train Loss:  2.91507  Acc: 0.934, Valid Loss:  3.79444  Acc: 0.911
+# float ver
+# batch_size: 8, lr: 0.001, i_len:8
+# EPOCH:   1, Train Loss: 32.54446  Acc: 0.357, Valid Loss: 26.92791  Acc: 0.430
+# EPOCH:   2, Train Loss: 24.78248  Acc: 0.462, Valid Loss: 23.16067  Acc: 0.481
+# EPOCH:   3, Train Loss: 21.83537  Acc: 0.521, Valid Loss: 20.64173  Acc: 0.543
+# EPOCH:   4, Train Loss: 19.60747  Acc: 0.566, Valid Loss: 18.62666  Acc: 0.578
+# EPOCH:   5, Train Loss: 17.69908  Acc: 0.598, Valid Loss: 16.88712  Acc: 0.610
+# EPOCH:   6, Train Loss: 16.08023  Acc: 0.632, Valid Loss: 15.41215  Acc: 0.641
+# EPOCH:   7, Train Loss: 14.68007  Acc: 0.668, Valid Loss: 14.11074  Acc: 0.674
+# EPOCH:   8, Train Loss: 13.42758  Acc: 0.699, Valid Loss: 12.94986  Acc: 0.706
+# EPOCH:   9, Train Loss: 12.35737  Acc: 0.723, Valid Loss: 12.01143  Acc: 0.724
+# EPOCH:  10, Train Loss: 11.50777  Acc: 0.742, Valid Loss: 11.27303  Acc: 0.740
+# EPOCH:  11, Train Loss: 10.82428  Acc: 0.756, Valid Loss: 10.67728  Acc: 0.754
+# EPOCH:  12, Train Loss: 10.25968  Acc: 0.768, Valid Loss: 10.18462  Acc: 0.765
+# EPOCH:  13, Train Loss:  9.78176  Acc: 0.780, Valid Loss:  9.76669  Acc: 0.774
+# EPOCH:  14, Train Loss:  9.36783  Acc: 0.789, Valid Loss:  9.40356  Acc: 0.781
+# EPOCH:  15, Train Loss:  9.00253  Acc: 0.797, Valid Loss:  9.08121  Acc: 0.788
+# EPOCH:  16, Train Loss:  8.67507  Acc: 0.804, Valid Loss:  8.78927  Acc: 0.797
+# EPOCH:  17, Train Loss:  8.37714  Acc: 0.811, Valid Loss:  8.51961  Acc: 0.802
+# EPOCH:  18, Train Loss:  8.10216  Acc: 0.816, Valid Loss:  8.26671  Acc: 0.806
+# EPOCH:  19, Train Loss:  7.84614  Acc: 0.822, Valid Loss:  8.02941  Acc: 0.812
+# EPOCH:  20, Train Loss:  7.60840  Acc: 0.826, Valid Loss:  7.81089  Acc: 0.816
 # base     : (　・ー́　・　)
-# generate : (　・ー́　・　)
+# generate : (　・ώ　・　)
 # base     : (((*。_。)
-# generate : (((*。_。)
+# generate : (((*。▽。)
 # base     : (　　́_ゝ`)。。
-# generate : (　　́_ゝ`)。。
+# generate : (　　́_·`)|♪
 # base     : ヽ(*　́∀`)ノ
 # generate : ヽ(*　́∀`)ノ
 # base     : (　△́　)
-# generate : (　艸́　)
+# generate : (　Д́　)
 # base     : ┌(　゚Д゚)ノ
-# generate : ┌(　゚Д゚)ノ
+# generate : ヽ(　゚Д゚)ノ
 # base     : _/(゚Д゚　)
-# generate : ~.(゚Д゚　)
+# generate : ~_(゚Д゚　)
 # base     : ||ヾ(　・ω|　
-# generate : ||ヾ(　・ω|　
+# generate : ||ヾ(　・ω@)
 # base     : (　́　゚∀　゚`)
-# generate : (　́　゚∀　゚`)
+# generate : (　́　゚∀　゚*)
 # base     : (゚Д゚ヾ　)
-# generate : (゚Д゚ヾ　)
+# generate : (゚゚́●　)
 # base     : !(。^。)
-# generate : !(。^。)
+# generate : \(。^。)
 # base     : (꒪ω꒪)
-# generate : (‘ω꒪)
+# generate : (·ω·)
 # base     : (ΘoΘ)σ
-# generate : (]o’)σ
+# generate : (·o◎))
 # base     : シヾ(*　▽́　*)
-# generate : シヾ(*　▽́　*)
+# generate : ゝヾ(*　▽́　*)
 # base     : ヾ(=　▽́　=)ヽ
-# generate : ヾ(=　▽́　●)ヽ
+# generate : ヾ(=　▽́　o)♪
 # base     : (__)
 # generate : (__)
 # base     : (　*`ω　́)
-# generate : (　　`ω　́)
+# generate : (　*`ω　́)
 # base     : ('-'*)ノ
 # generate : ('-'*)ノ
 # base     : (-:-)
-# generate : (-:-)
+# generate : (-д-)
 # base     : o(　̄ー　̄;)ゞ
 # generate : o(　̄ー　̄;)o
-# new_gen  : (　o゚　̄*̄*♪
-# new_gen  : (ー∇●　□☆.
-# new_gen  : ◇_　゚)σ。!!
-# new_gen  : !!^∇゚ρ!ヽシ
-# new_gen  : ・-　̄ノ?
-# new_gen  : ゚Д•・.ω!∇
-# new_gen  : →^∀_)♪o≦。
-# new_gen  : ლლ⊃ノ~<゚)　
-# new_gen  : (́_゚=゚ー@
-# new_gen  : ;^`~●/<(♪
-# new_gen  : =●●m゚゚̄　*
-# new_gen  : )(・□゚　*　
-# new_gen  : <⌒□́@)>)m
-# new_gen  : ;・へ~).)
-# new_gen  : !●*艸・ノ゚;゚)
-# new_gen  : ___≦~T\
-# new_gen  : ~.ー~'T゙!~
-# new_gen  : ヽ☆・∇'ノ;ー♪
-# new_gen  : (!o/)-)彡
-# new_gen  : |・ω~~·_≦)/
-# new_gen  : (ヾ゚┏●/。)
-# new_gen  : (ー▼^?　ノ-
-# new_gen  : !!*ー*ヾ̄
-# new_gen  : )ノ~)ωД;;)
-# new_gen  : ゚Д^人<o
-# new_gen  : ・】-~'ヾ≧ー　
-# new_gen  : (　_д|・ヾー*゚
-# new_gen  : .<□́^"　T)~
-# new_gen  : Σ(▼oω⌒ヾo!
-# new_gen  : )((-⌒^-　!=
-# new_gen  : ~~ヾ.T.・　
-# new_gen  : ー-.`.　^́⊂)
-# new_gen  : -ヽ・o　∀゚Д*)
-# new_gen  : __・∀σ●^')ノ
-# new_gen  : !๑_　~̄*)/
-# new_gen  : **σ゚□-)ノ!
-# new_gen  : T_@:T;~)-
-# new_gen  : ~?-(-([_\
-# new_gen  : (=●=_^̄　゚
-# new_gen  : !)(_^́^**
-# new_gen  : ?~ω☆^σ;ーl
-# new_gen  : (Д　*ω　　๑　)
-# new_gen  : (σд)))~♪
-# new_gen  : ゚σ;(・.<<
-# new_gen  : )●゚　́=>!<"
-# new_gen  : (　\ヾ□・-○))
-# new_gen  : 　;゚;o)ノ
-# new_gen  : ⊃Д　ノ☆/
-# new_gen  : 　　.゚;!'))
-# new_gen  : *;●^へ-　!ლ
-# new_gen  : (_";*o'^
-# new_gen  : ☆o_●ヽ　☆́!
-# new_gen  : b\=,・-)。!
-# new_gen  : (]_°?ヾノ.♪
-# new_gen  : ♪ヾ(∇^;~。!.
-# new_gen  : "~ノω_)、♪
-# new_gen  : ()゚́・`)σ
-# new_gen  : ●)#;|o|=^
-# new_gen  : !!　,ωー*/)
-# new_gen  : (　゚v~-")-
-# new_gen  : ノ(^~゚()
-# new_gen  : (oヾー^≦'
-# new_gen  : 。!**ゞ)◎)
-# new_gen  : 　　ё・(　!ー
-# new_gen  : ?~ヾmT-[)
-# new_gen  : ゚゚ヾ_　́Д`
-# new_gen  : ≧≦~̄*・([)
-# new_gen  : ⌒σ∇o);!
-# new_gen  : ~~・-o><・。
-# new_gen  : \●^~)๑`))o
-# new_gen  : (゚。゚.≦/♪
-# new_gen  : (·・*・(o彡
-# new_gen  : (*~-。。-　*
-# new_gen  : ⌒\̄　、*\_
-# new_gen  : ☆o*(゚*
-# new_gen  : ♪\((ω　ー;)o
-# new_gen  : 、_-^-o_
-# new_gen  : ~)(́)/^)
-# new_gen  : ヾ(=゚-ヾ*)/!
-# new_gen  : (〃·、\=T'・)
-# new_gen  : ((`~*!ゞ̄　
-# new_gen  : *゚・;--・∩ゝ)
-# new_gen  : ヽ(・_)・゚゚　)
-# new_gen  : ]゚;;ω=ω○*]
-# new_gen  : ・♪(≧́σ゚)v
-# new_gen  : ∩　^д　　(　)□
-# new_gen  : !/゚m　^゚゚*☆
-# new_gen  : ;^\・_.)_)
-# new_gen  : mo>'́@　|⌒
-# new_gen  : ]|;　゚;((　☆
-# new_gen  : )!(́・ー・=゚)
-# new_gen  : ()(=^¬<
-# new_gen  : 【゚へ⌒`!~o!
-# new_gen  : (_!;ー;+=^・
-# new_gen  : ((×≧з̄ノー
-# new_gen  : (●・Oώ　)∑
-# new_gen  : ノ!;(　()　)
-# new_gen  : ☆oヾд^~┐ノ
-# new_gen  : !?-Д゚\)-ー)
-# new_gen  : !!'ω^'彡'
+# new_gen  : )?)̄`ノ̄!o
+# new_gen  : ♪ヾ|o゚ノ_ー
+# new_gen  : ☆*_・♪
+# new_gen  : ヾ(。。-　_<゚)
+# new_gen  : o(・・。~ノ・
+# new_gen  : ^́*_)/^̄)
+# new_gen  : ̄　・)゚∀・`)
+# new_gen  : ・_・　_ω・・)
+# new_gen  : !((*゚-**)!
+# new_gen  : (*/Д*≧　)
+# new_gen  : ๑Д̄*ω̄
+# new_gen  : ^ω♪?ヾ̄　ω)
+# new_gen  : !(๑(ω)/ノ♪
+# new_gen  : (^　^*̄!)
+# new_gen  : __*)
+# new_gen  : /~≧)_*__・
+# new_gen  : ω|)Д。o(・.・
+# new_gen  : ヾ*・▽∀)ノノ*
+# new_gen  : ω̄(o・ώ́()
+# new_gen  : v(/^・)・)
+# new_gen  : ♪((∀!
+# new_gen  : ωωω̄)́̄;　
+# new_gen  : (̄　▽́∀)Σノ
+# new_gen  : ^^...;;))~
+# new_gen  : ?!ノ̄o*̄)
+# new_gen  : ・・　・ヾ*・́)
+# new_gen  : !・(・`o)
+# new_gen  : (゚_゚^♪
+# new_gen  : ωωo)∀ώ)ω
+# new_gen  : (\☆_;)
+# new_gen  : ;　`_∀́・(
+# new_gen  : ̄̄oo\!
+# new_gen  : (/oω*)
+# new_gen  : (;゚∇`　ノ̄*)
+# new_gen  : v(*(ー_-))
+# new_gen  : m(　▽・/o♪
+# new_gen  : _].o|・゚・
+# new_gen  : ♪(　^!∀・)
+# new_gen  : ♪((^゚*))!ノ
+# new_gen  : ~ヾ*):[
+# new_gen  : ・▽^́　|)
+# new_gen  : *oノ_*　ω^)
+# new_gen  : /・^・(。ヾω)
+# new_gen  : ω・(　̄̄)
+# new_gen  : ̄*　)!　)/
+# new_gen  : ω)()　(・　̄
+# new_gen  : )ωω_`。*|♪
+# new_gen  : ♪(●∀●))_・゚
+# new_gen  : !!　̄_o♪
+# new_gen  : ♪((^o*))ノ
+# new_gen  : *(~o`o∀　o
+# new_gen  : (((▽`ooo
+# new_gen  : ;。;(゚)▽_　)
+# new_gen  : ω・・　　)
+# new_gen  : ♪(≧・)
+# new_gen  : (*^(_　())
+# new_gen  : ♪̄*_∀　
+# new_gen  : ゚(。ノ)ωヾ;)
+# new_gen  : o;^ω-)̄
+# new_gen  : (゚　'*　?
+# new_gen  : 　♪　/(・;　/)
+# new_gen  : _(ω(*(|ヾ)
+# new_gen  : ̄　●́)́^ヾ)
+# new_gen  : (。^..-　!!!
+# new_gen  : ω)̄)ō♪
+# new_gen  : 　　ヾ*Д・∀·　)
+# new_gen  : ((。;　ω-*)
+# new_gen  : ヾ(;　　∀　))ノ
+# new_gen  : (()!.))))
+# new_gen  : 　*・̄(　)゚)
+# new_gen  : ((·Дo~゚
+# new_gen  : 　(　　∀́　　)
+# new_gen  : /~♪\*)
+# new_gen  : ~⌒゚̄-́　・|
+# new_gen  : ;;.ー゚　/
+# new_gen  : ́(.　*ω)
+# new_gen  : ;ノノ^)?
+# new_gen  : ((・)
+# new_gen  : (*>ωo*)・
+# new_gen  : (((　(　*))
+# new_gen  : (　(∇。-oo)!
+# new_gen  : ∀ω・　)))
+# new_gen  : ・(・~!*/・ω
+# new_gen  : `(^▽~))・　-
+# new_gen  : *(*|　o)
+# new_gen  : o*　--;　)♪
+# new_gen  : (('Д・)oo!
+# new_gen  : !!_∇゚　ヾ　　)
+# new_gen  : o(Д́　/
+# new_gen  : "))。・^-**)
+# new_gen  : !・ノ・　))
+# new_gen  : (`(。^　/□゚)
+# new_gen  : ヽ　̄̄_ヾ̄))
+# new_gen  : 。^　(。。-^)
+# new_gen  : ^*゚̄_゚̄　
+# new_gen  : (ゞヾ(▼∀))ノ
+# new_gen  : ((`>́)ω　)
+# new_gen  : ヽヾ'∇^)-|~!
+# new_gen  : ヾ(　́∀́̄)
+# new_gen  : (　_　^・^)

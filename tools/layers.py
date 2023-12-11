@@ -4,8 +4,8 @@ import numpy as np
 
 # 固定小数点の桁数
 i_len = 8          # 整数部の桁数
-f_len = 14          # 小数部の桁数
-n_len = 18          # 整数部 + 小数部 の桁数
+f_len = 16          # 小数部の桁数
+n_len = 24          # 整数部 + 小数部 の桁数
 
 
 # 固定小数点精度に変換する関数
@@ -168,5 +168,8 @@ class Momentum:
     for key in params.keys():
       self.v[key] = convert_fixed(self.momentum*self.v[key]) - convert_fixed(self.lr*grads[key])
       params[key] += self.v[key]
+
       if params[key].max() > 2**(i_len-1) or params[key].min() < -2**(i_len-1):
         print(params[key].max(), params[key].min(), key)
+      if grads[key].max() > 2**(i_len-1) or grads[key].min() < -2**(i_len-1):
+        print(grads[key].max(), grads[key].min(), key)
