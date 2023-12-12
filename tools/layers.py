@@ -38,8 +38,8 @@ def crossEntropyLoss(y, t):
 
   # CrossEntropyLoss
   temp = convert_fixed(np.log(y + 1e-7))
-  temp = convert_fixed(t * temp)
-  loss = -np.sum(temp)
+  loss = -np.sum(temp[range(len(y)), t])
+  
   return loss
 
 
@@ -53,13 +53,15 @@ class Emb_Layer:
   
   def forward(self, x):
     self.x = x
-    out = dot_fixed(x, self.W)
+    out = self.W[x]
 
     return out
   
   def backward(self, dout):
     dx = dot_fixed(dout, self.W.T)
-    self.dW = dot_fixed(self.x.T, dout)
+    self.dW = np.zeros_like(self.W)
+    for i in range(len(dout)):
+      self.dW[self.x[i]] += dout[i]
 
     return dx
 

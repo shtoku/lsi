@@ -65,8 +65,8 @@ class Network:
   def gradient(self, y, t):
     # Softmax
     y = softmax(y)
-    dout = (y - t) / batch_size
-    dout = convert_fixed(dout)
+    y[range(len(y)), t] -= 1.0
+    dout = convert_fixed(y / batch_size)
 
     layers = list(self.layers.items())
     layers.reverse()
@@ -92,15 +92,16 @@ if __name__ == '__main__':
 
   # データの前処理
   kmj_onehot = kgn.preprocess(kmj_dataset)
+  kmj_int = kmj_onehot.argmax(axis=-1)
 
   # データセットを分割
   train_size = int(len(kmj_dataset) * 0.85)
   valid_size = int(len(kmj_dataset) * 0.10)
   test_size  = len(kmj_dataset) - train_size - valid_size
 
-  dataset_train = kmj_onehot[:train_size]
-  dataset_valid = kmj_onehot[train_size:train_size+valid_size]
-  dataset_test  = kmj_onehot[train_size+valid_size:]
+  dataset_train = kmj_int[:train_size]
+  dataset_valid = kmj_int[train_size:train_size+valid_size]
+  dataset_test  = kmj_int[train_size+valid_size:]
 
   # ミニバッチに分割
   n_train = int(train_size / batch_size)
@@ -132,7 +133,7 @@ if __name__ == '__main__':
         loss = crossEntropyLoss(y, x)
         net.gradient(y, x)
         losses_train.append(loss)
-        acc_train += (y.argmax(axis=-1) == x.argmax(axis=-1)).sum()
+        acc_train += (y.argmax(axis=-1) == x).sum()
       
       optim.update(net.params, net.grads)
     
@@ -142,7 +143,7 @@ if __name__ == '__main__':
         y = net.forward(x)
         loss = crossEntropyLoss(y, x)
         losses_valid.append(loss)
-        acc_valid += (y.argmax(axis=-1) == x.argmax(axis=-1)).sum()    
+        acc_valid += (y.argmax(axis=-1) == x).sum()    
       
     if (epoch+1) % 1 == 0:
       print('EPOCH: {:>3}, Train Loss: {:>8.5f}  Acc: {:>.3f}, Valid Loss: {:>8.5f}  Acc: {:>.3f}'.format(
