@@ -3,14 +3,16 @@ import numpy as np
                     
 
 # 固定小数点の桁数
-i_len = 8          # 整数部の桁数
+i_len = 8           # 整数部の桁数
 f_len = 16          # 小数部の桁数
 n_len = 24          # 整数部 + 小数部 の桁数
 
+i_len_w = 2         # W_out 以外の整数部の桁数
+
 
 # 固定小数点精度に変換する関数
-def convert_fixed(x):
-  return np.floor(x * 2**f_len) / 2**f_len
+def convert_fixed(x, bit=f_len):
+  return np.floor(x * 2**bit) / 2**bit
 
 
 # 固定小数点精度の行列積(2次元×2次元のみ)
@@ -26,7 +28,16 @@ def softmax(x):
   x = x - np.max(x, axis=-1, keepdims=True)   # オーバーフロー対策
   exp = np.exp(x)
   exp = convert_fixed(exp)
-  out =  exp / np.sum(exp, axis=-1, keepdims=True)
+  sum = np.sum(exp, axis=-1, keepdims=True)
+  sum = convert_fixed(sum, bit=2)
+  if sum.max() > 2**(i_len) or sum.min() < -2**(i_len):
+    print(sum.max(), sum.min(), 'softmax sum')
+  
+  inv = convert_fixed(1.0 / sum)
+  if inv.max() > 2**(i_len_w-1) or inv.min() < -2**(i_len_w-1):
+    print(inv.max(), inv.min(), 'softmax sum inverse')
+  
+  out =  exp * inv
   out = convert_fixed(out)
 
   return out
@@ -171,7 +182,11 @@ class Momentum:
       self.v[key] = convert_fixed(self.momentum*self.v[key]) - convert_fixed(self.lr*grads[key])
       params[key] += self.v[key]
 
-      if params[key].max() > 2**(i_len-1) or params[key].min() < -2**(i_len-1):
+      if params[key].max() > 2**(i_len_w-1) or params[key].min() < -2**(i_len_w-1):
+        if key == 'W_out':
+          continue
         print(params[key].max(), params[key].min(), key)
-      if grads[key].max() > 2**(i_len-1) or grads[key].min() < -2**(i_len-1):
+      if grads[key].max() > 2**(i_len_w-1) or grads[key].min() < -2**(i_len_w-1):
+        if key == 'W_out':
+          continue
         print(grads[key].max(), grads[key].min(), key)
