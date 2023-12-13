@@ -165,6 +165,7 @@ if __name__ == '__main__':
   
   for _ in range(100):
     z = np.random.uniform(low=-1, high=1, size=(hid_dim, 1))
+    z = convert_fixed(z)
     y = net.layers['Mix_Layer3'].forward(z)
     y = net.layers['Tanh_Layer3'].forward(y)
     y = net.layers['Dense_Layer'].forward(y)
@@ -174,153 +175,153 @@ if __name__ == '__main__':
 
 # fixed ver
 # batch_size: 8, lr: 0.001, i_len:8, f_len: 16
-# EPOCH:   1, Train Loss: 32.69794  Acc: 0.352, Valid Loss: 27.23468  Acc: 0.421
-# EPOCH:   2, Train Loss: 25.30200  Acc: 0.451, Valid Loss: 23.83146  Acc: 0.470
-# EPOCH:   3, Train Loss: 22.90687  Acc: 0.490, Valid Loss: 22.00840  Acc: 0.505
-# EPOCH:   4, Train Loss: 21.16120  Acc: 0.528, Valid Loss: 20.55713  Acc: 0.537
-# EPOCH:   5, Train Loss: 19.77288  Acc: 0.560, Valid Loss: 19.19781  Acc: 0.574
-# EPOCH:   6, Train Loss: 18.24578  Acc: 0.596, Valid Loss: 17.56806  Acc: 0.613
-# EPOCH:   7, Train Loss: 16.65023  Acc: 0.627, Valid Loss: 16.04897  Acc: 0.640
-# EPOCH:   8, Train Loss: 15.28112  Acc: 0.653, Valid Loss: 14.84025  Acc: 0.663
-# EPOCH:   9, Train Loss: 14.21566  Acc: 0.677, Valid Loss: 13.92585  Acc: 0.683
-# EPOCH:  10, Train Loss: 13.37533  Acc: 0.696, Valid Loss: 13.19164  Acc: 0.695
+# EPOCH:   1, Train Loss: 32.71446  Acc: 0.352, Valid Loss: 27.25101  Acc: 0.423
+# EPOCH:   2, Train Loss: 25.31803  Acc: 0.451, Valid Loss: 23.84107  Acc: 0.468
+# EPOCH:   3, Train Loss: 22.92326  Acc: 0.489, Valid Loss: 22.01107  Acc: 0.503
+# EPOCH:   4, Train Loss: 21.16168  Acc: 0.528, Valid Loss: 20.53221  Acc: 0.535
+# EPOCH:   5, Train Loss: 19.74830  Acc: 0.560, Valid Loss: 19.16264  Acc: 0.569
+# EPOCH:   6, Train Loss: 18.24478  Acc: 0.594, Valid Loss: 17.59392  Acc: 0.609
+# EPOCH:   7, Train Loss: 16.68622  Acc: 0.627, Valid Loss: 16.08543  Acc: 0.641
+# EPOCH:   8, Train Loss: 15.29247  Acc: 0.653, Valid Loss: 14.83610  Acc: 0.660
+# EPOCH:   9, Train Loss: 14.18054  Acc: 0.676, Valid Loss: 13.89194  Acc: 0.680
+# EPOCH:  10, Train Loss: 13.31101  Acc: 0.696, Valid Loss: 13.12636  Acc: 0.697
 # base     : (　・ー́　・　)
-# generate : (　・ώ　-　)
+# generate : (　・∀́　・　)
 # base     : (((*。_。)
 # generate : (((*)。)
 # base     : (　　́_ゝ`)。。
-# generate : (　　́_・`)ノ)
+# generate : (　　́_^`)ノ)
 # base     : ヽ(*　́∀`)ノ
-# generate : ヾ(*　́∀`)ノ
+# generate : ♪(*　́∀`)ノ
 # base     : (　△́　)
-# generate : (　▽́　)
+# generate : (　Д́　)
 # base     : ┌(　゚Д゚)ノ
 # generate : ♪(　゚Д゚)ノ
 # base     : _/(゚Д゚　)
-# generate : ヾ(゚Д゚　)
+# generate : _ヾ(゚Д゚　)
 # base     : ||ヾ(　・ω|　
-# generate : ☆~ヾ(　・ω̄)
+# generate : ☆~ヾ(　・^̄)
 # base     : (　́　゚∀　゚`)
-# generate : (　̄　　́　̄　)
+# generate : (　̄　　́　゚　)
 # base     : (゚Д゚ヾ　)
-# generate : (゚゚́ヾ　)
+# generate : (゚゚̄　)
 # base     : !(。^。)
 # generate : !(。^;)
 # base     : (꒪ω꒪)
 # generate : (。ω≦)
 # base     : (ΘoΘ)σ
-# generate : (~o≦)ノ
+# generate : (.o≦)ノ
 # base     : シヾ(*　▽́　*)
-# generate : ♪ヾ(*　▽́　*)
+# generate : ♪ヾ(*　∀́　*)
 # base     : ヾ(=　▽́　=)ヽ
-# generate : ヾ(*　́́　*)!
+# generate : ヾ(*　∀́　*)ノ
 # base     : (__)
-# generate : (-ω)
+# generate : (-_)
 # base     : (　*`ω　́)
-# generate : (　(゚-　́)
+# generate : (　(`∀　́)
 # base     : ('-'*)ノ
 # generate : ヾ(≧∀≦*)ノ
 # base     : (-:-)
-# generate : (-o-)
+# generate : (-。-)
 # base     : o(　̄ー　̄;)ゞ
 # generate : o(　̄▽　̄*)
-# new_gen  : *　́(́　　́
-# new_gen  : !!∀(　・゚*)
-# new_gen  : ((・　-*)・(
-# new_gen  : (;　)
-# new_gen  : !!*_^・・
-# new_gen  : ^)^　　*　　
-# new_gen  : (・)^))
-# new_gen  : !・_((　　)!
-# new_gen  : (・~　̄　)!
-# new_gen  : 　(̄(^　*)
-# new_gen  : 　　́́̄・)!)
-# new_gen  : (^・)~∀・・
-# new_gen  : ^(　゚((̄̄　)
-# new_gen  : (　́^`_　　
-# new_gen  : !(　・̄́　`̄
-# new_gen  : ́ノ!́^*)!
-# new_gen  : )(・*(∀́　　
-# new_gen  : ((́ーヾ　・!
-# new_gen  : (^_　́　)!!
-# new_gen  : ヾ(・́^!)・
-# new_gen  : ́(^_́!・Σノ
-# new_gen  : ・((!　_̄　
-# new_gen  : (・_∀・
-# new_gen  : (゚∀́)　́)
-# new_gen  : (ー^(^・)
-# new_gen  : (*゚̄^　̄　!
-# new_gen  : _.`)!・
-# new_gen  : ((゚　・_
-# new_gen  : ^゚^^゚^
-# new_gen  : ^・^*)!
-# new_gen  : ≦　・・*_・　・
-# new_gen  : (゚　)́　!
-# new_gen  : ((　́(・́・̄)
-# new_gen  : ♪ノ・(*!・)
-# new_gen  : (　　̄ノ　　・(
-# new_gen  : )((　)(́)(
-# new_gen  : )　　・(*((̄　
-# new_gen  : !・^・́　))
-# new_gen  : ゚)　　)!
-# new_gen  : ♪!!*(-　^)
-# new_gen  : 。・ヾ(;_^̄)
-# new_gen  : ^(!(　*((
-# new_gen  : (^^(*!(
-# new_gen  : ゚ノ~))^́
-# new_gen  : ・(　_^(　　　
-# new_gen  : )　(*・・・・・
-# new_gen  : (　・　_́　))(
-# new_gen  : 　(^　*!)
-# new_gen  : (_・・♪
-# new_gen  : )。(^)　()
-# new_gen  : *　・・・~)^・
-# new_gen  : _(^(・)_́́)
-# new_gen  : ♪(ヾ(_　∀^　(
-# new_gen  : (　(・)̄・
-# new_gen  : _(゚　゚́　^^)
-# new_gen  : ♪(̄　(̄)
-# new_gen  : ・_(゚・・・・)
-# new_gen  : 　!((　(_・
-# new_gen  : !・゚)_́　)ノ
-# new_gen  : (・)(・)・
-# new_gen  : )　**((　　　　
-# new_gen  : !!(((*(
-# new_gen  : ((∀ノ　̄　!
-# new_gen  : ・・　゚　_　́・!
-# new_gen  : !(̄̄　`)
-# new_gen  : (*́́　　゚)(
-# new_gen  : (♪!__　)(
-# new_gen  : (　・　　́^)(
-# new_gen  : ・　((ノ
-# new_gen  : (^・.。)~
-# new_gen  : 　　・_・)*)ヾ)
-# new_gen  : ・))`
-# new_gen  : (^・・)・・
-# new_gen  : ^・()　_　))
-# new_gen  : ``・・・・)・
-# new_gen  : (!(　((　　́　
-# new_gen  : (*(^　́)ヾ!
-# new_gen  : (　́)_(́́^)
-# new_gen  : _((^́　。
-# new_gen  : (-^(。)
-# new_gen  : ゚・(　)́　　)
-# new_gen  : ・・　゚　　_)
-# new_gen  : !　(・^・́)
-# new_gen  : (`　∀))!
-# new_gen  : !!(゚　)
-# new_gen  : ^・(　　　́　_　
-# new_gen  : ・　゚　゚́)*
-# new_gen  : (^́∀́(*　)
-# new_gen  : __́　　́́)
-# new_gen  : 　(　(̄　́))(
-# new_gen  : ^・　́　)　
-# new_gen  : 　*・≧)
-# new_gen  : (*　^ω**ノ~
-# new_gen  : (・　　　　́)
-# new_gen  : ()・　*)　́
-# new_gen  : )́(^!　)
-# new_gen  : ・(!(*(_()̄
-# new_gen  : (。_*)・)
-# new_gen  : 　(　　́̄̄　　̄
-# new_gen  : (・(・　`́・
+# new_gen  : ・!(()　　(!
+# new_gen  : ・　̄　́̄　`̄
+# new_gen  : (　̄_̄　))
+# new_gen  : !!(゚(_　　　　
+# new_gen  : !!^・・ー~)
+# new_gen  : (*　゚_・́)~
+# new_gen  : ヾ(・_・!
+# new_gen  : ー　・)・^)
+# new_gen  : `(^́　)♪
+# new_gen  : 　*(^(*　・(
+# new_gen  : ^　(_!_　
+# new_gen  : ^^　・)ノ!^)
+# new_gen  : ゚゚゚∀́)ノ!
+# new_gen  : (・　゚()^*)
+# new_gen  : !!(*_　^
+# new_gen  : ・・(　　́　́)
+# new_gen  : o・・・^)_
+# new_gen  : 　　゚(　・　*
+# new_gen  : ́(　^　)ノ)
+# new_gen  : ・・_　̄ωω
+# new_gen  : ・(゚　́∀・)-)
+# new_gen  : (・-)　)
+# new_gen  : !((*(́　!
+# new_gen  : 　(　(
+# new_gen  : !!*゚((^*!
+# new_gen  : (^́　(　̄　)
+# new_gen  : 。　゚≦)・`
+# new_gen  : )́^^(・♪　!
+# new_gen  : 　。~・;))
+# new_gen  : ・・((・́　ノ
+# new_gen  : ・・∀^・)
+# new_gen  : !　・(・́^　́
+# new_gen  : ヾ゚_́́*　♪!
+# new_gen  : !　・・!*)))
+# new_gen  : !　((((́　
+# new_gen  : ω)))
+# new_gen  : (*・)^　!
+# new_gen  : ・∀^`　　!
+# new_gen  : 　(!()　))
+# new_gen  : __　(_　^)̄
+# new_gen  : (・)^̄(・(̄
+# new_gen  : ヾ゚()*)*
+# new_gen  : ~・(・)ヾ
+# new_gen  : (̄　!　)
+# new_gen  : *　　́　)(　　
+# new_gen  : _́　́　・)
+# new_gen  : 　)・^^))゚)
+# new_gen  : !o*;̄^)♪!
+# new_gen  : *`((`　)!!
+# new_gen  : !((^・　・　)
+# new_gen  : ・　　́　`ノ・)
+# new_gen  : !_)　(
+# new_gen  : ()・ω)*)・・
+# new_gen  : ゚((・・́)
+# new_gen  : )・　　　゚̄́́　
+# new_gen  : ♪　(・　((・^)
+# new_gen  : !*(・)^^~
+# new_gen  : )((^ノ)ノ
+# new_gen  : (　・・()・
+# new_gen  : `(゚^　̄)^`
+# new_gen  : ♪　*　!　^
+# new_gen  : (　(́　　　)
+# new_gen  : ♪^(・・)́∀́
+# new_gen  : (`゚`*　・́)
+# new_gen  : !(*ヾ̄　́
+# new_gen  : ^・・・　　　)~
+# new_gen  : 　^(()ノ(
+# new_gen  : ()・_　*(・^^
+# new_gen  : )　`^))^)
+# new_gen  : ((^　・・・)(
+# new_gen  : ゚゚̄∀̄　_))
+# new_gen  : )(　　　̄!
+# new_gen  : ^・(・^　)
+# new_gen  : ゚　・(́・　　)
+# new_gen  : (*^・())♪
+# new_gen  : ・　゚∀́ヾo)
+# new_gen  : (゚^!(()
+# new_gen  : (。o∀゚)♪~
+# new_gen  : 　*゚　́∀　　_　
+# new_gen  : 　^^*　)
+# new_gen  : !　́　̄　　!!
+# new_gen  : (-(^)
+# new_gen  : (*　́∀　　)・(
+# new_gen  : (゚　゚́)_・・)
+# new_gen  : (^　・ωo゚・
+# new_gen  : ^(*　*̄)̄
+# new_gen  : ^　*̄_・　̄　・
+# new_gen  : !*ノ　*)^
+# new_gen  : 　・)(・́　*̄
+# new_gen  : o・́　)_)()
+# new_gen  : (　゚́・)・　)
+# new_gen  : ^・・(゚　　　
+# new_gen  : (。́▽・・　)
+# new_gen  : `(・(　()̄
+# new_gen  : (*_(**　~)!
+# new_gen  : ・_　・*　・・
+# new_gen  : !　・　　_^́　
+# new_gen  : )　(゚(　　^̄(
+# new_gen  : ・　　)̄　)
+# new_gen  : ^)́　^　́́́́

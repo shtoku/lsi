@@ -26,14 +26,18 @@ def dot_fixed(a, b):
 def softmax(x):
   # Softmax
   x = x - np.max(x, axis=-1, keepdims=True)   # オーバーフロー対策
-  exp = np.exp(x)
-  exp = convert_fixed(exp)
+  #-16以下は-16とする処理を挟む exp(-16) = 0.0
+  x = convert_fixed(x, bit=6) # 整数部：4，小数部：6
+
+  exp = np.exp(x) # 0~1の間になる
+  exp = convert_fixed(exp) # 整数部：2，小数部：16
+
   sum = np.sum(exp, axis=-1, keepdims=True)
-  sum = convert_fixed(sum, bit=2)
+  sum = convert_fixed(sum, bit=2) # 整数部：8，小数部：2
   if sum.max() > 2**(i_len) or sum.min() < -2**(i_len):
     print(sum.max(), sum.min(), 'softmax sum')
   
-  inv = convert_fixed(1.0 / sum)
+  inv = convert_fixed(1.0 / sum) # 整数部：2，小数部：16
   if inv.max() > 2**(i_len_w-1) or inv.min() < -2**(i_len_w-1):
     print(inv.max(), inv.min(), 'softmax sum inverse')
   
@@ -126,7 +130,8 @@ class Tanh_Layer:
     self.out = None
   
   def forward(self, x):
-    out = np.tanh(x)
+    x = convert_fixed(x, bit=6) # 整数部：4，小数部：6
+    out = np.tanh(x) # -1~1の間になる
     out = convert_fixed(out)
     self.out = out
 
@@ -190,3 +195,7 @@ class Momentum:
         if key == 'W_out':
           continue
         print(grads[key].max(), grads[key].min(), key)
+      if self.v[key].max() > 2**(i_len_w-1) or self.v[key].min() < -2**(i_len_w-1):
+        if key == 'W_out':
+          continue
+        print(self.v[key].max(), self.v[key].min(), key)
