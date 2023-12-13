@@ -1,7 +1,11 @@
 import numpy as np
+import kmj_gen_np as kgn
 
 
 PATH_DEC = '../data/parameter/train/decimal/'
+PATH_BIN18 = '../data/parameter/train/binary18/'
+PATH_BIN108 = '../data/parameter/train/binary108/'
+PATH_BIN144 = '../data/parameter/train/binary144/'
 
 
 N = 10              # 最大文字数
@@ -11,9 +15,11 @@ hid_dim = 24        # 潜在ベクトルの次元
 
 
 # 固定小数点の桁数
-i_len = 6           # 整数部の桁数
-f_len = 10          # 小数部の桁数
-n_len = 16          # 整数部 + 小数部 の桁数
+i_len = 8           # 整数部の桁数
+f_len = 16          # 小数部の桁数
+n_len = 24          # 整数部 + 小数部 の桁数
+
+i_len_w = 2         # W_out 以外の整数部の桁数
 
 
 # ファイルに出力する関数
@@ -50,6 +56,77 @@ def generate_initial_value():
   output_file(PATH_DEC + 'dense_layer_W_out.txt', W_out.flatten())
 
 
+# 10進数を2進数(文字列)に変換する関数
+def convert_dec_to_bin(x, i_len, f_len):
+  n_len = i_len + f_len
+  temp = []
+  for value in x:
+    value = int(np.floor(value * 2**f_len))
+    value = format(value & ((1 << n_len) - 1), '0' + str(n_len) + 'b')
+    temp.append(value)
+  return np.array(temp)
+
+
+# 値を6個並べてファイルに出力する関数
+def output_param_6(filename, param):
+  with open(filename, 'w') as file:
+    for data in param.reshape(-1, 6):
+      temp = ''.join(list(reversed(data)))
+      file.write(temp + '\n')
+
+
+# 訓練用のFPGA用のテキストファイルを生成する関数
+def generate_hard():
+  W_emb = kgn.read_param(PATH_DEC + 'emb_layer_W_emb.txt')
+  W_emb = convert_dec_to_bin(W_emb, i_len_w, f_len).reshape(char_num, emb_dim)
+  output_param_6(PATH_BIN108 + 'emb_layer_W_emb.txt', W_emb)
+
+  W_1 = kgn.read_param(PATH_DEC + 'mix_layer_W_1.txt')
+  b_1 = kgn.read_param(PATH_DEC + 'mix_layer_b_1.txt')
+  W_1 = convert_dec_to_bin(W_1, i_len_w, f_len).reshape(emb_dim, N, hid_dim)
+  b_1 = convert_dec_to_bin(b_1, i_len_w, f_len).reshape(emb_dim, hid_dim)
+  z_W_1 = np.full((hid_dim, hid_dim-N, hid_dim), format(0, '0' + str(i_len_w + f_len) + 'b'))  
+  W_1 = np.concatenate([W_1, z_W_1], axis=1)
+  for i in range(emb_dim):
+    output_param_6(PATH_BIN108 + 'mix_layer_W_1/mix_layer_W_1_' + format(i, '02') + '.txt', W_1[i].T)
+    output_param_6(PATH_BIN108 + 'mix_layer_W_1/mix_layer_W_1_' + format(i) + '.txt', W_1[i].T)
+    output_file(PATH_BIN18 + 'mix_layer_b_1/mix_layer_b_1_' + format(i, '02') + '.txt', b_1[i])
+    output_file(PATH_BIN18 + 'mix_layer_b_1/mix_layer_b_1_' + format(i) + '.txt', b_1[i])
+  
+  W_2 = kgn.read_param(PATH_DEC + 'mix_layer_W_2.txt')
+  b_2 = kgn.read_param(PATH_DEC + 'mix_layer_b_2.txt')
+  W_2 = convert_dec_to_bin(W_2, i_len_w, f_len).reshape(hid_dim, emb_dim, 1)
+  b_2 = convert_dec_to_bin(b_2, i_len_w, f_len).reshape(hid_dim, 1)
+  z_W_2 = np.full((hid_dim, hid_dim, hid_dim-1), format(0, '0' + str(i_len_w + f_len) + 'b'))
+  z_b_2 = np.full((hid_dim, hid_dim-1), format(0, '0' + str(i_len_w + f_len) + 'b'))
+  W_2 = np.concatenate([W_2, z_W_2], axis=2)
+  b_2 = np.concatenate([b_2, z_b_2], axis=1)
+  for i in range(hid_dim):
+    output_param_6(PATH_BIN108 + 'mix_layer_W_2/mix_layer_W_2_' + format(i, '02') + '.txt', W_2[i].T)
+    output_param_6(PATH_BIN108 + 'mix_layer_W_2/mix_layer_W_2_' + format(i) + '.txt', W_2[i].T)
+    output_file(PATH_BIN18 + 'mix_layer_b_2/mix_layer_b_2_' + format(i, '02') + '.txt', b_2[i])
+    output_file(PATH_BIN18 + 'mix_layer_b_2/mix_layer_b_2_' + format(i) + '.txt', b_2[i])
+  
+  W_3 = kgn.read_param(PATH_DEC + 'mix_layer_W_3.txt')
+  b_3 = kgn.read_param(PATH_DEC + 'mix_layer_b_3.txt')
+  W_3 = convert_dec_to_bin(W_3, i_len_w, f_len).reshape(N, hid_dim, hid_dim)
+  b_3 = convert_dec_to_bin(b_3, i_len_w, f_len).reshape(N, hid_dim)
+  z_W_3 = np.full((hid_dim-N, hid_dim, hid_dim), format(0, '0' + str(i_len_w + f_len) + 'b'))
+  z_b_3 = np.full((hid_dim-N, hid_dim), format(0, '0' + str(i_len_w + f_len) + 'b'))  
+  W_3 = np.concatenate([W_3, z_W_3], axis=0)
+  b_3 = np.concatenate([b_3, z_b_3], axis=0)
+  for i in range(hid_dim):
+    output_param_6(PATH_BIN108 + 'mix_layer_W_3/mix_layer_W_3_' + format(i, '02') + '.txt', W_3[i].T)
+    output_param_6(PATH_BIN108 + 'mix_layer_W_3/mix_layer_W_3_' + format(i) + '.txt', W_3[i].T)
+    output_file(PATH_BIN18 + 'mix_layer_b_3/mix_layer_b_3_' + format(i, '02') + '.txt', b_3[i])
+    output_file(PATH_BIN18 + 'mix_layer_b_3/mix_layer_b_3_' + format(i) + '.txt', b_3[i])
+
+  W_out = kgn.read_param(PATH_DEC + 'dense_layer_W_out.txt')
+  W_out = convert_dec_to_bin(W_out, i_len, f_len).reshape(hid_dim, char_num)
+  output_param_6(PATH_BIN144 + 'dense_layer_W_out.txt', W_out.T)
+
+
 
 if __name__ == '__main__':
-  generate_initial_value()
+  # generate_initial_value()
+  generate_hard()
