@@ -1,3 +1,20 @@
+// define Network parameter
+`define N           10                // max characters of Kaomoji 
+`define CHAR_NUM    200               // character list length
+`define EMB_DIM     24                // character vector length
+`define HID_DIM     24                // hidden vector length
+
+// define bit width
+`define I_LEN       8                 // integer part bit width
+`define F_LEN       16                // fractional part bit width
+`define N_LEN       24                // integer + fractional part bit width
+`define I_LEN_W     2                 // integer part bit width for ram (else W_out)
+`define F_LEN_W     16                // fractional part bit width for ram (else W_out)
+`define N_LEN_W     18                // integer + fractional part bit width for ram (else W_out)
+`define CHAR_LEN    8                 // integer bit width of character list
+
+`define DATA_N      6                 // read ram 1 time, read 6 data.
+
 // define mode
 `define MODE_LEN    2
 `define TRAIN       `MODE_LEN'd0      // training
