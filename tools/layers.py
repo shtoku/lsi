@@ -109,9 +109,6 @@ class Mix_Layer:
     dx = dout * self.W
     dx = convert_fixed(dx)
     dx = dx.sum(axis=-1)
-
-    if self.state == 3:
-      dx = dx.sum(axis=0, keepdims=True)
     dx = dx.T
     
     x = self.x.T

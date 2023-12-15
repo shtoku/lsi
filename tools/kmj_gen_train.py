@@ -24,12 +24,21 @@ class Network:
   def __init__(self):
     self.params = {}
     self.params['W_emb'] = convert_fixed(kgn.read_param(PATH_DEC + 'emb_layer_W_emb.txt').reshape(char_num, emb_dim))
-    self.params['W_1'] = convert_fixed(kgn.read_param(PATH_DEC + 'mix_layer_W_1.txt').reshape(emb_dim, N, hid_dim))
+
+    W_1 = convert_fixed(kgn.read_param(PATH_DEC + 'mix_layer_W_1.txt').reshape(emb_dim, N, hid_dim))
+    self.params['W_1'] = np.concatenate([W_1, np.zeros((hid_dim, hid_dim-N, hid_dim))], axis=1)
     self.params['b_1'] = convert_fixed(kgn.read_param(PATH_DEC + 'mix_layer_b_1.txt').reshape(emb_dim, hid_dim))
-    self.params['W_2'] = convert_fixed(kgn.read_param(PATH_DEC + 'mix_layer_W_2.txt').reshape(hid_dim, emb_dim, 1))
-    self.params['b_2'] = convert_fixed(kgn.read_param(PATH_DEC + 'mix_layer_b_2.txt').reshape(hid_dim, 1))
-    self.params['W_3'] = convert_fixed(kgn.read_param(PATH_DEC + 'mix_layer_W_3.txt').reshape(N, hid_dim, hid_dim))
-    self.params['b_3'] = convert_fixed(kgn.read_param(PATH_DEC + 'mix_layer_b_3.txt').reshape(N, hid_dim))
+
+    W_2 = convert_fixed(kgn.read_param(PATH_DEC + 'mix_layer_W_2.txt').reshape(hid_dim, emb_dim, 1))
+    self.params['W_2'] = np.concatenate([W_2, np.zeros((hid_dim, hid_dim, hid_dim-1))], axis=2)
+    b_2 = convert_fixed(kgn.read_param(PATH_DEC + 'mix_layer_b_2.txt').reshape(hid_dim, 1))
+    self.params['b_2'] = np.concatenate([b_2, np.zeros((hid_dim, hid_dim-1))], axis=1)
+
+    W_3 = convert_fixed(kgn.read_param(PATH_DEC + 'mix_layer_W_3.txt').reshape(N, hid_dim, hid_dim))
+    self.params['W_3'] = np.concatenate([W_3, np.zeros((hid_dim-N, hid_dim, hid_dim))], axis=0)
+    b_3 = convert_fixed(kgn.read_param(PATH_DEC + 'mix_layer_b_3.txt').reshape(N, hid_dim))
+    self.params['b_3'] = np.concatenate([b_3, np.zeros((hid_dim-N, hid_dim))], axis=0)
+
     self.params['W_out'] = convert_fixed(kgn.read_param(PATH_DEC + 'dense_layer_W_out.txt').reshape(hid_dim, char_num))
 
     self.grads = {}
@@ -46,10 +55,17 @@ class Network:
     self.layers['Dense_Layer'] = Dense_Layer(self.params['W_out'])
 
   def forward(self, x):
-    for key, layer in self.layers.items():
-      x = layer.forward(x)
-      if x.max() > 2**(i_len-1) or x.min() < -2**(i_len-1):
-        print(x.max(), x.min(), key)
+    x = self.layers['Emb_Layer'].forward(x)
+    x = np.concatenate([x, np.zeros((hid_dim-N, hid_dim))], axis=0)
+    x = self.layers['Mix_Layer1'].forward(x)
+    x = self.layers['Tanh_Layer1'].forward(x)
+    x = self.layers['Mix_Layer2'].forward(x)
+    x = self.layers['Tanh_Layer2'].forward(x)
+    x = np.full((hid_dim, hid_dim), x[:, 0]).T
+    x = self.layers['Mix_Layer3'].forward(x)
+    x = self.layers['Tanh_Layer3'].forward(x)
+    x = x[:N, :]
+    x = self.layers['Dense_Layer'].forward(x)
     
     return x
   
@@ -69,12 +85,18 @@ class Network:
     y[range(len(y)), t] -= 1.0
     dout = convert_fixed(y / batch_size)
 
-    layers = list(self.layers.items())
-    layers.reverse()
-    for key, layer in layers:
-      dout = layer.backward(dout)
-      if dout.max() > 2**(i_len-1) or dout.min() < -2**(i_len-1):
-        print(dout.max(), dout.min(), key)
+    dout = self.layers['Dense_Layer'].backward(dout)
+    dout = np.concatenate([dout, np.zeros((hid_dim-N, hid_dim))], axis=0)
+    dout = self.layers['Tanh_Layer3'].backward(dout)
+    dout = self.layers['Mix_Layer3'].backward(dout)
+    dout = dout.sum(axis=1, keepdims=True)
+    dout = np.concatenate([dout, np.zeros((hid_dim, hid_dim-1))], axis=1)
+    dout = self.layers['Tanh_Layer2'].backward(dout)
+    dout = self.layers['Mix_Layer2'].backward(dout)
+    dout = self.layers['Tanh_Layer1'].backward(dout)
+    dout = self.layers['Mix_Layer1'].backward(dout)
+    dout = dout[:N, :]
+    dout = self.layers['Emb_Layer'].backward(dout)
     
     self.grads['W_emb'] += self.layers['Emb_Layer'].dW
     self.grads['W_1'] += self.layers['Mix_Layer1'].dW
