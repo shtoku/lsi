@@ -79,9 +79,6 @@ module emb_forward #(
       count3 <= count3;
     end else begin
       count3 <= 0;
-      for (j = 0; j < `N*`EMB_DIM/`DATA_N; j = j + 1) begin
-        q_buf[j] <= 0;
-      end
     end
   end
 
