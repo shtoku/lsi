@@ -126,7 +126,27 @@ def generate_hard():
   output_param_6(PATH_BIN144 + 'dense_layer_W_out.txt', W_out.T)
 
 
+# 初期値用のゼロファイルを作成する関数
+def generate_zeros():
+  W_emb = np.zeros((char_num, emb_dim))
+  W_emb = convert_dec_to_bin(W_emb.flatten(), i_len_w, f_len)
+  output_param_6(PATH_BIN108 + 'zeros_like_W_emb.txt', W_emb)
+
+  W_1 = np.zeros((hid_dim, hid_dim))
+  W_1 = convert_dec_to_bin(W_1.flatten(), i_len_w, f_len)
+  output_param_6(PATH_BIN108 + 'zeros_like_W_1.txt', W_1)
+
+  b_1 = np.zeros((1, hid_dim))
+  b_1 = convert_dec_to_bin(b_1.flatten(), i_len_w, f_len)
+  output_file(PATH_BIN18 + 'zeros_like_b_1.txt', b_1)
+  
+  W_out = np.zeros((hid_dim, char_num))
+  W_out = convert_dec_to_bin(W_out.flatten(), i_len, f_len)
+  output_param_6(PATH_BIN144 + 'zeros_like_W_out.txt', W_out)
+
+
 
 if __name__ == '__main__':
   # generate_initial_value()
   generate_hard()
+  generate_zeros()
