@@ -56,7 +56,7 @@ def convert_fixed2(x, i_len, f_len):
 
 
 # ファイルに出力する関数
-def output_file(filename, x, i_len=i_len, f_len=f_len, mode='w'):
+def output_file(filename, x, i_len=i_len, f_len=f_len, mode='a'):
   with open(filename, mode) as file:
     for value in x:
       temp = convert_fixed2(value, i_len, f_len)
@@ -71,10 +71,10 @@ def remove_file():
 
 
 # 順伝播の入出力サンプルを作成する関数
-def output_forward(x, net, name=''):
-  output_file(PATH_TB + 'emb_layer/emb_layer_forward_in' + str(name) + '.txt', x, i_len=8, f_len=0)
+def output_forward(x, net):
+  output_file(PATH_TB + 'emb_layer/emb_layer_forward_in.txt', x, i_len=8, f_len=0)
   x = net.layers['Emb_Layer'].forward(x)
-  output_file(PATH_TB + 'emb_layer/emb_layer_forward_out' + str(name) + '.txt', x.flatten(), i_len=2, f_len=16)
+  output_file(PATH_TB + 'emb_layer/emb_layer_forward_out.txt', x.flatten(), i_len=2, f_len=16)
   x = np.concatenate([x, np.zeros((hid_dim-N, hid_dim))], axis=0)
   x = net.layers['Mix_Layer1'].forward(x)
   x = net.layers['Tanh_Layer1'].forward(x)
@@ -107,7 +107,7 @@ def output_backward(y, t, net):
     dout = net.layers['Tanh_Layer1'].backward(dout)
     dout = net.layers['Mix_Layer1'].backward(dout)
     dout = dout[:N, :]
-    output_file(PATH_TB + 'emb_layer/emb_layer_backward_in.txt', dout.flatten(), i_len=2, f_len=16, mode='a')
+    output_file(PATH_TB + 'emb_layer/emb_layer_backward_in.txt', dout.flatten(), i_len=2, f_len=16)
     dout = net.layers['Emb_Layer'].backward(dout)
     
     net.grads['W_emb'] += net.layers['Emb_Layer'].dW
@@ -134,11 +134,8 @@ if __name__ == '__main__':
   acc_train = 0
 
   net.zero_grads()
-  for i, x in enumerate(dataloader_train[0]):
-    if i == 0:
-      y = output_forward(x, net)
-    else:
-      y = net.forward(x)
+  for x in dataloader_train[0]:
+    y = output_forward(x, net)
     loss = crossEntropyLoss(y, x)
     output_backward(y, x, net)
     losses_train.append(loss)
@@ -148,7 +145,7 @@ if __name__ == '__main__':
   print(loss, acc_train)
 
   x = dataloader_train[1][0]
-  y = output_forward(x, net, name='_for_backward')
+  y = output_forward(x, net)
   print(y.sum())
 
 
