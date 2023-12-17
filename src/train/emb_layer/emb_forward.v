@@ -9,8 +9,8 @@ module emb_forward #(
     input  wire [`N*`CHAR_LEN-1:0] d,
     output wire valid,
     output wire [`N*`EMB_DIM*`N_LEN_W-1:0] q,
-    output reg  [ADDR_WIDTH-1:0] ram_addr,
-    input  wire [`DATA_N*`N_LEN_W-1:0] ram_data
+    output reg  [ADDR_WIDTH-1:0] raddr,
+    input  wire [`DATA_N*`N_LEN_W-1:0] rdata
   );
 
   // ----------------------------------------
@@ -41,25 +41,25 @@ module emb_forward #(
 
 
   // ----------------------------------------
-  // ram_addr controller
+  // raddr controller
   always @(posedge clk, negedge rst_n) begin
     if (~rst_n) begin
       count1 <= 0;
       count2 <= 0;
-      ram_addr <= 0;
+      raddr <= 0;
     end else if (run & ~(count1 == (`EMB_DIM/`DATA_N) - 1 & count2 == `N)) begin
       if (count1 == (`EMB_DIM/`DATA_N) - 1) begin
         count1 <= 0;
         count2 <= count2 + 1;
-        ram_addr <= (`EMB_DIM/`DATA_N) * d_buf[count2];
+        raddr <= (`EMB_DIM/`DATA_N) * d_buf[count2];
       end else begin
         count1 <= count1 + 1;
-        ram_addr <= ram_addr + 1;
+        raddr <= raddr + 1;
       end
     end else begin
       count1 <= 0;
       count2 <= 1;
-      ram_addr <= (`EMB_DIM/`DATA_N) * d_buf[0];
+      raddr <= (`EMB_DIM/`DATA_N) * d_buf[0];
     end
   end
 
@@ -73,7 +73,7 @@ module emb_forward #(
     end else if (run & ~valid) begin
       count3 <= count3 + 1;
       if (count3 != 0) begin
-        q_buf[count3-1] <= ram_data;
+        q_buf[count3-1] <= rdata;
       end
     end else if (run) begin
       count3 <= count3;

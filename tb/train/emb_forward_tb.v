@@ -11,8 +11,8 @@ module emb_forward_tb ();
   wire [`N*`CHAR_LEN-1:0] emb_forward_d;
   wire emb_forward_valid;
   wire [`N*`EMB_DIM*`N_LEN_W-1:0] emb_forward_q;
-  wire [ADDR_WIDTH-1:0] emb_forward_ram_addr;
-  wire [`DATA_N*`N_LEN_W-1:0] emb_forward_ram_data;
+  wire [ADDR_WIDTH-1:0] emb_forward_addr;
+  wire [`DATA_N*`N_LEN_W-1:0] emb_forward_rdata;
 
   // emb_ram_W_emb
   wire emb_ram_w_load;
@@ -37,8 +37,8 @@ module emb_forward_tb ();
       assign q_ans[i*`N_LEN_W +: `N_LEN_W] = q_mem[i];
     end
   endgenerate
-  assign emb_forward_ram_data = emb_ram_w_q;
-  assign emb_ram_w_addr = emb_forward_ram_addr;
+  assign emb_forward_rdata = emb_ram_w_q;
+  assign emb_ram_w_addr = emb_forward_addr;
 
   assign correct = (emb_forward_q == q_ans);
 
@@ -51,8 +51,8 @@ module emb_forward_tb ();
     .d(emb_forward_d),
     .valid(emb_forward_valid),
     .q(emb_forward_q),
-    .ram_addr(emb_forward_ram_addr),
-    .ram_data(emb_forward_ram_data)
+    .addr(emb_forward_addr),
+    .rdata(emb_forward_rdata)
   );
 
   ram #(

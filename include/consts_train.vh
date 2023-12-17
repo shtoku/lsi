@@ -15,6 +15,11 @@
 
 `define DATA_N      6                 // read ram 1 time, read 6 data.
 
+// define traing parameter
+`define BATCH_SIZE  2                 // mini batch size
+`define MOMENTUM    `N_LEN_W'h0E666   // momentum=0.9
+`define LR          `N_LEN_W'h00041   // learning rate=0.001
+
 // define mode
 `define MODE_LEN    2
 `define TRAIN       `MODE_LEN'd0      // training
