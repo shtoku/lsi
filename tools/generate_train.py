@@ -88,8 +88,10 @@ def generate_hard():
   z_W_1 = np.full((hid_dim, hid_dim-N, hid_dim), format(0, '0' + str(i_len_w + f_len) + 'b'))  
   W_1 = np.concatenate([W_1, z_W_1], axis=1)
   for i in range(emb_dim):
-    output_param_6(PATH_BIN108 + 'mix_layer_W_1/mix_layer_W_1_' + format(i, '02') + '.txt', W_1[i].T)
-    output_param_6(PATH_BIN108 + 'mix_layer_W_1/mix_layer_W_1_' + format(i) + '.txt', W_1[i].T)
+    output_param_6(PATH_BIN108 + 'mix_layer_W_1/mix_layer_W_1_' + format(i, '02') + '.txt', W_1[i])
+    output_param_6(PATH_BIN108 + 'mix_layer_W_1/mix_layer_W_1_' + format(i) + '.txt', W_1[i])
+    output_param_6(PATH_BIN108 + 'mix_layer_W_1/mix_layer_W_1_T_' + format(i, '02') + '.txt', W_1[i].T)
+    output_param_6(PATH_BIN108 + 'mix_layer_W_1/mix_layer_W_1_T_' + format(i) + '.txt', W_1[i].T)
     output_file(PATH_BIN18 + 'mix_layer_b_1/mix_layer_b_1_' + format(i, '02') + '.txt', b_1[i])
     output_file(PATH_BIN18 + 'mix_layer_b_1/mix_layer_b_1_' + format(i) + '.txt', b_1[i])
   
@@ -102,8 +104,10 @@ def generate_hard():
   W_2 = np.concatenate([W_2, z_W_2], axis=2)
   b_2 = np.concatenate([b_2, z_b_2], axis=1)
   for i in range(hid_dim):
-    output_param_6(PATH_BIN108 + 'mix_layer_W_2/mix_layer_W_2_' + format(i, '02') + '.txt', W_2[i].T)
-    output_param_6(PATH_BIN108 + 'mix_layer_W_2/mix_layer_W_2_' + format(i) + '.txt', W_2[i].T)
+    output_param_6(PATH_BIN108 + 'mix_layer_W_2/mix_layer_W_2_' + format(i, '02') + '.txt', W_2[i])
+    output_param_6(PATH_BIN108 + 'mix_layer_W_2/mix_layer_W_2_' + format(i) + '.txt', W_2[i])
+    output_param_6(PATH_BIN108 + 'mix_layer_W_2/mix_layer_W_2_T_' + format(i, '02') + '.txt', W_2[i].T)
+    output_param_6(PATH_BIN108 + 'mix_layer_W_2/mix_layer_W_2_T_' + format(i) + '.txt', W_2[i].T)
     output_file(PATH_BIN18 + 'mix_layer_b_2/mix_layer_b_2_' + format(i, '02') + '.txt', b_2[i])
     output_file(PATH_BIN18 + 'mix_layer_b_2/mix_layer_b_2_' + format(i) + '.txt', b_2[i])
   
@@ -116,8 +120,10 @@ def generate_hard():
   W_3 = np.concatenate([W_3, z_W_3], axis=0)
   b_3 = np.concatenate([b_3, z_b_3], axis=0)
   for i in range(hid_dim):
-    output_param_6(PATH_BIN108 + 'mix_layer_W_3/mix_layer_W_3_' + format(i, '02') + '.txt', W_3[i].T)
-    output_param_6(PATH_BIN108 + 'mix_layer_W_3/mix_layer_W_3_' + format(i) + '.txt', W_3[i].T)
+    output_param_6(PATH_BIN108 + 'mix_layer_W_3/mix_layer_W_3_' + format(i, '02') + '.txt', W_3[i])
+    output_param_6(PATH_BIN108 + 'mix_layer_W_3/mix_layer_W_3_' + format(i) + '.txt', W_3[i])
+    output_param_6(PATH_BIN108 + 'mix_layer_W_3/mix_layer_W_3_T_' + format(i, '02') + '.txt', W_3[i].T)
+    output_param_6(PATH_BIN108 + 'mix_layer_W_3/mix_layer_W_3_T_' + format(i) + '.txt', W_3[i].T)
     output_file(PATH_BIN18 + 'mix_layer_b_3/mix_layer_b_3_' + format(i, '02') + '.txt', b_3[i])
     output_file(PATH_BIN18 + 'mix_layer_b_3/mix_layer_b_3_' + format(i) + '.txt', b_3[i])
 
