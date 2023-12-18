@@ -138,13 +138,13 @@ def generate_zeros():
   W_emb = convert_dec_to_bin(W_emb.flatten(), i_len_w, f_len)
   output_param_6(PATH_BIN108 + 'zeros_like_W_emb.txt', W_emb)
 
-  W_1 = np.zeros((hid_dim, hid_dim))
-  W_1 = convert_dec_to_bin(W_1.flatten(), i_len_w, f_len)
-  output_param_6(PATH_BIN108 + 'zeros_like_W_1.txt', W_1)
+  W_mix = np.zeros((3, hid_dim, hid_dim))
+  W_mix = convert_dec_to_bin(W_mix.flatten(), i_len_w, f_len)
+  output_param_6(PATH_BIN108 + 'zeros_like_W_mix.txt', W_mix)
 
-  b_1 = np.zeros((1, hid_dim))
-  b_1 = convert_dec_to_bin(b_1.flatten(), i_len_w, f_len)
-  output_file(PATH_BIN18 + 'zeros_like_b_1.txt', b_1)
+  b_mix = np.zeros((3, 1, hid_dim))
+  b_mix = convert_dec_to_bin(b_mix.flatten(), i_len_w, f_len)
+  output_file(PATH_BIN18 + 'zeros_like_b_mix.txt', b_mix)
   
   W_out = np.zeros((hid_dim, char_num))
   W_out = convert_dec_to_bin(W_out.flatten(), i_len, f_len)
