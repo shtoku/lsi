@@ -1,6 +1,6 @@
 `include "consts_train.vh"
 
-module mix_forward_logic (
+module mix_dot (
     input  wire clk, 
     input  wire rst_n, 
     input  wire run, 

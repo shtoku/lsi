@@ -97,7 +97,7 @@ module mix_layer_tb ();
     run_backward=1; #10;
     // wait (valid_forward & valid_backward); #5;
     wait (valid_forward); #5;
-    #10;
+    #200;
     run_forward=0; run_backward=0; #10;
     #100;
     $finish;

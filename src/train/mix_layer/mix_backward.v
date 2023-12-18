@@ -1,29 +1,32 @@
 `include "consts_train.vh"
 
-module mix_forward #(
+module mix_backward #(
     parameter integer ADDR_WIDTH = 9    // log2(3*`HID_DIM*`HID_DIM/`DATA_N) < 9
   ) (
-    input  wire clk, 
-    input  wire rst_n, 
+    input  wire clk,
+    input  wire rst_n,
     input  wire run,
     input  wire [`STATE_LEN-1:0] state,
-    input  wire [`HID_DIM*`N_LEN-1:0] d,
+    input  wire [`HID_DIM*`N_LEN-1:0] d_forward,
+    input  wire [`HID_DIM*`N_LEN-1:0] d_backward,
     output wire valid,
     output wire [`HID_DIM*`N_LEN-1:0] q,
+    output reg  [ADDR_WIDTH-1:0] waddr_grad,
+    output wire [`DATA_N*`N_LEN_W-1:0] wdata_grad,
     output reg  [ADDR_WIDTH-1:0] raddr_w,
-    output reg  [ADDR_WIDTH-1:0] raddr_b,
+    output reg  [ADDR_WIDTH-1:0] raddr_grad,
     input  wire [`DATA_N*`N_LEN_W-1:0] rdata_w,
-    input  wire [`N_LEN_W-1:0] rdata_b
+    input  wire [`DATA_N*`N_LEN_W-1:0] rdata_grad
   );
 
 
   // ----------------------------------------
-  // wire mix_dot
+  // reg/wire mix_dot
   reg  [`DATA_N*`N_LEN-1:0] mix_dot_d;
+  wire mix_dot_valid;
 
   // reg counter
   reg  [1:0] count1;
-  reg  [7:0] count2, count3;
 
 
   // ----------------------------------------
@@ -39,25 +42,14 @@ module mix_forward #(
     endcase
   endfunction
 
-  // fucntion raddr_w_bias
-  function [ADDR_WIDTH-1:0] raddr_w_bias;
+  // fucntion raddr_bias
+  function [ADDR_WIDTH-1:0] raddr_bias;
     input [`STATE_LEN-1:0] select;
     case (select)
-      `F_MIX1 : raddr_w_bias = 0*(`HID_DIM*`HID_DIM/`DATA_N);
-      `F_MIX2 : raddr_w_bias = 1*(`HID_DIM*`HID_DIM/`DATA_N);
-      `F_MIX3 : raddr_w_bias = 2*(`HID_DIM*`HID_DIM/`DATA_N);
-      default : raddr_w_bias = {`STATE_LEN{1'bX}};
-    endcase
-  endfunction
-
-  // function raddr_b_bias
-  function [ADDR_WIDTH-1:0] raddr_b_bias;
-    input [`STATE_LEN-1:0] select;
-    case (select)
-      `F_MIX1 : raddr_b_bias = 0*`HID_DIM;
-      `F_MIX2 : raddr_b_bias = 1*`HID_DIM;
-      `F_MIX3 : raddr_b_bias = 2*`HID_DIM;
-      default : raddr_b_bias = {`STATE_LEN{1'bX}};
+      `B_MIX1 : raddr_bias = 0*(`HID_DIM*`HID_DIM/`DATA_N);
+      `B_MIX2 : raddr_bias = 1*(`HID_DIM*`HID_DIM/`DATA_N);
+      `B_MIX3 : raddr_bias = 2*(`HID_DIM*`HID_DIM/`DATA_N);
+      default : raddr_bias = {`STATE_LEN{1'bX}};
     endcase
   endfunction
 
@@ -70,7 +62,7 @@ module mix_forward #(
       mix_dot_d <= 0;
     end else if (run) begin
       count1 <= count1 + 1;
-      mix_dot_d <= select_d(d, count1);
+      mix_dot_d <= select_d(d_backward, count1);
     end else begin
       count1 <= 0;
       mix_dot_d <= 0;
@@ -84,42 +76,23 @@ module mix_forward #(
     end else if (run) begin
       raddr_w <= raddr_w + 1;
     end else begin
-      raddr_w <= raddr_w_bias(state);
-    end
-  end
-
-  // raddr_b controller
-  always @(posedge clk, negedge rst_n) begin
-    if (~rst_n) begin
-      count2 <= 0;
-      count3 <= 0;
-      raddr_b <= 0;
-    end else if (run) begin
-        count2 <= count2 + 1;
-      if (count2 == count3 + 8) begin
-        count3 <= count3 + 4;
-        raddr_b <= raddr_b + 1;
-      end
-    end else begin
-      count2 <= 0;
-      count3 <= 0;
-      raddr_b <= raddr_b_bias(state);
+      raddr_w <= raddr_bias(state);
     end
   end
 
 
   // ----------------------------------------
-  // mix_dot
+  // mix_dot (calculate q)
   mix_dot mix_dot_inst (
     .clk(clk),
     .rst_n(rst_n),
     .run(run),
-    .valid(valid),
+    .valid(mix_dot_valid),
     .d(mix_dot_d),
     .rdata_w(rdata_w),
-    .rdata_b(rdata_b),
+    .rdata_b({`N_LEN_W{1'b0}}),
     .q(q)
-  );
+  ); 
 
 
 endmodule
