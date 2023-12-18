@@ -91,8 +91,7 @@ module emb_layer #(
   // assign emb_ram_grad
   assign emb_ram_grad_load  = (zero_grad | run_backward);
   assign emb_ram_grad_waddr = (zero_grad)    ? zero_grad_addr     :
-                              (run_backward) ? emb_backward_waddr :
-                              (update)       ? emb_optim_waddr    : {ADDR_WIDTH{1'bX}};
+                              (run_backward) ? emb_backward_waddr : {ADDR_WIDTH{1'bX}};
   assign emb_ram_grad_wdata = (zero_grad)    ? {`DATA_N*`N_LEN_W{1'b0}} :
                               (run_backward) ? emb_backward_wdata       : {`DATA_N*`N_LEN_W{1'bX}};
   assign emb_ram_grad_raddr = (run_backward) ? emb_backward_raddr :

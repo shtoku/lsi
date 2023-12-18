@@ -33,18 +33,7 @@ module emb_optim #(
   reg  [`N_LEN_W-1:0] mul_lr_buf  [0:`DATA_N-1];
 
   // reg waddr controller
-  reg [ADDR_WIDTH-1:0] raddr_delay1, raddr_delay2, raddr_delay3;
-
-
-  // fucntion fixed multiply 
-  function [`N_LEN_W-1:0] fixed_mul;
-    input signed [`N_LEN_W-1:0] num1, num2;
-    reg [2*`N_LEN_W-1:0] mul;
-    begin
-      mul = num1 * num2;
-      fixed_mul = mul[`F_LEN_W +: `N_LEN_W]; 
-    end
-  endfunction
+  reg  [ADDR_WIDTH-1:0] raddr_delay1, raddr_delay2, raddr_delay3;
 
 
   // ----------------------------------------
@@ -61,6 +50,17 @@ module emb_optim #(
 
   // assign valid
   assign valid = run & (raddr_delay3 == `CHAR_NUM*`EMB_DIM/`DATA_N - 1);
+
+
+  // fucntion fixed multiply 
+  function [`N_LEN_W-1:0] fixed_mul;
+    input signed [`N_LEN_W-1:0] num1, num2;
+    reg [2*`N_LEN_W-1:0] mul;
+    begin
+      mul = num1 * num2;
+      fixed_mul = mul[`F_LEN_W +: `N_LEN_W]; 
+    end
+  endfunction
 
 
   // ----------------------------------------
