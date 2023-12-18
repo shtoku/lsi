@@ -61,10 +61,10 @@ module mix_layer_tb ();
   always #5 clk =~clk;
 
   initial begin
-    $readmemb("../../data/tb/train/mix_layer/mix_layer1_forward_in.txt",  d_forward_mem);
-    $readmemb("../../data/tb/train/mix_layer/mix_layer1_forward_out.txt", q_forward_mem);
-    $readmemb("../../data/tb/train/mix_layer/mix_layer1_backward_in.txt",  d_backward_mem);
-    $readmemb("../../data/tb/train/mix_layer/mix_layer1_backward_out.txt", q_backward_mem);
+    $readmemb("../../data/tb/train/mix_layer/mix_layer2_forward_in.txt",  d_forward_mem);
+    $readmemb("../../data/tb/train/mix_layer/mix_layer2_forward_out.txt", q_forward_mem);
+    $readmemb("../../data/tb/train/mix_layer/mix_layer2_backward_in.txt",  d_backward_mem);
+    $readmemb("../../data/tb/train/mix_layer/mix_layer2_backward_out.txt", q_backward_mem);
   end
 
   initial begin
@@ -73,15 +73,14 @@ module mix_layer_tb ();
     run_forward=0; run_backward=0; load_backward=0; d_forward=0; d_backward=0;
     #10;
     rst_n=1; #10;
-    state_forward=`F_MIX1; state_backward=`B_MIX1; #10;
+    state_forward=`F_MIX2; state_backward=`B_MIX2; #10;
     #20;
 
     // S1
     zero_grad=1; #10;
     d_forward=d_forward_buf[0]; #10;
     run_forward=1; #10;
-    // wait (valid_forward & valid_zero_grad); #5;
-    wait (valid_forward); #5;
+    wait (valid_forward & valid_zero_grad); #5;
     #10;
     run_forward=0; #10;
     zero_grad=0; #10;
@@ -95,11 +94,38 @@ module mix_layer_tb ();
     #100;
     d_backward=d_backward_buf[0]; #10;
     run_backward=1; #10;
-    // wait (valid_forward & valid_backward); #5;
-    wait (valid_forward); #5;
-    #200;
+    wait (valid_forward & valid_backward); #5;
+    #10;
     run_forward=0; run_backward=0; #10;
     #100;
+
+    // S3
+    load_backward=1; #10;
+    load_backward=0; #10;
+    d_backward=d_backward_buf[1]; #10;
+    run_backward=1; #10;
+    wait (valid_backward); #5;
+    #10;
+    run_backward=0; #10;
+    #100;
+  
+    // UPDATE
+    update=1; #10;
+    // wait (valid_update); #5;
+    #1200;
+    update=0; #10;
+    #100;
+
+    // S1
+    zero_grad=1; #10;
+    d_forward=d_forward_buf[2]; #10;
+    run_forward=1; #10;
+    wait (valid_forward & valid_zero_grad); #5;
+    #10;
+    run_forward=0; #10;
+    zero_grad=0; #10;
+    #100;
+
     $finish;
   end
 
