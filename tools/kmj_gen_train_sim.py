@@ -97,7 +97,10 @@ def output_forward(x, net):
 
   x = net.layers['Tanh_Layer3'].forward(x)
   x = x[:N, :]
+  
+  output_file(PATH_TB + 'dense_layer/dense_layer_forward_in.txt', x.flatten())
   x = net.layers['Dense_Layer'].forward(x)
+  output_file(PATH_TB + 'dense_layer/dense_layer_forward_out.txt', x.flatten())
 
   return x
 
@@ -109,7 +112,10 @@ def output_backward(y, t, net):
     y[range(len(y)), t] -= 1.0
     dout = convert_fixed(y / batch_size)
 
+    output_file(PATH_TB + 'dense_layer/dense_layer_backward_in.txt', dout.flatten(), i_len=2, f_len=16)
     dout = net.layers['Dense_Layer'].backward(dout)
+    output_file(PATH_TB + 'dense_layer/dense_layer_backward_out.txt', dout.flatten())
+
     dout = np.concatenate([dout, np.zeros((hid_dim-N, hid_dim))], axis=0)
     dout = net.layers['Tanh_Layer3'].backward(dout)
 
