@@ -5,7 +5,7 @@ import kmj_gen_np as kgn
 PATH_DEC = '../data/parameter/train/decimal/'
 PATH_BIN18 = '../data/parameter/train/binary18/'
 PATH_BIN108 = '../data/parameter/train/binary108/'
-PATH_BIN144 = '../data/parameter/train/binary144/'
+PATH_BIN192 = '../data/parameter/train/binary192/'
 
 
 N = 10              # 最大文字数
@@ -68,9 +68,9 @@ def convert_dec_to_bin(x, i_len, f_len):
 
 
 # 値を6個並べてファイルに出力する関数
-def output_param_6(filename, param):
+def output_param_6(filename, param, num=6):
   with open(filename, 'w') as file:
-    for data in param.reshape(-1, 6):
+    for data in param.reshape(-1, num):
       temp = ''.join(list(reversed(data)))
       file.write(temp + '\n')
 
@@ -129,7 +129,8 @@ def generate_hard():
 
   W_out = kgn.read_param(PATH_DEC + 'dense_layer_W_out.txt')
   W_out = convert_dec_to_bin(W_out, i_len, f_len).reshape(hid_dim, char_num)
-  output_param_6(PATH_BIN144 + 'dense_layer_W_out.txt', W_out.T)
+  output_param_6(PATH_BIN192 + 'dense_layer_W_out.txt', W_out, num=8)
+  output_param_6(PATH_BIN192 + 'dense_layer_W_out_T.txt', W_out.T, num=8)
 
 
 # 初期値用のゼロファイルを作成する関数
@@ -148,7 +149,7 @@ def generate_zeros():
   
   W_out = np.zeros((hid_dim, char_num))
   W_out = convert_dec_to_bin(W_out.flatten(), i_len, f_len)
-  output_param_6(PATH_BIN144 + 'zeros_like_W_out.txt', W_out)
+  output_param_6(PATH_BIN192 + 'zeros_like_W_out.txt', W_out, num=8)
 
 
 
