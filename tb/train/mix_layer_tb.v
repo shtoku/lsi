@@ -112,7 +112,7 @@ module mix_layer_tb ();
     // UPDATE
     update=1; #10;
     // wait (valid_update); #5;
-    #1200;
+    #3000;
     update=0; #10;
     #100;
 

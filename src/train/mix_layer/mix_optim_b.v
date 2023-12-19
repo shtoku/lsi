@@ -6,7 +6,6 @@ module mix_optim_b #(
     input  wire clk,
     input  wire rst_n,
     input  wire run,
-    input  wire [`STATE_LEN-1:0] state,
     output wire valid,
     output reg  [ADDR_WIDTH-1:0] waddr,
     output reg  [`N_LEN_W-1:0] wdata_b,
@@ -28,28 +27,14 @@ module mix_optim_b #(
   reg  [`N_LEN_W-1:0] mul_mtm_buf;
   reg  [`N_LEN_W-1:0] mul_lr_buf;
 
-  // reg raddr controller
-  reg  [6:0] count1, count1_delay1, count1_delay2, count1_delay3, count1_delay4;
-
   // reg waddr controller
-  reg  [ADDR_WIDTH-1:0] raddr_delay1, raddr_delay2;
+  reg  [ADDR_WIDTH-1:0] raddr_delay1, raddr_delay2, raddr_delay3;
 
 
   // ----------------------------------------
   // assign valid
-  assign valid = run & (count1_delay4 == `HID_DIM - 1);
+  assign valid = run & (raddr_delay3 == 3*`HID_DIM*`HID_DIM - 1);
 
-
-    // function raddr_b_bias
-  function [ADDR_WIDTH-1:0] raddr_b_bias;
-    input [`STATE_LEN-1:0] select;
-    case (select)
-      `B_MIX1 : raddr_b_bias = 0*`HID_DIM;
-      `B_MIX2 : raddr_b_bias = 1*`HID_DIM;
-      `B_MIX3 : raddr_b_bias = 2*`HID_DIM;
-      default : raddr_b_bias = {`STATE_LEN{1'bX}};
-    endcase
-  endfunction
 
   // fucntion fixed multiply 
   function [`N_LEN_W-1:0] fixed_mul;
@@ -66,31 +51,13 @@ module mix_optim_b #(
   // raddr controller
   always @(posedge clk, negedge rst_n) begin
     if (~rst_n) begin
-      count1 <= 0;
       raddr <= 0;
+    end else if (run & (raddr != (3*`HID_DIM) - 1)) begin
+      raddr <= raddr + 1;
     end else if (run) begin
-      if (count1 != `HID_DIM - 1) begin
-        count1 <= count1 + 1;
-        raddr <= raddr + 1;
-      end
+      raddr <= raddr;
     end else begin
-      count1 <= 0;
-      raddr <= raddr_b_bias(state);
-    end
-  end
-
-  // count1 delay
-  always @(posedge clk, negedge rst_n) begin
-    if (~rst_n) begin
-      count1_delay1 <= 0;
-      count1_delay2 <= 0;
-      count1_delay3 <= 0;
-      count1_delay4 <= 0;
-    end else begin
-      count1_delay1 <= count1;
-      count1_delay2 <= count1_delay1;
-      count1_delay3 <= count1_delay2;
-      count1_delay4 <= count1_delay3;
+      raddr <= 0;
     end
   end
 
@@ -101,7 +68,7 @@ module mix_optim_b #(
     end else begin
       rdata_b_delay <= rdata_b;
     end
-  end    
+  end
 
   // calculate momentum*rdata_v and lr*rdata_v
   always @(posedge clk, negedge rst_n) begin
@@ -131,10 +98,12 @@ module mix_optim_b #(
       raddr_delay1 <= 0;
       raddr_delay2 <= 0;
       waddr <= 0;
+      raddr_delay3 <= 0;
     end else begin
       raddr_delay1 <= raddr;
       raddr_delay2 <= raddr_delay1;
       waddr <= raddr_delay2;
+      raddr_delay3 <= waddr;
     end 
   end
 
