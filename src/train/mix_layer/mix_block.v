@@ -94,20 +94,29 @@ module mix_block #(
   wire [ADDR_WIDTH-1:0] mix_ram_grad_b_waddr, mix_ram_grad_b_raddr;
   wire [`N_LEN_W-1:0]   mix_ram_grad_b_wdata, mix_ram_grad_b_rdata;
 
+  // wire mix_transpose
+  wire mix_transpose_run;
+  wire mix_transpose_valid;
+  wire [ADDR_WIDTH-1:0]       mix_transpose_waddr, mix_transpose_raddr;
+  wire [`DATA_N*`N_LEN_W-1:0] mix_transpose_wdata, mix_transpose_rdata;
+
 
   // ----------------------------------------
+  // assign valid_update
+  assign valid_update = (update & mix_transpose_valid);
+
   // assign valid_zero_grad
-  assign valid_zero_grad = (zero_grad_addr == 3*`HID_DIM*`HID_DIM/`DATA_N);
+  assign valid_zero_grad = (zero_grad & zero_grad_addr == 3*`HID_DIM*`HID_DIM/`DATA_N);
 
   // assign mix_forward
   assign mix_forward_rdata_w = mix_ram_wt_rdata;
   assign mix_forward_rdata_b = mix_ram_b_rdata;
 
   // assign mix_backward
-  assign mix_backward_d_forward  = (state_backward == `B_MIX1) ? d_forward_mix1_delay :
-                                   (state_backward == `B_MIX2) ? d_forward_mix2_delay :
-                                   (state_backward == `B_MIX3) ? d_forward_mix3_delay : {(`HID_DIM*`N_LEN){1'bX}};
-  assign mix_backward_rdata_w    = mix_ram_w_rdata;
+  assign mix_backward_d_forward    = (state_backward == `B_MIX1) ? d_forward_mix1_delay :
+                                     (state_backward == `B_MIX2) ? d_forward_mix2_delay :
+                                     (state_backward == `B_MIX3) ? d_forward_mix3_delay : {(`HID_DIM*`N_LEN){1'bX}};
+  assign mix_backward_rdata_w      = mix_ram_w_rdata;
   assign mix_backward_rdata_grad_w = mix_ram_grad_w_rdata;
   assign mix_backward_rdata_grad_b = mix_ram_grad_b_rdata;
 
@@ -122,33 +131,34 @@ module mix_block #(
   assign mix_optim_b_rdata_grad = mix_ram_grad_b_rdata;
 
   // assign mix_ram_wt
-  assign mix_ram_wt_load  = 0;
-  assign mix_ram_wt_waddr = 0;
-  assign mix_ram_wt_wdata = 0;
+  assign mix_ram_wt_load  = mix_transpose_run;
+  assign mix_ram_wt_waddr = mix_transpose_waddr;
+  assign mix_ram_wt_wdata = mix_transpose_wdata;
   assign mix_ram_wt_raddr = mix_forward_raddr_w;
 
   // assign mix_ram_w
-  assign mix_ram_w_load  = update;
+  assign mix_ram_w_load  = (update & ~mix_optim_w_valid);
   assign mix_ram_w_waddr = mix_optim_w_waddr;
   assign mix_ram_w_wdata = mix_optim_w_wdata_w;
-  assign mix_ram_w_raddr = (run_backward) ? mix_backward_raddr_w :
-                           (update)       ? mix_optim_w_raddr    : {ADDR_WIDTH{1'bX}};
+  assign mix_ram_w_raddr = (run_backward)      ? mix_backward_raddr_w :
+                           (mix_transpose_run) ? mix_transpose_raddr  :
+                           (update)            ? mix_optim_w_raddr    : {ADDR_WIDTH{1'bX}};
 
   // assign mix_ram_b
-  assign mix_ram_b_load  = update;
+  assign mix_ram_b_load  = (update & ~mix_optim_b_valid);
   assign mix_ram_b_waddr = mix_optim_b_waddr;
   assign mix_ram_b_wdata = mix_optim_b_wdata_b;
   assign mix_ram_b_raddr = (run_forward) ? mix_forward_raddr_b :
                            (update)      ? mix_optim_b_raddr   : {ADDR_WIDTH{1'bX}};
 
   // assign mix_ram_v_w
-  assign mix_ram_v_w_load  = update;
+  assign mix_ram_v_w_load  = (update & ~mix_optim_w_valid);
   assign mix_ram_v_w_waddr = mix_optim_w_waddr;
   assign mix_ram_v_w_wdata = mix_optim_w_wdata_v;
   assign mix_ram_v_w_raddr = mix_optim_w_raddr;
 
   // assign mix_ram_v_b
-  assign mix_ram_v_b_load  = update;
+  assign mix_ram_v_b_load  = (update & ~mix_optim_b_valid);
   assign mix_ram_v_b_waddr = mix_optim_b_waddr;
   assign mix_ram_v_b_wdata = mix_optim_b_wdata_v;
   assign mix_ram_v_b_raddr = mix_optim_b_raddr;
@@ -170,6 +180,10 @@ module mix_block #(
                                 (run_backward) ? mix_backward_wdata_grad_b : {`N_LEN_W{1'bX}};
   assign mix_ram_grad_b_raddr = (run_backward) ? mix_backward_raddr_grad_b :
                                 (update)       ? mix_optim_b_raddr         : {ADDR_WIDTH{1'bX}};
+  
+  // mix_transpose
+  assign mix_transpose_run   = update & mix_optim_w_valid & mix_optim_b_valid;
+  assign mix_transpose_rdata = mix_ram_w_rdata;
 
 
   // ----------------------------------------
@@ -387,7 +401,19 @@ module mix_block #(
     .rdata(mix_ram_grad_b_rdata)
   );
 
-  // mix_w_transpose
+  // mix_transpose
+  mix_transpose #(
+    .ADDR_WIDTH(ADDR_WIDTH)
+  ) mix_transpose_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .run(mix_transpose_run),
+    .valid(mix_transpose_valid),
+    .waddr(mix_transpose_waddr),
+    .wdata(mix_transpose_wdata),
+    .raddr(mix_transpose_raddr),
+    .rdata(mix_transpose_rdata)
+  );
 
 
 

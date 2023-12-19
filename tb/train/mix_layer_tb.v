@@ -61,10 +61,10 @@ module mix_layer_tb ();
   always #5 clk =~clk;
 
   initial begin
-    $readmemb("../../data/tb/train/mix_layer/mix_layer2_forward_in.txt",  d_forward_mem);
-    $readmemb("../../data/tb/train/mix_layer/mix_layer2_forward_out.txt", q_forward_mem);
-    $readmemb("../../data/tb/train/mix_layer/mix_layer2_backward_in.txt",  d_backward_mem);
-    $readmemb("../../data/tb/train/mix_layer/mix_layer2_backward_out.txt", q_backward_mem);
+    $readmemb("../../data/tb/train/mix_layer/mix_layer3_forward_in.txt",  d_forward_mem);
+    $readmemb("../../data/tb/train/mix_layer/mix_layer3_forward_out.txt", q_forward_mem);
+    $readmemb("../../data/tb/train/mix_layer/mix_layer3_backward_in.txt",  d_backward_mem);
+    $readmemb("../../data/tb/train/mix_layer/mix_layer3_backward_out.txt", q_backward_mem);
   end
 
   initial begin
@@ -73,7 +73,7 @@ module mix_layer_tb ();
     run_forward=0; run_backward=0; load_backward=0; d_forward=0; d_backward=0;
     #10;
     rst_n=1; #10;
-    state_forward=`F_MIX2; state_backward=`B_MIX2; #10;
+    state_forward=`F_MIX3; state_backward=`B_MIX3; #10;
     #20;
 
     // S1
@@ -111,8 +111,7 @@ module mix_layer_tb ();
   
     // UPDATE
     update=1; #10;
-    // wait (valid_update); #5;
-    #3000;
+    wait (valid_update); #5;
     update=0; #10;
     #100;
 

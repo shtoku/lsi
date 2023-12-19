@@ -33,7 +33,7 @@ module mix_optim_b #(
 
   // ----------------------------------------
   // assign valid
-  assign valid = run & (raddr_delay3 == 3*`HID_DIM*`HID_DIM - 1);
+  assign valid = run & (raddr_delay3 == 3*`HID_DIM - 1);
 
 
   // fucntion fixed multiply 
@@ -52,7 +52,7 @@ module mix_optim_b #(
   always @(posedge clk, negedge rst_n) begin
     if (~rst_n) begin
       raddr <= 0;
-    end else if (run & (raddr != (3*`HID_DIM) - 1)) begin
+    end else if (run & (raddr != 3*`HID_DIM - 1)) begin
       raddr <= raddr + 1;
     end else if (run) begin
       raddr <= raddr;

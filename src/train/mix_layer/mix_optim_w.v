@@ -68,7 +68,7 @@ module mix_optim_w #(
   always @(posedge clk, negedge rst_n) begin
     if (~rst_n) begin
       raddr <= 0;
-    end else if (run & (raddr != (3*`HID_DIM*`HID_DIM/`DATA_N) - 1)) begin
+    end else if (run & (raddr != 3*`HID_DIM*`HID_DIM/`DATA_N - 1)) begin
       raddr <= raddr + 1;
     end else if (run) begin
       raddr <= raddr;
