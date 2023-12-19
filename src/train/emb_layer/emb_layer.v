@@ -62,18 +62,18 @@ module emb_layer #(
 
   // ----------------------------------------
   // assign valid_zero_grad
-  assign valid_zero_grad = (zero_grad_addr == `CHAR_NUM*`EMB_DIM/`DATA_N);
+  assign valid_zero_grad = (zero_grad & zero_grad_addr == `CHAR_NUM*`EMB_DIM/`DATA_N);
 
   // assign emb_forward
   assign emb_forward_rdata = emb_ram_w_rdata;
+
+  // assign emb_backward
+  assign emb_backward_rdata = emb_ram_grad_rdata;
 
   // assign emb_optim
   assign emb_optim_rdata_w    = emb_ram_w_rdata;
   assign emb_optim_rdata_v    = emb_ram_v_rdata;
   assign emb_optim_rdata_grad = emb_ram_grad_rdata;
-
-  // assign emb_backward
-  assign emb_backward_rdata = emb_ram_grad_rdata;
 
   // assign emb_ram_w
   assign emb_ram_w_load  = update;
