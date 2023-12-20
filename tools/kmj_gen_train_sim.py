@@ -82,20 +82,28 @@ def output_forward(x, net):
   x = net.layers['Mix_Layer1'].forward(x)
   output_file(PATH_TB + 'mix_layer/mix_layer1_forward_out.txt', x.flatten())
 
+  output_file(PATH_TB + 'tanh_layer/tanh_layer1_forward_in.txt', x.flatten())
   x = net.layers['Tanh_Layer1'].forward(x)
+  output_file(PATH_TB + 'tanh_layer/tanh_layer1_forward_out.txt', x.flatten(), i_len=2, f_len=16)
 
   output_file(PATH_TB + 'mix_layer/mix_layer2_forward_in.txt', x.flatten())
   x = net.layers['Mix_Layer2'].forward(x)
   output_file(PATH_TB + 'mix_layer/mix_layer2_forward_out.txt', x.flatten())
 
+  output_file(PATH_TB + 'tanh_layer/tanh_layer2_forward_in.txt', x.flatten())
   x = net.layers['Tanh_Layer2'].forward(x)
+  output_file(PATH_TB + 'tanh_layer/tanh_layer2_forward_out.txt', x.flatten(), i_len=2, f_len=16)
+
   x = np.full((hid_dim, hid_dim), x[:, 0]).T
 
   output_file(PATH_TB + 'mix_layer/mix_layer3_forward_in.txt', x.flatten())
   x = net.layers['Mix_Layer3'].forward(x)
   output_file(PATH_TB + 'mix_layer/mix_layer3_forward_out.txt', x.flatten())
 
+  output_file(PATH_TB + 'tanh_layer/tanh_layer3_forward_in.txt', x.flatten())
   x = net.layers['Tanh_Layer3'].forward(x)
+  output_file(PATH_TB + 'tanh_layer/tanh_layer3_forward_out.txt', x.flatten(), i_len=2, f_len=16)
+
   x = x[:N, :]
   
   output_file(PATH_TB + 'dense_layer/dense_layer_forward_in.txt', x.flatten())
@@ -117,7 +125,10 @@ def output_backward(y, t, net):
     output_file(PATH_TB + 'dense_layer/dense_layer_backward_out.txt', dout.flatten())
 
     dout = np.concatenate([dout, np.zeros((hid_dim-N, hid_dim))], axis=0)
+
+    output_file(PATH_TB + 'tanh_layer/tanh_layer3_backward_in.txt', dout.flatten())
     dout = net.layers['Tanh_Layer3'].backward(dout)
+    output_file(PATH_TB + 'tanh_layer/tanh_layer3_backward_out.txt', dout.flatten())
 
     output_file(PATH_TB + 'mix_layer/mix_layer3_backward_in.txt', dout.flatten())
     dout = net.layers['Mix_Layer3'].backward(dout)
@@ -125,13 +136,18 @@ def output_backward(y, t, net):
     
     dout = dout.sum(axis=1, keepdims=True)
     dout = np.concatenate([dout, np.zeros((hid_dim, hid_dim-1))], axis=1)
+    
+    output_file(PATH_TB + 'tanh_layer/tanh_layer2_backward_in.txt', dout.flatten())
     dout = net.layers['Tanh_Layer2'].backward(dout)
+    output_file(PATH_TB + 'tanh_layer/tanh_layer2_backward_out.txt', dout.flatten())
 
     output_file(PATH_TB + 'mix_layer/mix_layer2_backward_in.txt', dout.flatten())
     dout = net.layers['Mix_Layer2'].backward(dout)
     output_file(PATH_TB + 'mix_layer/mix_layer2_backward_out.txt', dout.flatten())
 
+    output_file(PATH_TB + 'tanh_layer/tanh_layer1_backward_in.txt', dout.flatten())
     dout = net.layers['Tanh_Layer1'].backward(dout)
+    output_file(PATH_TB + 'tanh_layer/tanh_layer1_backward_out.txt', dout.flatten())
 
     output_file(PATH_TB + 'mix_layer/mix_layer1_backward_in.txt', dout.flatten())
     dout = net.layers['Mix_Layer1'].backward(dout)
