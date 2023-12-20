@@ -152,8 +152,16 @@ def generate_zeros():
   output_param_6(PATH_BIN192 + 'zeros_like_W_out.txt', W_out, num=8)
 
 
+# Tanhの値ファイルの作成
+def generate_tanh():
+  x = np.arange(-8, 8, 2**(-6))   # 入力値 (整数：4bit 小数：6bit)
+  y = np.tanh(x)
+  output_file(PATH_BIN18 + 'tanh_table.txt', convert_dec_to_bin(y, 2, 16))
+
 
 if __name__ == '__main__':
   # generate_initial_value()
   generate_hard()
   generate_zeros()
+
+  generate_tanh()
