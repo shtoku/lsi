@@ -1,13 +1,13 @@
 `include "consts_train.vh"
 
-module dense_inner_8 #(
+module dense_inner_10 #(
     parameter integer DATA_WIDTH1 = `N_LEN,
     parameter integer DATA_WIDTH2 = `N_LEN
   ) (
     input  wire clk,
     input  wire rst_n,
-    input  wire [8*DATA_WIDTH1-1:0] d1,
-    input  wire [8*DATA_WIDTH2-1:0] d2,
+    input  wire [10*DATA_WIDTH1-1:0] d1,
+    input  wire [10*DATA_WIDTH2-1:0] d2,
     output reg  [DATA_WIDTH1-1:0] q
   );
 
@@ -16,8 +16,9 @@ module dense_inner_8 #(
   genvar i;
 
   // reg result
-  reg  [DATA_WIDTH1-1:0] mul [0:7];
-  reg  [DATA_WIDTH1-1:0] add [0:2];
+  reg  [DATA_WIDTH1-1:0] mul  [0:9];
+  reg  [DATA_WIDTH1-1:0] add1 [0:3];
+  reg  [DATA_WIDTH1-1:0] add2 [0:1];
 
 
   // ----------------------------------------
@@ -37,7 +38,7 @@ module dense_inner_8 #(
   // ----------------------------------------
   // fixed multiply
   generate
-    for (i = 0; i < 8; i = i + 1) begin
+    for (i = 0; i < 10; i = i + 1) begin
       always @(posedge clk, negedge rst_n) begin
         if (~rst_n)
           mul[i] <= 0;
@@ -50,13 +51,25 @@ module dense_inner_8 #(
   // first add
   always @(posedge clk, negedge rst_n) begin
     if (~rst_n) begin
-      add[0] <= 0;
-      add[1] <= 0;
-      add[2] <= 0;
+      add1[0] <= 0;
+      add1[1] <= 0;
+      add1[2] <= 0;
     end else begin
-      add[0] <= mul[0] + mul[1] + mul[2];
-      add[1] <= mul[3] + mul[4] + mul[5];
-      add[2] <= mul[6] + mul[7];
+      add1[0] <= mul[0] + mul[1] + mul[2];
+      add1[1] <= mul[3] + mul[4] + mul[5];
+      add1[2] <= mul[6] + mul[7] + mul[8];
+      add1[3] <= mul[9];
+    end
+  end
+
+  // second add
+  always @(posedge clk, negedge rst_n) begin
+    if (~rst_n) begin
+      add2[0] <= 0;
+      add2[1] <= 0;
+    end else begin
+      add2[0] <= add1[0] + add1[1];
+      add2[1] <= add1[2] + add1[3];
     end
   end
 
@@ -65,7 +78,7 @@ module dense_inner_8 #(
     if (~rst_n) begin
       q <= 0;
     end else begin
-      q <= add[0] + add[1] + add[2];
+      q <= add2[0] + add2[1];
     end
   end
   

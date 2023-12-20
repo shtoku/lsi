@@ -81,50 +81,49 @@ module dense_layer_tb ();
     zero_grad=1; #10;
     d_forward=d_forward_buf[0]; #10;
     run_forward=1; #10;
-    // wait (valid_forward & valid_zero_grad); #5;
-    wait (valid_forward); #5;
+    wait (valid_forward & valid_zero_grad); #5;
     run_forward=0; #10;
     zero_grad=0; #10;
     #100;
 
-    // // S2
-    // load_backward=1; #10;
-    // load_backward=0; #10;
-    // d_forward=d_forward_buf[1]; #10;
-    // run_forward=1;  #10;
-    // #100;
-    // d_backward=d_backward_buf[0]; #10;
-    // run_backward=1; #10;
-    // wait (valid_forward & valid_backward); #5;
-    // #10;
-    // run_forward=0; run_backward=0; #10;
-    // #100;
+    // S2
+    load_backward=1; #10;
+    load_backward=0; #10;
+    d_forward=d_forward_buf[1]; #10;
+    run_forward=1;  #10;
+    #100;
+    d_backward=d_backward_buf[0]; #10;
+    run_backward=1; #10;
+    wait (valid_forward & valid_backward); #5;
+    #10;
+    run_forward=0; run_backward=0; #10;
+    #100;
 
-    // // S3
-    // load_backward=1; #10;
-    // load_backward=0; #10;
-    // d_backward=d_backward_buf[1]; #10;
-    // run_backward=1; #10;
-    // wait (valid_backward); #5;
-    // #10;
-    // run_backward=0; #10;
-    // #100;
+    // S3
+    load_backward=1; #10;
+    load_backward=0; #10;
+    d_backward=d_backward_buf[1]; #10;
+    run_backward=1; #10;
+    wait (valid_backward); #5;
+    #10;
+    run_backward=0; #10;
+    #100;
   
-    // // UPDATE
-    // update=1; #10;
-    // wait (valid_update); #5;
-    // update=0; #10;
-    // #100;
+    // UPDATE
+    update=1; #10;
+    wait (valid_update); #5;
+    update=0; #10;
+    #100;
 
-    // // S1
-    // zero_grad=1; #10;
-    // d_forward=d_forward_buf[2]; #10;
-    // run_forward=1; #10;
-    // wait (valid_forward & valid_zero_grad); #5;
-    // #10;
-    // run_forward=0; #10;
-    // zero_grad=0; #10;
-    // #100;
+    // S1
+    zero_grad=1; #10;
+    d_forward=d_forward_buf[2]; #10;
+    run_forward=1; #10;
+    wait (valid_forward & valid_zero_grad); #5;
+    #10;
+    run_forward=0; #10;
+    zero_grad=0; #10;
+    #100;
 
     $finish;
   end
