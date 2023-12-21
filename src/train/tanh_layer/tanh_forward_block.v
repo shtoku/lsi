@@ -14,7 +14,7 @@ module tanh_forward_block (
   genvar i;
   integer j;
 
-  // wire input/output buffer
+  // reg/wire input/output buffer
   wire [`N_LEN-1:0] d_buf [0:`HID_DIM-1];
   reg  [`N_LEN_W-1:0] q_buf [0:`HID_DIM-1];
 

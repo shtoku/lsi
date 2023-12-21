@@ -57,10 +57,10 @@ module tanh_layer_tb ();
   always #5 clk =~clk;
 
   initial begin
-    $readmemb("../../data/tb/train/tanh_layer/tanh_layer1_forward_in.txt",  d_forward_mem);
-    $readmemb("../../data/tb/train/tanh_layer/tanh_layer1_forward_out.txt", q_forward_mem);
-    $readmemb("../../data/tb/train/tanh_layer/tanh_layer1_backward_in.txt",  d_backward_mem);
-    $readmemb("../../data/tb/train/tanh_layer/tanh_layer1_backward_out.txt", q_backward_mem);
+    $readmemb("../../data/tb/train/tanh_layer/tanh_layer3_forward_in.txt",  d_forward_mem);
+    $readmemb("../../data/tb/train/tanh_layer/tanh_layer3_forward_out.txt", q_forward_mem);
+    $readmemb("../../data/tb/train/tanh_layer/tanh_layer3_backward_in.txt",  d_backward_mem);
+    $readmemb("../../data/tb/train/tanh_layer/tanh_layer3_backward_out.txt", q_backward_mem);
   end
 
   initial begin
@@ -69,7 +69,7 @@ module tanh_layer_tb ();
     run_forward=0; run_backward=0; load_backward=0; d_forward=0; d_backward=0;
     #10;
     rst_n=1; #10;
-    state_forward=`F_TANH1; state_backward=`B_TANH1; #10;
+    state_forward=`F_TANH3; state_backward=`B_TANH3; #10;
     #20;
 
     // S1
@@ -90,37 +90,36 @@ module tanh_layer_tb ();
     #100;
     d_backward=d_backward_buf[0]; #10;
     run_backward=1; #10;
-    // wait (valid_forward & valid_backward); #5;
-    #300;
+    wait (valid_forward & valid_backward); #5;
     #10;
     run_forward=0; run_backward=0; #10;
     #100;
 
-    // // S3
-    // load_backward=1; #10;
-    // load_backward=0; #10;
-    // d_backward=d_backward_buf[1]; #10;
-    // run_backward=1; #10;
-    // wait (valid_backward); #5;
-    // #10;
-    // run_backward=0; #10;
-    // #100;
+    // S3
+    load_backward=1; #10;
+    load_backward=0; #10;
+    d_backward=d_backward_buf[1]; #10;
+    run_backward=1; #10;
+    wait (valid_backward); #5;
+    #10;
+    run_backward=0; #10;
+    #100;
   
-    // // UPDATE
+    // UPDATE
     // update=1; #10;
     // wait (valid_update); #5;
     // update=0; #10;
-    // #100;
+    #100;
 
-    // // S1
-    // zero_grad=1; #10;
-    // d_forward=d_forward_buf[2]; #10;
-    // run_forward=1; #10;
-    // wait (valid_forward & valid_zero_grad); #5;
-    // #10;
-    // run_forward=0; #10;
-    // zero_grad=0; #10;
-    // #100;
+    // S1
+    /* zero_grad=1 */; #10;
+    d_forward=d_forward_buf[2]; #10;
+    run_forward=1; #10;
+    wait (valid_forward); #5;
+    #10;
+    run_forward=0; #10;
+    /* zero_grad=0; */ #10;
+    #100;
 
     $finish;
   end
