@@ -110,6 +110,11 @@ def output_forward(x, net):
   x = net.layers['Dense_Layer'].forward(x)
   output_file(PATH_TB + 'dense_layer/dense_layer_forward_out.txt', x.flatten())
 
+  output_file(PATH_TB + 'comp_layer/comp_layer_in.txt', x.flatten())
+  num = x.argmax(axis=-1)
+  output_file(PATH_TB + 'comp_layer/comp_layer_out.txt', x.max(axis=-1).flatten())
+  output_file(PATH_TB + 'comp_layer/comp_layer_num.txt', num.flatten(), i_len=8, f_len=0)
+  
   return x
 
 
