@@ -13,5 +13,6 @@ iverilog -W all ^
          -y ../../src/train/dense_layer ^
          -y ../../src/train/tanh_layer ^
          -y ../../src/train/comp_layer ^
+         -y ../../src/train/softmax_layer ^
          -y ../../src/train/rand_layer ^
          %1
