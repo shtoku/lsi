@@ -201,12 +201,17 @@ if __name__ == '__main__':
   optim.update(net.params, net.grads)
   print(loss, acc_train)
 
-  x = dataloader_train[1][0]
-  y = output_forward(x, net)
-  print(y.sum())
+  net.zero_grads()
+  for i, x in enumerate(dataloader_train[1]):
+    if i == 0:
+      y = output_forward(x, net)
+    else:
+      output_file(PATH_TB + 'emb_layer/emb_layer_forward_in.txt', x, i_len=8, f_len=0)
+      x = net.layers['Emb_Layer'].forward(x)
+      output_file(PATH_TB + 'emb_layer/emb_layer_forward_out.txt', x.flatten(), i_len=2, f_len=16)
+
 
 
 # fixed sample ver
 # batch_size: 2, lr: 0.001
 # 52.89280700683594 0
-# 1.3714752197265625
