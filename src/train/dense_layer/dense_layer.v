@@ -11,7 +11,7 @@ module dense_layer #(
     input  wire run_forward,
     input  wire run_backward,
     input  wire load_backward,
-    input  wire [`N*`HID_DIM*`N_LEN-1:0] d_forward,
+    input  wire [`N*`HID_DIM*`N_LEN_W-1:0] d_forward,
     input  wire [`N*`CHAR_NUM*`N_LEN_W-1:0] d_backward,
     output wire valid_update,
     output wire valid_zero_grad,
@@ -24,7 +24,7 @@ module dense_layer #(
 
   // ----------------------------------------
   // reg input buffer
-  reg [`N*`HID_DIM*`N_LEN-1:0] d_forward_buf, d_forward_buf_delay;
+  reg [`N*`HID_DIM*`N_LEN_W-1:0] d_forward_buf, d_forward_buf_delay;
 
   // reg zero_grad
   reg [ADDR_WIDTH-1:0] zero_grad_addr;

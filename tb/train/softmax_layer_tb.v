@@ -10,15 +10,15 @@ module softmax_layer_tb ();
   reg  [`N*`CHAR_LEN-1:0] d_num;
   reg  [`N*`N_LEN-1:0] d_max;
   wire valid;
-  wire [`N*`CHAR_NUM*`N_LEN-1:0] q;
+  wire [`N*`CHAR_NUM*`N_LEN_W-1:0] q;
 
   softmax_layer softmax_layer_inst (.*);
 
   // correct
   reg  [`N_LEN-1:0] d_mem [0:`BATCH_SIZE*`N*`CHAR_NUM-1];
-  reg  [`N_LEN-1:0] q_mem [0:`BATCH_SIZE*`N*`CHAR_NUM-1];
+  reg  [`N_LEN_W-1:0] q_mem [0:`BATCH_SIZE*`N*`CHAR_NUM-1];
   wire [`N*`CHAR_NUM*`N_LEN-1:0] d_buf [0:`BATCH_SIZE-1];
-  wire [`N*`CHAR_NUM*`N_LEN-1:0] q_ans [0:`BATCH_SIZE-1];
+  wire [`N*`CHAR_NUM*`N_LEN_W-1:0] q_ans [0:`BATCH_SIZE-1];
 
   reg  [`CHAR_LEN-1:0] d_num_mem [0:`BATCH_SIZE*`N-1];
   reg  [`N_LEN-1:0] d_max_mem [0:`BATCH_SIZE*`N-1];
@@ -34,7 +34,7 @@ module softmax_layer_tb ();
     for (i = 0; i < `BATCH_SIZE; i = i + 1) begin
       for (j = 0; j < `N*`CHAR_NUM; j = j + 1) begin
         assign d_buf[i][j*`N_LEN +: `N_LEN] = d_mem[i*`N*`CHAR_NUM + j];
-        assign q_ans[i][j*`N_LEN +: `N_LEN] = q_mem[i*`N*`CHAR_NUM + j];
+        assign q_ans[i][j*`N_LEN_W +: `N_LEN_W] = q_mem[i*`N*`CHAR_NUM + j];
       end
       for (j = 0; j < `N; j = j + 1) begin
         assign d_num_buf[i][j*`CHAR_LEN +: `CHAR_LEN] = d_num_mem[i*`N + j];

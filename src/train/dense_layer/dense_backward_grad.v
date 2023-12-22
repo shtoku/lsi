@@ -7,7 +7,7 @@ module dense_backward_grad #(
     input  wire clk,
     input  wire rst_n,
     input  wire run,
-    input  wire [`N*`HID_DIM*`N_LEN-1:0] d_forward,
+    input  wire [`N*`HID_DIM*`N_LEN_W-1:0] d_forward,
     input  wire [`N*`CHAR_NUM*`N_LEN_W-1:0] d_backward,
     output wire valid,
     output wire [ADDR_WIDTH-1:0] waddr,
@@ -22,7 +22,7 @@ module dense_backward_grad #(
   integer k;
 
   // wire input buffer
-  wire [`N*`N_LEN-1:0] d_forward_buf_t [0:`HID_DIM-1];
+  wire [`N*`N_LEN_W-1:0] d_forward_buf_t [0:`HID_DIM-1];
   wire [`N*`N_LEN_W-1:0] d_backward_buf_t [0:`CHAR_NUM-1];
   wire [`N*`N_LEN_W-1:0] d_backward_buf_t_split [0:`CHAR_NUM/DENSE_DATA_N-1][0:DENSE_DATA_N-1];
 
@@ -54,7 +54,7 @@ module dense_backward_grad #(
     for (i = 0; i < `N; i = i + 1) begin
       // transpose d_forward
       for (j = 0; j < `HID_DIM; j = j + 1) begin
-        assign d_forward_buf_t[j][i*`N_LEN +: `N_LEN] = d_forward[(i*`HID_DIM+j)*`N_LEN +: `N_LEN];
+        assign d_forward_buf_t[j][i*`N_LEN_W +: `N_LEN_W] = d_forward[(i*`HID_DIM+j)*`N_LEN_W +: `N_LEN_W];
       end
       // transpose d_backward
       for (j = 0; j < `CHAR_NUM; j = j + 1) begin
@@ -159,8 +159,9 @@ module dense_backward_grad #(
   generate
     for (i = 0; i < DENSE_DATA_N; i = i + 1) begin : inner_10
       dense_inner_10 #(
-        .DATA_WIDTH1(`N_LEN),
-        .DATA_WIDTH2(`N_LEN_W)
+        .DATA_WIDTH1(`N_LEN_W),
+        .DATA_WIDTH2(`N_LEN_W),
+        .OUT_WIDTH(`N_LEN)
       ) dense_inner_10_inst (
         .clk(clk),
         .rst_n(rst_n),

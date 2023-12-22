@@ -106,7 +106,7 @@ def output_forward(x, net):
 
   x = x[:N, :]
   
-  output_file(PATH_TB + 'dense_layer/dense_layer_forward_in.txt', x.flatten())
+  output_file(PATH_TB + 'dense_layer/dense_layer_forward_in.txt', x.flatten(), i_len=2, f_len=16)
   x = net.layers['Dense_Layer'].forward(x)
   output_file(PATH_TB + 'dense_layer/dense_layer_forward_out.txt', x.flatten())
 
@@ -127,7 +127,7 @@ def output_backward(y, t, net):
   y = softmax(y)
   y[range(len(y)), t] -= 1.0
   dout = convert_fixed(y / batch_size)
-  output_file(PATH_TB + 'softmax_layer/softmax_layer_out.txt', dout.flatten())
+  output_file(PATH_TB + 'softmax_layer/softmax_layer_out.txt', dout.flatten(), i_len=2, f_len=16)
 
   output_file(PATH_TB + 'dense_layer/dense_layer_backward_in.txt', dout.flatten(), i_len=2, f_len=16)
   dout = net.layers['Dense_Layer'].backward(dout)
@@ -164,7 +164,7 @@ def output_backward(y, t, net):
 
   dout = dout[:N, :]
 
-  output_file(PATH_TB + 'emb_layer/emb_layer_backward_in.txt', dout.flatten(), i_len=2, f_len=16)
+  output_file(PATH_TB + 'emb_layer/emb_layer_backward_in.txt', dout.flatten())
   dout = net.layers['Emb_Layer'].backward(dout)
   
   net.grads['W_emb'] += net.layers['Emb_Layer'].dW

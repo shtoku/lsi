@@ -15,7 +15,7 @@ module emb_layer #(
     input  wire run_backward,
     input  wire load_backward,
     input  wire [`N*`CHAR_LEN-1:0] d_forward,
-    input  wire [`N*`EMB_DIM*`N_LEN_W-1:0] d_backward,
+    input  wire [`N*`EMB_DIM*`N_LEN-1:0] d_backward,
     output wire valid_update,
     output wire valid_zero_grad,
     output wire valid_forward,

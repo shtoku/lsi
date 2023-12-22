@@ -7,7 +7,7 @@ module dense_backward #(
     input  wire clk,
     input  wire rst_n,
     input  wire run,
-    input  wire [`N*`HID_DIM*`N_LEN-1:0] d_forward,
+    input  wire [`N*`HID_DIM*`N_LEN_W-1:0] d_forward,
     input  wire [`N*`CHAR_NUM*`N_LEN_W-1:0] d_backward,
     output wire valid,
     output wire [`N*`HID_DIM*`N_LEN-1:0] q,

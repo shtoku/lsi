@@ -9,7 +9,7 @@ module softmax_layer (
     input  wire [`N*`CHAR_LEN-1:0] d_num,
     input  wire [`N*`N_LEN-1:0] d_max,
     output wire valid,
-    output wire [`N*`CHAR_NUM*`N_LEN-1:0] q
+    output wire [`N*`CHAR_NUM*`N_LEN_W-1:0] q
   );
 
 
@@ -20,7 +20,7 @@ module softmax_layer (
   wire [`CHAR_NUM*`N_LEN-1:0] d_buf [0:`N-1];
   reg  [`CHAR_LEN-1:0] d_num_buf [0:`N-1];
   wire [`N_LEN-1:0] d_max_buf [0:`N-1];
-  wire [`CHAR_NUM*`N_LEN-1:0] q_buf [0:`N-1];
+  wire [`CHAR_NUM*`N_LEN_W-1:0] q_buf [0:`N-1];
   wire [`N-1:0] valid_buf;
 
 
@@ -29,7 +29,7 @@ module softmax_layer (
     for (i = 0; i < `N; i = i + 1) begin
       // convert shape (`N, `CHAR_NUM*`N_LEN) <-> (`HID_DIM*`HID_DIM*`N_LEN,)
       assign d_buf[i] = d[i*`CHAR_NUM*`N_LEN +: `CHAR_NUM*`N_LEN];
-      assign q[i*`CHAR_NUM*`N_LEN +: `CHAR_NUM*`N_LEN] = q_buf[i];
+      assign q[i*`CHAR_NUM*`N_LEN_W +: `CHAR_NUM*`N_LEN_W] = q_buf[i];
       
       // convert shape (`N, `N_LEN) <- (`N*`N_LEN,)
       assign d_max_buf[i] = d_max[i*`N_LEN +: `N_LEN];

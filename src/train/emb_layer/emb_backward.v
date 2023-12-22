@@ -7,7 +7,7 @@ module emb_backward #(
     input  wire rst_n,
     input  wire run,
     input  wire [`N*`CHAR_LEN-1:0] d_forward,
-    input  wire [`N*`EMB_DIM*`N_LEN_W-1:0] d_backward,
+    input  wire [`N*`EMB_DIM*`N_LEN-1:0] d_backward,
     output wire valid,
     output reg  [ADDR_WIDTH-1:0] waddr,
     output wire [`DATA_N*`N_LEN_W-1:0] wdata,
@@ -21,7 +21,7 @@ module emb_backward #(
 
   // wire input buffer
   wire [`CHAR_LEN-1:0] d_forward_buf  [0:`N-1];
-  wire [`DATA_N*`N_LEN_W-1:0] d_backward_buf [0:`N*`EMB_DIM/`DATA_N-1];
+  wire [`DATA_N*`N_LEN-1:0] d_backward_buf [0:`N*`EMB_DIM/`DATA_N-1];
 
   // reg/wire rdata/wdata buffer
   wire [`N_LEN_W-1:0] rdata_buf [0:`DATA_N-1];
@@ -44,9 +44,9 @@ module emb_backward #(
     for (i = 0; i < `N; i = i + 1) begin
       assign d_forward_buf[i] = d_forward[i*`CHAR_LEN +: `CHAR_LEN];
     end
-    // convert shape (`N*`EMB_DIM/`DATA_N, `DATA_N*`N_LEN_W) <- (`N*`EMB_DIM*`N_LEN_W,)
+    // convert shape (`N*`EMB_DIM/`DATA_N, `DATA_N*`N_LEN) <- (`N*`EMB_DIM*`N_LEN,)
     for (i = 0; i < `N*`EMB_DIM/`DATA_N; i = i + 1) begin
-      assign d_backward_buf[i] = d_backward[i*`DATA_N*`N_LEN_W +: `DATA_N*`N_LEN_W];
+      assign d_backward_buf[i] = d_backward[i*`DATA_N*`N_LEN +: `DATA_N*`N_LEN];
     end
     // covert shape (`DATA_N, `N_LEN_W) <-> (`DATA_N*`N_LEN_W,)
     for (i = 0; i < `DATA_N; i = i + 1) begin
@@ -133,7 +133,7 @@ module emb_backward #(
         if (~rst_n) begin
           wdata_buf[i] <= 0;
         end else begin
-          wdata_buf[i] <= rdata_buf[i] + d_backward_buf[count3_delay1][i*`N_LEN_W +: `N_LEN_W];
+          wdata_buf[i] <= rdata_buf[i] + d_backward_buf[count3_delay1][i*`N_LEN +: `N_LEN_W];
         end
       end
     end

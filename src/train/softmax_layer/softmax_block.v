@@ -10,7 +10,7 @@ module softmax_block #(
     input  wire [`CHAR_LEN-1:0] d_num,
     input  wire [`N_LEN-1:0] d_max,
     output wire valid,
-    output wire [`CHAR_NUM*`N_LEN-1:0] q
+    output wire [`CHAR_NUM*`N_LEN_W-1:0] q
   );
 
 
@@ -20,12 +20,12 @@ module softmax_block #(
 
   // wire input buffer
   wire [`N_LEN-1:0] d_buf [0:`CHAR_NUM-1];
-  reg  [`N_LEN-1:0] q_buf [0:`CHAR_NUM-1];
+  reg  [`N_LEN_W-1:0] q_buf [0:`CHAR_NUM-1];
 
   // reg calculate buffer
   reg  [`N_LEN-1:0] sum;
-  wire [`N_LEN-1:0] mul;
-  wire [`N_LEN-1:0] sub_1;
+  wire [`N_LEN_W-1:0] mul;
+  wire [`N_LEN_W-1:0] sub_1;
 
   // reg counter
   reg [`CHAR_LEN-1:0] count1, count1_delay [0:5];
@@ -52,7 +52,7 @@ module softmax_block #(
   generate
     for (i = 0; i < `CHAR_NUM; i = i + 1) begin
       assign d_buf[i] = d[i*`N_LEN +: `N_LEN] - d_max;
-      assign q[i*`N_LEN +: `N_LEN] = q_buf[i];
+      assign q[i*`N_LEN_W +: `N_LEN_W] = q_buf[i];
     end
   endgenerate
 
@@ -76,13 +76,12 @@ module softmax_block #(
 
   // fucntion fixed multiply 
   function [`N_LEN-1:0] fixed_mul;
-    input [`N_LEN-1:0] num1;
-    input [`N_LEN_W-1:0] num2;
+    input [`N_LEN_W-1:0] num1, num2;
 
-    reg [`N_LEN+`N_LEN_W-1:0] mul;
+    reg [2*`N_LEN_W-1:0] mul;
     begin
       mul = num1 * num2;
-      fixed_mul = mul[`F_LEN +: `N_LEN]; 
+      fixed_mul = mul[`F_LEN_W +: `N_LEN_W]; 
     end
   endfunction
 
@@ -147,9 +146,9 @@ module softmax_block #(
         q_buf[exp_index] <= exp_table_q;
       end else if ((inv_index_delay == `CHAR_NUM - 1) & (mul_index_delay != `CHAR_NUM - 1)) begin
         if (mul_index == d_num) begin
-          q_buf[mul_index] <= {{`BATCH_SHIFT{sub_1[`N_LEN-1]}}, sub_1[`N_LEN-1:`BATCH_SHIFT]};
+          q_buf[mul_index] <= {{`BATCH_SHIFT{sub_1[`N_LEN_W-1]}}, sub_1[`N_LEN_W-1:`BATCH_SHIFT]};
         end else begin
-          q_buf[mul_index] <= {{`BATCH_SHIFT{mul[`N_LEN-1]}}, mul[`N_LEN-1:`BATCH_SHIFT]};          
+          q_buf[mul_index] <= {{`BATCH_SHIFT{mul[`N_LEN_W-1]}}, mul[`N_LEN_W-1:`BATCH_SHIFT]};          
         end
       end
     end

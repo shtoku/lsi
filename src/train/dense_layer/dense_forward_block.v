@@ -6,7 +6,7 @@ module dense_forward_block #(
     input  wire clk,
     input  wire rst_n,
     input  wire run,
-    input  wire [`HID_DIM*`N_LEN-1:0] d,
+    input  wire [`HID_DIM*`N_LEN_W-1:0] d,
     output wire valid,
     output wire [`CHAR_NUM*`N_LEN-1:0] q,
     input  wire [DENSE_DATA_N*`N_LEN-1:0] rdata
@@ -18,7 +18,7 @@ module dense_forward_block #(
   integer j;
 
   // wire input/output buffer
-  wire [DENSE_DATA_N*`N_LEN-1:0] d_buf [0:`HID_DIM/DENSE_DATA_N-1];
+  wire [DENSE_DATA_N*`N_LEN_W-1:0] d_buf [0:`HID_DIM/DENSE_DATA_N-1];
   reg  [`N_LEN-1:0] q_buf [0:`CHAR_NUM-1];
 
   // reg counter
@@ -34,7 +34,8 @@ module dense_forward_block #(
   reg  [`N_LEN-1:0] inner_buf [0:`HID_DIM/DENSE_DATA_N-1];
 
   // wire dense_inner_8
-  wire [DENSE_DATA_N*`N_LEN-1:0] inner_d1, inner_d2;
+  wire [DENSE_DATA_N*`N_LEN-1:0] inner_d1;
+  wire [DENSE_DATA_N*`N_LEN_W-1:0] inner_d2;
   wire [`N_LEN-1:0] inner_q;
 
 
@@ -43,9 +44,9 @@ module dense_forward_block #(
   assign valid = run & (q_buf_index_delay == `CHAR_NUM - 1) & (inner_buf_index_delay == `HID_DIM/DENSE_DATA_N - 1);
 
   generate
-    // convert shape (`HID_DIM/DENSE_DATA_N, DENSE_DATA_N*`N_LEN) <- (`HID_DIM*`N_LEN,)
+    // convert shape (`HID_DIM/DENSE_DATA_N, DENSE_DATA_N*`N_LEN_W) <- (`HID_DIM*`N_LEN_W,)
     for (i = 0; i < `HID_DIM/DENSE_DATA_N; i = i + 1) begin
-      assign d_buf[i] = d[i*DENSE_DATA_N*`N_LEN +: DENSE_DATA_N*`N_LEN];
+      assign d_buf[i] = d[i*DENSE_DATA_N*`N_LEN_W +: DENSE_DATA_N*`N_LEN_W];
     end
     // convert shape (`CHAR_NUM*`N_LEN) <- (`CHAR_NUM, `N_LEN)
     for (i = 0; i < `CHAR_NUM; i = i + 1) begin
@@ -150,7 +151,7 @@ module dense_forward_block #(
   // dense_inner_8
   dense_inner_8 #(
     .DATA_WIDTH1(`N_LEN),
-    .DATA_WIDTH2(`N_LEN)
+    .DATA_WIDTH2(`N_LEN_W)
   ) dense_inner_8_inst (
     .clk(clk),
     .rst_n(rst_n),

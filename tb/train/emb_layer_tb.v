@@ -10,7 +10,7 @@ module emb_layer_tb ();
   reg  run_backward;
   reg  load_backward;
   reg  [`N*`CHAR_LEN-1:0] d_forward;
-  reg  [`N*`EMB_DIM*`N_LEN_W-1:0] d_backward;
+  reg  [`N*`EMB_DIM*`N_LEN-1:0] d_backward;
   wire valid_update;
   wire valid_zero_grad;
   wire valid_forward;
@@ -26,8 +26,8 @@ module emb_layer_tb ();
   wire [`N*`EMB_DIM*`N_LEN_W-1:0] q_forward_ans[0:`BATCH_SIZE];
   wire [`BATCH_SIZE:0] correct_forward;
 
-  reg  [`N_LEN_W-1:0] d_backward_mem [0:`BATCH_SIZE*`N*`EMB_DIM-1];
-  wire [`N*`EMB_DIM*`N_LEN_W-1:0] d_backward_buf [0:`BATCH_SIZE-1];
+  reg  [`N_LEN-1:0] d_backward_mem [0:`BATCH_SIZE*`N*`EMB_DIM-1];
+  wire [`N*`EMB_DIM*`N_LEN-1:0] d_backward_buf [0:`BATCH_SIZE-1];
 
 
   // assign
@@ -46,7 +46,7 @@ module emb_layer_tb ();
     
     for (i = 0; i < `BATCH_SIZE; i = i + 1) begin
       for (j = 0; j < `N*`EMB_DIM; j = j + 1) begin
-        assign d_backward_buf[i][j*`N_LEN_W +: `N_LEN_W] = d_backward_mem[i*`N*`EMB_DIM + j];
+        assign d_backward_buf[i][j*`N_LEN +: `N_LEN] = d_backward_mem[i*`N*`EMB_DIM + j];
       end
     end
   endgenerate

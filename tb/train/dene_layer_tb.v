@@ -9,7 +9,7 @@ module dense_layer_tb ();
   reg  run_forward;
   reg  run_backward;
   reg  load_backward;;
-  reg  [`N*`HID_DIM*`N_LEN-1:0] d_forward;
+  reg  [`N*`HID_DIM*`N_LEN_W-1:0] d_forward;
   reg  [`N*`CHAR_NUM*`N_LEN_W-1:0] d_backward;
   wire valid_update;
   wire valid_zero_grad;
@@ -21,9 +21,9 @@ module dense_layer_tb ();
   dense_layer dense_layer_inst (.*);
 
   // correct
-  reg  [`N_LEN-1:0] d_forward_mem [0:(`BATCH_SIZE+1)*`N*`HID_DIM-1];
+  reg  [`N_LEN_W-1:0] d_forward_mem [0:(`BATCH_SIZE+1)*`N*`HID_DIM-1];
   reg  [`N_LEN-1:0] q_forward_mem [0:(`BATCH_SIZE+1)*`N*`CHAR_NUM-1];
-  wire [`N*`HID_DIM*`N_LEN-1:0] d_forward_buf [0:`BATCH_SIZE];
+  wire [`N*`HID_DIM*`N_LEN_W-1:0] d_forward_buf [0:`BATCH_SIZE];
   wire [`N*`CHAR_NUM*`N_LEN-1:0] q_forward_ans [0:`BATCH_SIZE];
   wire [`BATCH_SIZE:0] correct_forward;
 
@@ -39,7 +39,7 @@ module dense_layer_tb ();
   generate
     for (i = 0; i < `BATCH_SIZE + 1; i = i + 1) begin
       for (j = 0; j < `N*`HID_DIM; j = j + 1) begin
-        assign d_forward_buf[i][j*`N_LEN +: `N_LEN] = d_forward_mem[i*`N*`HID_DIM + j];
+        assign d_forward_buf[i][j*`N_LEN_W +: `N_LEN_W] = d_forward_mem[i*`N*`HID_DIM + j];
       end
       for (j = 0; j < `N*`CHAR_NUM; j = j + 1) begin
         assign q_forward_ans[i][j*`N_LEN +: `N_LEN] = q_forward_mem[i*`N*`CHAR_NUM + j];

@@ -2,13 +2,14 @@
 
 module dense_inner_10 #(
     parameter integer DATA_WIDTH1 = `N_LEN,
-    parameter integer DATA_WIDTH2 = `N_LEN
+    parameter integer DATA_WIDTH2 = `N_LEN,
+    parameter integer OUT_WIDTH     = `N_LEN
   ) (
     input  wire clk,
     input  wire rst_n,
     input  wire [10*DATA_WIDTH1-1:0] d1,
     input  wire [10*DATA_WIDTH2-1:0] d2,
-    output reg  [DATA_WIDTH1-1:0] q
+    output reg  [OUT_WIDTH-1:0] q
   );
 
 
@@ -16,21 +17,21 @@ module dense_inner_10 #(
   genvar i;
 
   // reg result
-  reg  [DATA_WIDTH1-1:0] mul  [0:9];
-  reg  [DATA_WIDTH1-1:0] add1 [0:3];
-  reg  [DATA_WIDTH1-1:0] add2 [0:1];
+  reg  [OUT_WIDTH-1:0] mul  [0:9];
+  reg  [OUT_WIDTH-1:0] add1 [0:3];
+  reg  [OUT_WIDTH-1:0] add2 [0:1];
 
 
   // ----------------------------------------
   // function fixed_multiply
-  function [DATA_WIDTH1-1:0] fixed_mul;
+  function [OUT_WIDTH-1:0] fixed_mul;
     input signed [DATA_WIDTH1-1:0] num1;
     input signed [DATA_WIDTH2-1:0] num2;
 
-    reg [DATA_WIDTH1*DATA_WIDTH2-1:0] mul;
+    reg [2*OUT_WIDTH-1:0] mul;
     begin
       mul = num1 * num2;
-      fixed_mul = mul[`F_LEN +: DATA_WIDTH1]; 
+      fixed_mul = mul[`F_LEN +: OUT_WIDTH]; 
     end
   endfunction  
 
