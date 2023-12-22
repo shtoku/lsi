@@ -22,9 +22,6 @@ module tanh_table #(
 
 
   // ----------------------------------------
-
-
-  // ----------------------------------------
   // raddr controller
   always @(posedge clk, negedge rst_n) begin
     if (~rst_n) begin
@@ -41,7 +38,7 @@ module tanh_table #(
       d_delay2 <= 0;
     end else begin
       d_delay1 <= d;
-      d_delay2 <= d_delay2;
+      d_delay2 <= d_delay1;
     end
   end
 
@@ -50,10 +47,10 @@ module tanh_table #(
     if (~rst_n) begin
       q <= 0;
     end else begin
-      if ($signed(d_delay2) < -2**(ADDR_WIDTH-1) * 2**(`F_LEN-D_F_LEN))             // d < 11111000_0000000000000000 = -8
+      if ($signed(d_delay2) < -1 * 2**(ADDR_WIDTH-1 + `F_LEN-D_F_LEN))              // d < 11111000_0000000000000000 = -8
         q <= {{`I_LEN_W{1'b1}}, {`F_LEN_W{1'b0}}};                                  // q =       11_0000000000000000 = -1.0
       else if ($signed(d_delay2) > (2**(ADDR_WIDTH-1) - 1) * 2**(`F_LEN-D_F_LEN))   // d > 00000111_1111110000000000 = 7.984375 ~= 8
-        q <= {{`I_LEN_W{1'b1}}, {`F_LEN_W{1'b0}}};                                  // q =       01_0000000000000000 = 1.0
+        q <= {`I_LEN_W'h1, {`F_LEN_W{1'b0}}};                                       // q =       01_0000000000000000 = 1.0
       else                                                                          // -8 < d < 7.984375 ~= 8
         q <= rdata;
     end
