@@ -114,63 +114,67 @@ def output_forward(x, net):
   num = x.argmax(axis=-1)
   output_file(PATH_TB + 'comp_layer/comp_layer_out.txt', x.max(axis=-1).flatten())
   output_file(PATH_TB + 'comp_layer/comp_layer_num.txt', num.flatten(), i_len=8, f_len=0)
-  
+
   return x
 
 
 # 逆伝播の入出力サンプルを作成する関数
 def output_backward(y, t, net):
+  output_file(PATH_TB + 'softmax_layer/softmax_layer_num.txt', t.flatten(), i_len=8, f_len=0)
+  output_file(PATH_TB + 'softmax_layer/softmax_layer_max.txt', y.max(axis=-1).flatten())
+  output_file(PATH_TB + 'softmax_layer/softmax_layer_in.txt', y.flatten())
   # Softmax
-    y = softmax(y)
-    y[range(len(y)), t] -= 1.0
-    dout = convert_fixed(y / batch_size)
+  y = softmax(y)
+  y[range(len(y)), t] -= 1.0
+  dout = convert_fixed(y / batch_size)
+  output_file(PATH_TB + 'softmax_layer/softmax_layer_out.txt', dout.flatten())
 
-    output_file(PATH_TB + 'dense_layer/dense_layer_backward_in.txt', dout.flatten(), i_len=2, f_len=16)
-    dout = net.layers['Dense_Layer'].backward(dout)
-    output_file(PATH_TB + 'dense_layer/dense_layer_backward_out.txt', dout.flatten())
+  output_file(PATH_TB + 'dense_layer/dense_layer_backward_in.txt', dout.flatten(), i_len=2, f_len=16)
+  dout = net.layers['Dense_Layer'].backward(dout)
+  output_file(PATH_TB + 'dense_layer/dense_layer_backward_out.txt', dout.flatten())
 
-    dout = np.concatenate([dout, np.zeros((hid_dim-N, hid_dim))], axis=0)
+  dout = np.concatenate([dout, np.zeros((hid_dim-N, hid_dim))], axis=0)
 
-    output_file(PATH_TB + 'tanh_layer/tanh_layer3_backward_in.txt', dout.flatten())
-    dout = net.layers['Tanh_Layer3'].backward(dout)
-    output_file(PATH_TB + 'tanh_layer/tanh_layer3_backward_out.txt', dout.flatten())
+  output_file(PATH_TB + 'tanh_layer/tanh_layer3_backward_in.txt', dout.flatten())
+  dout = net.layers['Tanh_Layer3'].backward(dout)
+  output_file(PATH_TB + 'tanh_layer/tanh_layer3_backward_out.txt', dout.flatten())
 
-    output_file(PATH_TB + 'mix_layer/mix_layer3_backward_in.txt', dout.flatten())
-    dout = net.layers['Mix_Layer3'].backward(dout)
-    output_file(PATH_TB + 'mix_layer/mix_layer3_backward_out.txt', dout.flatten())
-    
-    dout = dout.sum(axis=1, keepdims=True)
-    dout = np.concatenate([dout, np.zeros((hid_dim, hid_dim-1))], axis=1)
-    
-    output_file(PATH_TB + 'tanh_layer/tanh_layer2_backward_in.txt', dout.flatten())
-    dout = net.layers['Tanh_Layer2'].backward(dout)
-    output_file(PATH_TB + 'tanh_layer/tanh_layer2_backward_out.txt', dout.flatten())
+  output_file(PATH_TB + 'mix_layer/mix_layer3_backward_in.txt', dout.flatten())
+  dout = net.layers['Mix_Layer3'].backward(dout)
+  output_file(PATH_TB + 'mix_layer/mix_layer3_backward_out.txt', dout.flatten())
+  
+  dout = dout.sum(axis=1, keepdims=True)
+  dout = np.concatenate([dout, np.zeros((hid_dim, hid_dim-1))], axis=1)
+  
+  output_file(PATH_TB + 'tanh_layer/tanh_layer2_backward_in.txt', dout.flatten())
+  dout = net.layers['Tanh_Layer2'].backward(dout)
+  output_file(PATH_TB + 'tanh_layer/tanh_layer2_backward_out.txt', dout.flatten())
 
-    output_file(PATH_TB + 'mix_layer/mix_layer2_backward_in.txt', dout.flatten())
-    dout = net.layers['Mix_Layer2'].backward(dout)
-    output_file(PATH_TB + 'mix_layer/mix_layer2_backward_out.txt', dout.flatten())
+  output_file(PATH_TB + 'mix_layer/mix_layer2_backward_in.txt', dout.flatten())
+  dout = net.layers['Mix_Layer2'].backward(dout)
+  output_file(PATH_TB + 'mix_layer/mix_layer2_backward_out.txt', dout.flatten())
 
-    output_file(PATH_TB + 'tanh_layer/tanh_layer1_backward_in.txt', dout.flatten())
-    dout = net.layers['Tanh_Layer1'].backward(dout)
-    output_file(PATH_TB + 'tanh_layer/tanh_layer1_backward_out.txt', dout.flatten())
+  output_file(PATH_TB + 'tanh_layer/tanh_layer1_backward_in.txt', dout.flatten())
+  dout = net.layers['Tanh_Layer1'].backward(dout)
+  output_file(PATH_TB + 'tanh_layer/tanh_layer1_backward_out.txt', dout.flatten())
 
-    output_file(PATH_TB + 'mix_layer/mix_layer1_backward_in.txt', dout.flatten())
-    dout = net.layers['Mix_Layer1'].backward(dout)
-    output_file(PATH_TB + 'mix_layer/mix_layer1_backward_out.txt', dout.flatten())
+  output_file(PATH_TB + 'mix_layer/mix_layer1_backward_in.txt', dout.flatten())
+  dout = net.layers['Mix_Layer1'].backward(dout)
+  output_file(PATH_TB + 'mix_layer/mix_layer1_backward_out.txt', dout.flatten())
 
-    dout = dout[:N, :]
+  dout = dout[:N, :]
 
-    output_file(PATH_TB + 'emb_layer/emb_layer_backward_in.txt', dout.flatten(), i_len=2, f_len=16)
-    dout = net.layers['Emb_Layer'].backward(dout)
-    
-    net.grads['W_emb'] += net.layers['Emb_Layer'].dW
-    net.grads['W_1'] += net.layers['Mix_Layer1'].dW
-    net.grads['b_1'] += net.layers['Mix_Layer1'].db
-    net.grads['W_2'] += net.layers['Mix_Layer2'].dW
-    net.grads['b_2'] += net.layers['Mix_Layer2'].db
-    net.grads['W_3'] += net.layers['Mix_Layer3'].dW
-    net.grads['b_3'] += net.layers['Mix_Layer3'].db
-    net.grads['W_out'] += net.layers['Dense_Layer'].dW
+  output_file(PATH_TB + 'emb_layer/emb_layer_backward_in.txt', dout.flatten(), i_len=2, f_len=16)
+  dout = net.layers['Emb_Layer'].backward(dout)
+  
+  net.grads['W_emb'] += net.layers['Emb_Layer'].dW
+  net.grads['W_1'] += net.layers['Mix_Layer1'].dW
+  net.grads['b_1'] += net.layers['Mix_Layer1'].db
+  net.grads['W_2'] += net.layers['Mix_Layer2'].dW
+  net.grads['b_2'] += net.layers['Mix_Layer2'].db
+  net.grads['W_3'] += net.layers['Mix_Layer3'].dW
+  net.grads['b_3'] += net.layers['Mix_Layer3'].db
+  net.grads['W_out'] += net.layers['Dense_Layer'].dW
 
 
 if __name__ == '__main__':
