@@ -152,11 +152,25 @@ def generate_zeros():
   output_param_6(PATH_BIN192 + 'zeros_like_W_out.txt', W_out, num=8)
 
 
-# Tanhの値ファイルの作成
-def generate_tanh():
+# テーブル用のファイルの作成する関数
+def generate_table():
+  # tanh
   x = np.arange(-8, 8, 2**(-6))   # 入力値 (整数：4bit 小数：6bit)
   y = np.tanh(x)
   output_file(PATH_BIN18 + 'tanh_table.txt', convert_dec_to_bin(y, 2, 16))
+
+  # exp
+  x = np.arange(-16, 0, 2**(-6))   # 入力値 (整数：4bit 小数：6bit)
+  y = np.exp(x)
+  output_file(PATH_BIN18 + 'exp_table.txt', convert_dec_to_bin(y, 2, 16))
+
+  # inverse
+  x = np.arange(0, 2**10 / 2**2, 2**(-2))   # 入力値 (整数：8bit 小数：2bit)
+  x[0] = x[1]
+  y = 1 / x
+  mask = (y > 2**2 - 2**(-16))
+  y[mask] = 2**2 - 2**(-16)
+  output_file(PATH_BIN18 + 'inverse_table.txt', convert_dec_to_bin(y, 2, 16))
 
 
 if __name__ == '__main__':
@@ -164,4 +178,4 @@ if __name__ == '__main__':
   generate_hard()
   generate_zeros()
 
-  generate_tanh()
+  generate_table()
