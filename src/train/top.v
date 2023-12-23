@@ -50,7 +50,7 @@ module top # (
     // AXI Stream interface (output) end
 
     // debug port
-    input  wire [`N*`EMB_DIM*`N_LEN-1:0] d_backward_debug
+    input  wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] d_backward_debug
   );
 
 
@@ -58,31 +58,29 @@ module top # (
   // wire load_backward, update, zero_grad
   wire load_backward;
   wire update, zero_grad;
-  wire valid_update, valid_zero_grad;
+  wire [1:0] valid_update, valid_zero_grad;
 
   // wire AXI LITE Controller
   wire clk;
   wire rst_n;
-  wire axi_lite_run;
-  wire axi_lite_set;
-  wire axi_lite_next;
-  wire [2:0] axi_lite_finish;
-  wire [`MODE_LEN-1:0] axi_lite_mode;
+  wire run;
+  wire set;
+  wire next;
+  wire [2:0] finish;
+  wire [`MODE_LEN-1:0] mode;
 
   // wire state_main
   wire state_main_run;
-  wire [`MODE_LEN-1:0] state_main_mode;
-  wire [`STATE_LEN-1:0] state_main_q;
+  wire [`STATE_LEN-1:0] state_main;
 
   // wire state_forward
   wire state_forward_run;
-  wire state_forward_set;
   wire [`STATE_LEN-1:0] state_forward_d;
-  wire [`STATE_LEN-1:0] state_forward_q;
+  wire [`STATE_LEN-1:0] state_forward;
 
   // wire state_backward
   wire state_backward_run;
-  wire [`STATE_LEN-1:0] state_backward_q;
+  wire [`STATE_LEN-1:0] state_backward;
 
   // wire AXI Stream Controller (input)
   wire axis_in_run;
@@ -96,6 +94,26 @@ module top # (
   wire emb_valid_forward, emb_valid_backward;
   wire [`N*`EMB_DIM*`N_LEN_W-1:0] emb_q_forward;
 
+  // wire forward_mix_input
+  wire [`N*`EMB_DIM*`N_LEN_W-1:0] forward_mix_in_d_emb;
+  wire [`HID_DIM*`HID_DIM*`N_LEN_W-1:0] forward_mix_in_d_tanh;
+  wire forward_mix_in_valid;
+  wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] forward_mix_in_q;
+
+  // wire mix_layer
+  wire mix_run_forward;
+  reg  mix_run_backward;
+  wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] mix_d_forward, mix_d_backward;
+  wire mix_valid_forward, mix_valid_backward;
+  wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] mix_q_forward, mix_q_backward;
+
+  // wire tanh_layer
+  wire tanh_run_forward, tanh_run_backward;
+  wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] tanh_d_forward, tanh_d_backward;
+  wire tanh_valid_forward, tanh_valid_backward;
+  wire [`HID_DIM*`HID_DIM*`N_LEN_W-1:0] tanh_q_forward;
+  wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] tanh_q_backward;
+
 
   
 
@@ -108,69 +126,93 @@ module top # (
   // ----------------------------------------
   // assign load_backward, update, zero_grad
   assign load_backward = state_main_run;
-  assign update        = (state_main_q == `M_UPDATE);
-  assign zero_grad     = (state_main_q == `M_S1);
+  assign update        = (state_main == `M_UPDATE);
+  assign zero_grad     = (state_main == `M_S1);
 
   // assign AXI LITE Controller
-  assign axi_lite_finish = {(state_backward_q == `B_FIN), (state_forward_q  == `F_FIN), (state_main_q == `M_FIN)};
+  assign finish = {(state_backward == `B_FIN), (state_forward  == `F_FIN), (state_main == `M_FIN)};
 
   // assign state_main
-  assign state_main_run = (state_main_q == `M_IDLE)   ? axi_lite_run :
-                          (state_main_q == `M_S1)     ? (state_forward_q  == `F_FIN) & (&valid_zero_grad):
-                          (state_main_q == `M_S2)     ? (state_forward_q  == `F_FIN) & (state_backward_q == `B_FIN) :
-                          (state_main_q == `M_S3)     ? (state_backward_q == `B_FIN) :
-                          (state_main_q == `M_UPDATE) ? (&valid_update) :
-                          (state_main_q == `M_FIN)    ? axi_lite_next : 1'b0;
-  assign state_main_mode = axi_lite_mode;
+  assign state_main_run = (state_main == `M_IDLE)   ? run :
+                          (state_main == `M_S1)     ? (state_forward  == `F_FIN) & (&valid_zero_grad):
+                          (state_main == `M_S2)     ? (state_forward  == `F_FIN) & (state_backward == `B_FIN) :
+                          (state_main == `M_S3)     ? (state_backward == `B_FIN) :
+                          (state_main == `M_UPDATE) ? (&valid_update) :
+                          (state_main == `M_FIN)    ? next : 1'b0;
 
   // assign state_forward
-  assign state_forward_run = (state_forward_q == `F_IDLE)  ? (state_main_q == `M_S1 | state_main_q == `M_S2) :
-                             (state_forward_q == `F_RECV)  ? axis_in_valid :
-                             (state_forward_q == `F_EMB)   ? emb_valid_forward :
-                             (state_forward_q == `F_MIX1)  ? 1'b1 :
-                             (state_forward_q == `F_TANH1) ? 1'b1 :
-                             (state_forward_q == `F_MIX2)  ? 1'b1 :
-                             (state_forward_q == `F_TANH2) ? 1'b1 :
-                             (state_forward_q == `F_MIX3)  ? 1'b1 :
-                             (state_forward_q == `F_TANH3) ? 1'b1 :
-                             (state_forward_q == `F_DENS)  ? 1'b1 :
-                             (state_forward_q == `F_COMP)  ? 1'b1 :
-                             (state_forward_q == `F_SEND)  ? axis_out_valid :
-                             (state_forward_q == `F_FIN)  ? state_main_run : 1'b0;
-  assign state_forward_set = axi_lite_set;
-  assign state_forward_d   = (axi_lite_mode == `TRAIN )   ? `F_IDLE :
-                             (axi_lite_mode == `FORWARD)  ? `F_IDLE :
-                             (axi_lite_mode == `GEN_SIMI) ? `F_IDLE :
-                             (axi_lite_mode == `GEN_NEW ) ? `F_MIX3 : `F_IDLE;
+  assign state_forward_run = (state_forward == `F_IDLE)  ? (state_main == `M_S1 | state_main == `M_S2) :
+                             (state_forward == `F_RECV)  ? axis_in_valid :
+                             (state_forward == `F_EMB)   ? emb_valid_forward :
+                             (state_forward == `F_MIX1)  ? mix_valid_forward :
+                             (state_forward == `F_TANH1) ? 1'b1 :
+                             (state_forward == `F_MIX2)  ? 1'b1 :
+                             (state_forward == `F_TANH2) ? 1'b1 :
+                             (state_forward == `F_MIX3)  ? 1'b1 :
+                             (state_forward == `F_TANH3) ? 1'b1 :
+                             (state_forward == `F_DENS)  ? 1'b1 :
+                             (state_forward == `F_COMP)  ? 1'b1 :
+                             (state_forward == `F_SEND)  ? axis_out_valid :
+                             (state_forward == `F_FIN)   ? state_main_run : 1'b0;
+  assign state_forward_d   = (mode == `TRAIN )   ? `F_IDLE :
+                             (mode == `FORWARD)  ? `F_IDLE :
+                             (mode == `GEN_SIMI) ? `F_IDLE :
+                             (mode == `GEN_NEW ) ? `F_MIX3 : `F_IDLE;
   
   // assign state_backward
-  assign state_backward_run = (state_backward_q == `B_IDLE)  ? (state_main_q == `M_S2 | state_main_q == `M_S3) :
-                              (state_backward_q == `B_SMAX)  ? 1'b1 :
-                              (state_backward_q == `B_DENS)  ? 1'b1 :
-                              (state_backward_q == `B_TANH3) ? 1'b1 :
-                              (state_backward_q == `B_MIX3)  ? 1'b1 :
-                              (state_backward_q == `B_TANH2) ? 1'b1 :
-                              (state_backward_q == `B_MIX2)  ? 1'b1 :
-                              (state_backward_q == `B_TANH1) ? 1'b1 :
-                              (state_backward_q == `B_MIX1)  ? 1'b1 :
-                              (state_backward_q == `B_EMB)   ? emb_valid_backward :
-                              (state_backward_q == `B_FIN)   ? state_main_run : 1'b0;
+  assign state_backward_run = (state_backward == `B_IDLE)  ? (state_main == `M_S2 | state_main == `M_S3) :
+                              (state_backward == `B_SMAX)  ? 1'b1 :
+                              (state_backward == `B_DENS)  ? 1'b1 :
+                              (state_backward == `B_TANH3) ? 1'b1 :
+                              (state_backward == `B_MIX3)  ? 1'b1 :
+                              (state_backward == `B_TANH2) ? 1'b1 :
+                              (state_backward == `B_MIX2)  ? 1'b1 :
+                              (state_backward == `B_TANH1) ? 1'b1 :
+                              (state_backward == `B_MIX1)  ? mix_valid_backward :
+                              (state_backward == `B_EMB)   ? emb_valid_backward :
+                              (state_backward == `B_FIN)   ? state_main_run : 1'b0;
 
   // assign AXI Stream Controller (input)
-  assign axis_in_run = (state_forward_q == `F_RECV);
+  assign axis_in_run = (state_forward == `F_RECV);
 
   // assign emb_layer
-  assign emb_run_forward  = (state_forward_q  == `F_EMB);
-  assign emb_run_backward = (state_backward_q == `B_EMB);
+  assign emb_run_forward  = (state_forward  == `F_EMB);
+  assign emb_run_backward = (state_backward == `B_EMB);
   assign emb_d_forward    = axis_in_q;
-  assign emb_d_backward   = d_backward_debug;
+  assign emb_d_backward   = mix_q_backward;
+
+  // assign forward_mix_input
+  assign forward_mix_in_d_emb = emb_q_forward;
+  // assign forward_mix_in_d_tanh = tanh_q_forward;
+
+  // assign mix_layer
+  assign mix_run_forward  = forward_mix_in_valid;
+  assign mix_d_forward    = forward_mix_in_q;
+  assign mix_d_backward   = d_backward_debug;
+
+  // assign tanh_layer
+  // assign tanh_run_forward  = (state_forward  == `F_TANH1) | (state_forward  == `F_TANH2) | (state_forward  == `F_TANH3);
+  // assign tanh_run_backward = (state_backward == `B_TANH1) | (state_backward == `B_TANH2) | (state_backward == `B_TANH3);
+  // assign tanh_d_forward    = mix_q_forward;
+  // assign tanh_d_backward   = d_backward_debug; 
 
 
   
 
   // assign AXI Stream Controller (output)
-  assign axis_out_run = (state_forward_q == `F_SEND);
+  assign axis_out_run = (state_forward == `F_SEND);
   assign axis_out_d   = axis_in_q;
+
+
+  // ----------------------------------------
+  // mix_run_backward controller
+  always @(posedge clk, negedge rst_n) begin
+    if (~rst_n) begin
+      mix_run_backward <= 0;
+    end else begin
+      mix_run_backward <= (state_backward == `B_MIX1) | (state_backward == `B_MIX2) | (state_backward == `B_MIX3);
+    end
+  end
 
 
   // ----------------------------------------
@@ -181,11 +223,11 @@ module top # (
   ) axi_lite_controller_inst (
     .clk(clk),
     .rst_n(rst_n),
-    .run(axi_lite_run),
-    .set(axi_lite_set),
-    .next(axi_lite_next),
-    .finish(axi_lite_finish),
-    .mode(axi_lite_mode),
+    .run(run),
+    .set(set),
+    .next(next),
+    .finish(finish),
+    .mode(mode),
     .led_out(led_out),
     .S_AXI_ACLK(ACLK),
     .S_AXI_ARESETN(ARESETN),
@@ -215,8 +257,8 @@ module top # (
     .clk(clk),
     .rst_n(rst_n),
     .run(state_main_run),
-    .mode(state_main_mode),
-    .q(state_main_q)
+    .mode(mode),
+    .q(state_main)
   );
 
   // state_forward
@@ -224,9 +266,9 @@ module top # (
     .clk(clk),
     .rst_n(rst_n),
     .run(state_forward_run),
-    .set(state_forward_set),
+    .set(set),
     .d(state_forward_d),
-    .q(state_forward_q)
+    .q(state_forward)
   );
 
   // state_backward
@@ -234,7 +276,7 @@ module top # (
     .clk(clk),
     .rst_n(rst_n),
     .run(state_backward_run),
-    .q(state_backward_q)
+    .q(state_backward)
   );
 
   // AXI Stream Controller (input)
@@ -261,12 +303,62 @@ module top # (
     .load_backward(load_backward),
     .d_forward(emb_d_forward),
     .d_backward(emb_d_backward),
-    .valid_update(valid_update),
-    .valid_zero_grad(valid_zero_grad),
+    .valid_update(valid_update[0]),
+    .valid_zero_grad(valid_zero_grad[0]),
     .valid_forward(emb_valid_forward),
     .valid_backward(emb_valid_backward),
     .q_forward(emb_q_forward)
   );
+
+  // forward_mix_input
+  forward_mix_input forward_mix_input_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .state(state_forward),
+    .mode(mode),
+    .d_emb(forward_mix_in_d_emb),
+    .d_tanh(forward_mix_in_d_tanh),
+    .valid(forward_mix_in_valid),
+    .q(forward_mix_in_q)
+  );
+
+  // mix_layer
+  mix_layer mix_layer_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .update(update),
+    .zero_grad(zero_grad),
+    .run_forward(mix_run_forward),
+    .run_backward(mix_run_backward),
+    .load_backward(load_backward),
+    .state_forward(state_forward),
+    .state_backward(state_backward),
+    .d_forward(mix_d_forward),
+    .d_backward(mix_d_backward),
+    .valid_update(valid_update[1]),
+    .valid_zero_grad(valid_zero_grad[1]),
+    .valid_forward(mix_valid_forward),
+    .valid_backward(mix_valid_backward),
+    .q_forward(mix_q_forward),
+    .q_backward(mix_q_backward)
+  );
+
+  // tanh_layer
+  // tanh_layer tanh_layer_inst (
+  //   .clk(clk),
+  //   .rst_n(rst_n),
+  //   .run_forward(tanh_run_forward),
+  //   .run_backward(tanh_run_backward),
+  //   .load_backward(load_backward),
+  //   .state_forward(state_forward),
+  //   .state_backward(state_backward),
+  //   .d_forward(tanh_d_forward),
+  //   .d_backward(tanh_d_backward),
+  //   .valid_forward(tanh_valid_forward),
+  //   .valid_backward(tanh_valid_backward),
+  //   .q_forward(tanh_q_forward),
+  //   .q_backward(tanh_q_backward)
+  // );
 
 
 

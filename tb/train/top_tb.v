@@ -50,7 +50,7 @@ module top_tb ();
   // AXI Stream interface (output) end
 
   // debug port
-  reg  [`N*`EMB_DIM*`N_LEN-1:0] d_backward_debug;
+  reg  [`HID_DIM*`HID_DIM*`N_LEN-1:0] d_backward_debug;
 
   top top_inst (.*);
 
@@ -65,38 +65,38 @@ module top_tb ();
   reg  [`CHAR_LEN-1:0] q_forward_buf [0:`N-1];
 
   // debug mem
-  reg  [`N_LEN-1:0] d_backward_mem [0:`BATCH_SIZE*`N*`EMB_DIM-1];
-  reg  [`N*`EMB_DIM*`N_LEN-1:0] d_backward_buf [0:`BATCH_SIZE-1];
+  reg  [`N_LEN-1:0] d_backward_mem [0:`BATCH_SIZE*`HID_DIM*`HID_DIM-1];
+  reg  [`HID_DIM*`HID_DIM*`N_LEN-1:0] d_backward_buf [0:`BATCH_SIZE-1];
 
-  reg  [`N_LEN_W-1:0] q_forward_mem [0:(2*`BATCH_SIZE)*`N*`EMB_DIM-1];
-  wire [`N*`EMB_DIM*`N_LEN_W-1:0] q_forward_ans [0:2*`BATCH_SIZE-1];
-  wire [2*`BATCH_SIZE-1:0] correct_forward;
+  reg  [`N_LEN-1:0] q_forward_mem [0:(`BATCH_SIZE+1)*`HID_DIM*`HID_DIM-1];
+  wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] q_forward_ans [0:`BATCH_SIZE];
+  wire [`BATCH_SIZE:0] correct_forward;
 
 
   generate
-    for (i = 0; i < 2*`BATCH_SIZE; i = i + 1) begin
-      for (j = 0; j < `N*`EMB_DIM; j = j + 1) begin
-        assign q_forward_ans[i][j*`N_LEN_W +: `N_LEN_W] = q_forward_mem[i*`N*`EMB_DIM + j];
+    for (i = 0; i < `BATCH_SIZE + 1; i = i + 1) begin
+      for (j = 0; j < `HID_DIM*`HID_DIM; j = j + 1) begin
+        assign q_forward_ans[i][j*`N_LEN +: `N_LEN] = q_forward_mem[i*`HID_DIM*`HID_DIM + j];
       end
-      assign correct_forward[i] = (q_forward_ans[i] == top_inst.emb_q_forward);
+      assign correct_forward[i] = (q_forward_ans[i] == top_inst.mix_q_forward);
     end
     
     for (i = 0; i < `BATCH_SIZE; i = i + 1) begin
-      for (j = 0; j < `N*`EMB_DIM; j = j + 1) begin
-        assign d_backward_buf[i][j*`N_LEN +: `N_LEN] = d_backward_mem[i*`N*`EMB_DIM + j];
+      for (j = 0; j < `HID_DIM*`HID_DIM; j = j + 1) begin
+        assign d_backward_buf[i][j*`N_LEN +: `N_LEN] = d_backward_mem[i*`HID_DIM*`HID_DIM + j];
       end
     end
   endgenerate
 
 
-  assign d_backward_debug = (top_inst.state_main_q == `M_S2) ? d_backward_buf[0] :
-                            (top_inst.state_main_q == `M_S3) ? d_backward_buf[1] : d_backward_buf[0];
+  assign d_backward_debug = (top_inst.state_main == `M_S2) ? d_backward_buf[0] :
+                            (top_inst.state_main == `M_S3) ? d_backward_buf[1] : d_backward_buf[0];
 
 
   initial begin
-    $readmemb("../../data/tb/train/emb_layer/emb_layer_forward_in.txt",  d_forward_mem);
-    $readmemb("../../data/tb/train/emb_layer/emb_layer_backward_in.txt", d_backward_mem);
-    $readmemb("../../data/tb/train/emb_layer/emb_layer_forward_out.txt", q_forward_mem);
+    $readmemb("../../data/tb/train/emb_layer/emb_layer_forward_in.txt", d_forward_mem);
+    $readmemb("../../data/tb/train/mix_layer/mix_layer1_backward_in.txt", d_backward_mem);
+    $readmemb("../../data/tb/train/mix_layer/mix_layer1_forward_out.txt", q_forward_mem);
   end
 
 
