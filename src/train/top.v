@@ -50,7 +50,7 @@ module top # (
     // AXI Stream interface (output) end
 
     // debug port
-    input  wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] d_backward_debug
+    input  wire [`N*`HID_DIM*`N_LEN-1:0] d_backward_debug
   );
 
 
@@ -114,6 +114,13 @@ module top # (
   wire [`HID_DIM*`HID_DIM*`N_LEN_W-1:0] tanh_q_forward;
   wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] tanh_q_backward;
 
+  // wire backward_tanh_input
+  wire backward_tanh_in_run;
+  wire [`N*`HID_DIM*`N_LEN-1:0] backward_tanh_in_d_dense;
+  wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] backward_tanh_in_d_mix;
+  wire backward_tanh_in_valid;
+  wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] backward_tanh_in_q;
+
 
   
 
@@ -146,10 +153,10 @@ module top # (
                              (state_forward == `F_EMB)   ? emb_valid_forward :
                              (state_forward == `F_MIX1)  ? mix_valid_forward :
                              (state_forward == `F_TANH1) ? tanh_valid_forward :
-                             (state_forward == `F_MIX2)  ? 1'b1 :
-                             (state_forward == `F_TANH2) ? 1'b1 :
-                             (state_forward == `F_MIX3)  ? 1'b1 :
-                             (state_forward == `F_TANH3) ? 1'b1 :
+                             (state_forward == `F_MIX2)  ? mix_valid_forward :
+                             (state_forward == `F_TANH2) ? tanh_valid_forward :
+                             (state_forward == `F_MIX3)  ? mix_valid_forward :
+                             (state_forward == `F_TANH3) ? tanh_valid_forward :
                              (state_forward == `F_DENS)  ? 1'b1 :
                              (state_forward == `F_COMP)  ? 1'b1 :
                              (state_forward == `F_SEND)  ? axis_out_valid :
@@ -163,10 +170,10 @@ module top # (
   assign state_backward_run = (state_backward == `B_IDLE)  ? (state_main == `M_S2 | state_main == `M_S3) :
                               (state_backward == `B_SMAX)  ? 1'b1 :
                               (state_backward == `B_DENS)  ? 1'b1 :
-                              (state_backward == `B_TANH3) ? 1'b1 :
-                              (state_backward == `B_MIX3)  ? 1'b1 :
-                              (state_backward == `B_TANH2) ? 1'b1 :
-                              (state_backward == `B_MIX2)  ? 1'b1 :
+                              (state_backward == `B_TANH3) ? tanh_valid_backward :
+                              (state_backward == `B_MIX3)  ? mix_valid_backward :
+                              (state_backward == `B_TANH2) ? tanh_valid_backward :
+                              (state_backward == `B_MIX2)  ? mix_valid_backward :
                               (state_backward == `B_TANH1) ? tanh_valid_backward :
                               (state_backward == `B_MIX1)  ? mix_valid_backward :
                               (state_backward == `B_EMB)   ? emb_valid_backward :
@@ -192,9 +199,14 @@ module top # (
 
   // assign tanh_layer
   assign tanh_run_forward  = (state_forward  == `F_TANH1) | (state_forward  == `F_TANH2) | (state_forward  == `F_TANH3);
-  assign tanh_run_backward = (state_backward == `B_TANH1) | (state_backward == `B_TANH2) | (state_backward == `B_TANH3);
+  assign tanh_run_backward = backward_tanh_in_valid;
   assign tanh_d_forward    = mix_q_forward;
-  assign tanh_d_backward   = d_backward_debug; 
+  assign tanh_d_backward   = backward_tanh_in_q;
+
+  // assign backward_tanh_input
+  assign backward_tanh_in_run     = (state_backward == `B_TANH1) | (state_backward == `B_TANH2) | (state_backward == `B_TANH3);
+  assign backward_tanh_in_d_dense = d_backward_debug;
+  assign backward_tanh_in_d_mix   = mix_q_backward;
 
 
   
@@ -358,6 +370,18 @@ module top # (
     .valid_backward(tanh_valid_backward),
     .q_forward(tanh_q_forward),
     .q_backward(tanh_q_backward)
+  );
+
+  // backward_tanh_input
+  backward_tanh_input backward_tanh_input_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .run(backward_tanh_in_run),
+    .state(state_backward),
+    .d_dense(backward_tanh_in_d_dense),
+    .d_mix(backward_tanh_in_d_mix),
+    .valid(backward_tanh_in_valid),
+    .q(backward_tanh_in_q)
   );
 
 

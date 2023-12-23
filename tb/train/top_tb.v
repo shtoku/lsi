@@ -50,7 +50,7 @@ module top_tb ();
   // AXI Stream interface (output) end
 
   // debug port
-  reg  [`HID_DIM*`HID_DIM*`N_LEN-1:0] d_backward_debug;
+  reg  [`N*`HID_DIM*`N_LEN-1:0] d_backward_debug;
 
   top top_inst (.*);
 
@@ -65,12 +65,23 @@ module top_tb ();
   reg  [`CHAR_LEN-1:0] q_forward_buf [0:`N-1];
 
   // debug mem
-  reg  [`N_LEN-1:0] d_backward_mem [0:`BATCH_SIZE*`HID_DIM*`HID_DIM-1];
-  reg  [`HID_DIM*`HID_DIM*`N_LEN-1:0] d_backward_buf [0:`BATCH_SIZE-1];
+  reg  [`N_LEN-1:0] d_backward_mem [0:`BATCH_SIZE*`N*`HID_DIM-1];
+  reg  [`N*`HID_DIM*`N_LEN-1:0] d_backward_buf [0:`BATCH_SIZE-1];
 
   reg  [`N_LEN_W-1:0] q_forward_mem [0:(`BATCH_SIZE+1)*`HID_DIM*`HID_DIM-1];
   wire [`HID_DIM*`HID_DIM*`N_LEN_W-1:0] q_forward_ans [0:`BATCH_SIZE];
+
+  reg  [`N_LEN-1:0] q_backward_mem [0:`BATCH_SIZE*`HID_DIM*`HID_DIM-1];
+  wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] q_backward_ans [0:`BATCH_SIZE-1];
+
   wire [`BATCH_SIZE:0] correct_forward;
+  wire [`BATCH_SIZE-1:0] correct_backward;
+
+  // extract answer
+  wire [`HID_DIM*`HID_DIM*`N_LEN_W-1:0] q_forward_ans_tmp;
+  wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] q_backward_ans_tmp;
+  assign q_forward_ans_tmp = q_forward_ans[2];
+  assign q_backward_ans_tmp = q_backward_ans[0];
 
 
   generate
@@ -82,9 +93,13 @@ module top_tb ();
     end
     
     for (i = 0; i < `BATCH_SIZE; i = i + 1) begin
-      for (j = 0; j < `HID_DIM*`HID_DIM; j = j + 1) begin
-        assign d_backward_buf[i][j*`N_LEN +: `N_LEN] = d_backward_mem[i*`HID_DIM*`HID_DIM + j];
+      for (j = 0; j < `N*`HID_DIM; j = j + 1) begin
+        assign d_backward_buf[i][j*`N_LEN +: `N_LEN] = d_backward_mem[i*`N*`HID_DIM + j];
       end
+      for (j = 0; j < `HID_DIM*`HID_DIM; j = j + 1) begin
+        assign q_backward_ans[i][j*`N_LEN +: `N_LEN] = q_backward_mem[i*`HID_DIM*`HID_DIM + j];
+      end
+      assign correct_backward[i] = (q_backward_ans[i] == top_inst.mix_q_backward);
     end
   endgenerate
 
@@ -95,8 +110,9 @@ module top_tb ();
 
   initial begin
     $readmemb("../../data/tb/train/emb_layer/emb_layer_forward_in.txt", d_forward_mem);
-    $readmemb("../../data/tb/train/tanh_layer/tanh_layer1_backward_in.txt", d_backward_mem);
-    $readmemb("../../data/tb/train/tanh_layer/tanh_layer1_forward_out.txt", q_forward_mem);
+    $readmemb("../../data/tb/train/dense_layer/dense_layer_backward_out.txt", d_backward_mem);
+    $readmemb("../../data/tb/train/tanh_layer/tanh_layer3_forward_out.txt", q_forward_mem);
+    $readmemb("../../data/tb/train/mix_layer/mix_layer1_backward_out.txt", q_backward_mem);
   end
 
 

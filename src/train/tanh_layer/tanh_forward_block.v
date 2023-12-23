@@ -85,7 +85,7 @@ module tanh_forward_block (
       for (j = 0; j < `HID_DIM; j = j + 1) begin
         q_buf[j] <= 0;
       end
-    end else begin
+    end else if (run) begin
       q_buf[q_buf_index] <= tanh_table_q;
     end
   end

@@ -126,7 +126,7 @@ module tanh_backward_block (
       for (j = 0; j < `HID_DIM; j = j + 1) begin
         q_backward_buf[j] <= 0;
       end
-    end else if (run) begin
+    end else if (run & ~valid) begin
       q_backward_buf[q_backward_index] <= fixed_mul2(d_buf[d_buf_index], sub);
     end
   end
