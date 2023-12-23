@@ -145,7 +145,7 @@ module top # (
                              (state_forward == `F_RECV)  ? axis_in_valid :
                              (state_forward == `F_EMB)   ? emb_valid_forward :
                              (state_forward == `F_MIX1)  ? mix_valid_forward :
-                             (state_forward == `F_TANH1) ? 1'b1 :
+                             (state_forward == `F_TANH1) ? tanh_valid_forward :
                              (state_forward == `F_MIX2)  ? 1'b1 :
                              (state_forward == `F_TANH2) ? 1'b1 :
                              (state_forward == `F_MIX3)  ? 1'b1 :
@@ -167,7 +167,7 @@ module top # (
                               (state_backward == `B_MIX3)  ? 1'b1 :
                               (state_backward == `B_TANH2) ? 1'b1 :
                               (state_backward == `B_MIX2)  ? 1'b1 :
-                              (state_backward == `B_TANH1) ? 1'b1 :
+                              (state_backward == `B_TANH1) ? tanh_valid_backward :
                               (state_backward == `B_MIX1)  ? mix_valid_backward :
                               (state_backward == `B_EMB)   ? emb_valid_backward :
                               (state_backward == `B_FIN)   ? state_main_run : 1'b0;
@@ -183,18 +183,18 @@ module top # (
 
   // assign forward_mix_input
   assign forward_mix_in_d_emb = emb_q_forward;
-  // assign forward_mix_in_d_tanh = tanh_q_forward;
+  assign forward_mix_in_d_tanh = tanh_q_forward;
 
   // assign mix_layer
   assign mix_run_forward  = forward_mix_in_valid;
   assign mix_d_forward    = forward_mix_in_q;
-  assign mix_d_backward   = d_backward_debug;
+  assign mix_d_backward   = tanh_q_backward;
 
   // assign tanh_layer
-  // assign tanh_run_forward  = (state_forward  == `F_TANH1) | (state_forward  == `F_TANH2) | (state_forward  == `F_TANH3);
-  // assign tanh_run_backward = (state_backward == `B_TANH1) | (state_backward == `B_TANH2) | (state_backward == `B_TANH3);
-  // assign tanh_d_forward    = mix_q_forward;
-  // assign tanh_d_backward   = d_backward_debug; 
+  assign tanh_run_forward  = (state_forward  == `F_TANH1) | (state_forward  == `F_TANH2) | (state_forward  == `F_TANH3);
+  assign tanh_run_backward = (state_backward == `B_TANH1) | (state_backward == `B_TANH2) | (state_backward == `B_TANH3);
+  assign tanh_d_forward    = mix_q_forward;
+  assign tanh_d_backward   = d_backward_debug; 
 
 
   
@@ -344,21 +344,21 @@ module top # (
   );
 
   // tanh_layer
-  // tanh_layer tanh_layer_inst (
-  //   .clk(clk),
-  //   .rst_n(rst_n),
-  //   .run_forward(tanh_run_forward),
-  //   .run_backward(tanh_run_backward),
-  //   .load_backward(load_backward),
-  //   .state_forward(state_forward),
-  //   .state_backward(state_backward),
-  //   .d_forward(tanh_d_forward),
-  //   .d_backward(tanh_d_backward),
-  //   .valid_forward(tanh_valid_forward),
-  //   .valid_backward(tanh_valid_backward),
-  //   .q_forward(tanh_q_forward),
-  //   .q_backward(tanh_q_backward)
-  // );
+  tanh_layer tanh_layer_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .run_forward(tanh_run_forward),
+    .run_backward(tanh_run_backward),
+    .load_backward(load_backward),
+    .state_forward(state_forward),
+    .state_backward(state_backward),
+    .d_forward(tanh_d_forward),
+    .d_backward(tanh_d_backward),
+    .valid_forward(tanh_valid_forward),
+    .valid_backward(tanh_valid_backward),
+    .q_forward(tanh_q_forward),
+    .q_backward(tanh_q_backward)
+  );
 
 
 

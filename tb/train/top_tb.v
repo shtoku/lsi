@@ -68,17 +68,17 @@ module top_tb ();
   reg  [`N_LEN-1:0] d_backward_mem [0:`BATCH_SIZE*`HID_DIM*`HID_DIM-1];
   reg  [`HID_DIM*`HID_DIM*`N_LEN-1:0] d_backward_buf [0:`BATCH_SIZE-1];
 
-  reg  [`N_LEN-1:0] q_forward_mem [0:(`BATCH_SIZE+1)*`HID_DIM*`HID_DIM-1];
-  wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] q_forward_ans [0:`BATCH_SIZE];
+  reg  [`N_LEN_W-1:0] q_forward_mem [0:(`BATCH_SIZE+1)*`HID_DIM*`HID_DIM-1];
+  wire [`HID_DIM*`HID_DIM*`N_LEN_W-1:0] q_forward_ans [0:`BATCH_SIZE];
   wire [`BATCH_SIZE:0] correct_forward;
 
 
   generate
     for (i = 0; i < `BATCH_SIZE + 1; i = i + 1) begin
       for (j = 0; j < `HID_DIM*`HID_DIM; j = j + 1) begin
-        assign q_forward_ans[i][j*`N_LEN +: `N_LEN] = q_forward_mem[i*`HID_DIM*`HID_DIM + j];
+        assign q_forward_ans[i][j*`N_LEN_W +: `N_LEN_W] = q_forward_mem[i*`HID_DIM*`HID_DIM + j];
       end
-      assign correct_forward[i] = (q_forward_ans[i] == top_inst.mix_q_forward);
+      assign correct_forward[i] = (q_forward_ans[i] == top_inst.tanh_q_forward);
     end
     
     for (i = 0; i < `BATCH_SIZE; i = i + 1) begin
@@ -95,8 +95,8 @@ module top_tb ();
 
   initial begin
     $readmemb("../../data/tb/train/emb_layer/emb_layer_forward_in.txt", d_forward_mem);
-    $readmemb("../../data/tb/train/mix_layer/mix_layer1_backward_in.txt", d_backward_mem);
-    $readmemb("../../data/tb/train/mix_layer/mix_layer1_forward_out.txt", q_forward_mem);
+    $readmemb("../../data/tb/train/tanh_layer/tanh_layer1_backward_in.txt", d_backward_mem);
+    $readmemb("../../data/tb/train/tanh_layer/tanh_layer1_forward_out.txt", q_forward_mem);
   end
 
 
