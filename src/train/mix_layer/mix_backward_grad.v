@@ -38,7 +38,7 @@ module mix_backward_grad #(
 
   // reg counter
   reg  [6:0] count1, count1_delay1, count1_delay2, count1_delay3;
-  reg  [4:0] count2;
+  reg  [4:0] count2, count2_delay1, count2_delay2;
   reg  [1:0] count3;
   reg  [4:0] count4;
 
@@ -138,13 +138,24 @@ module mix_backward_grad #(
       count2 <= 0;
       raddr_grad_b <= 0;
     end else if (run) begin
-      if (count2 != `HID_DIM) begin
+      if (count2 != `HID_DIM - 1) begin
         count2 <= count2 + 1;
         raddr_grad_b <= raddr_grad_b + 1;
       end
     end else begin
       count2 <= 0;
       raddr_grad_b <= raddr_b_bias(state);
+    end
+  end
+
+  // count2 delay
+  always @(posedge clk, negedge rst_n) begin
+    if (~rst_n) begin
+      count2_delay1 <= 0;
+      count2_delay2 <= 0;
+    end else begin
+      count2_delay1 <= count2;
+      count2_delay2 <= count2_delay1;
     end
   end
 
@@ -212,7 +223,7 @@ module mix_backward_grad #(
       always @(posedge clk, negedge rst_n) begin
         if (~rst_n) begin
           wdata_grad_w_buf[i] <= 0;
-        end else begin
+        end else if (run & ~valid) begin
           wdata_grad_w_buf[i] <= rdata_grad_w_buf[i] + mul[i];
         end
       end
@@ -223,8 +234,8 @@ module mix_backward_grad #(
   always @(posedge clk, negedge rst_n) begin
     if (~rst_n) begin
       wdata_grad_b <= 0;
-    end else begin
-      wdata_grad_b <= rdata_grad_b + d_backward_buf1[count2-1];
+    end else if (count2_delay2 != `HID_DIM - 1) begin
+      wdata_grad_b <= rdata_grad_b + d_backward_buf1[count2_delay1];
     end
   end
 

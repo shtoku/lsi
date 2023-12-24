@@ -76,14 +76,14 @@ module emb_layer #(
   assign emb_optim_rdata_grad = emb_ram_grad_rdata;
 
   // assign emb_ram_w
-  assign emb_ram_w_load  = update;
+  assign emb_ram_w_load  = (update & ~valid_update);
   assign emb_ram_w_waddr = emb_optim_waddr;
   assign emb_ram_w_wdata = emb_optim_wdata_w;
   assign emb_ram_w_raddr = (run_forward) ? emb_forward_raddr :
                            (update)      ? emb_optim_raddr   : {ADDR_WIDTH{1'bX}};
 
   // assign emb_ram_v
-  assign emb_ram_v_load  = update;
+  assign emb_ram_v_load  = (update & ~valid_update);
   assign emb_ram_v_waddr = emb_optim_waddr;
   assign emb_ram_v_wdata = emb_optim_rdata_v;
   assign emb_ram_v_raddr = emb_optim_raddr;

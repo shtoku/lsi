@@ -132,7 +132,7 @@ module emb_backward #(
       always @(posedge clk, negedge rst_n) begin
         if (~rst_n) begin
           wdata_buf[i] <= 0;
-        end else begin
+        end else if (run & ~valid) begin
           wdata_buf[i] <= rdata_buf[i] + d_backward_buf[count3_delay1][i*`N_LEN +: `N_LEN_W];
         end
       end

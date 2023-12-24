@@ -146,7 +146,7 @@ module dense_backward_grad #(
       always @(posedge clk, negedge rst_n) begin
         if (~rst_n) begin
           wdata_buf[i] <= 0;
-        end else if (~valid) begin
+        end else if (run & ~valid) begin
           wdata_buf[i] <= rdata_buf[i] + inner_q[i];
         end
       end
