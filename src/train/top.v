@@ -46,11 +46,8 @@ module top # (
     output wire [`CHAR_LEN-1:0] M_AXIS_TDATA,
     output wire M_AXIS_TLAST,
     output wire M_AXIS_TVALID,
-    input  wire M_AXIS_TREADY,
+    input  wire M_AXIS_TREADY
     // AXI Stream interface (output) end
-
-    // debug port
-    input  wire [`N*`CHAR_NUM*`N_LEN_W-1:0] d_backward_debug
   );
 
 
@@ -136,8 +133,13 @@ module top # (
   wire [`N*`CHAR_LEN-1:0] comp_num;
   wire [`N*`N_LEN-1:0] comp_q;
 
-
-  
+  // wire softmax_layer
+  wire smax_run;
+  wire [`N*`CHAR_NUM*`N_LEN-1:0] smax_d;
+  wire [`N*`CHAR_LEN-1:0] smax_d_num;
+  wire [`N*`N_LEN-1:0] smax_d_max;
+  wire smax_valid;
+  wire [`N*`CHAR_NUM*`N_LEN_W-1:0] smax_q;  
 
   // wire AXI Stream Controller (output)
   wire axis_out_run;
@@ -183,16 +185,16 @@ module top # (
   
   // assign state_backward
   assign state_backward_run = (state_backward == `B_IDLE)  ? (state_main == `M_S2 | state_main == `M_S3) :
-                              (state_backward == `B_SMAX)  ? 1'b1 :
+                              (state_backward == `B_SMAX)  ?           smax_valid :
                               (state_backward == `B_DENS)  ? dense_valid_backward :
-                              (state_backward == `B_TANH3) ? tanh_valid_backward :
-                              (state_backward == `B_MIX3)  ? mix_valid_backward :
-                              (state_backward == `B_TANH2) ? tanh_valid_backward :
-                              (state_backward == `B_MIX2)  ? mix_valid_backward :
-                              (state_backward == `B_TANH1) ? tanh_valid_backward :
-                              (state_backward == `B_MIX1)  ? mix_valid_backward :
-                              (state_backward == `B_EMB)   ? emb_valid_backward :
-                              (state_backward == `B_FIN)   ? state_main_run : 1'b0;
+                              (state_backward == `B_TANH3) ?  tanh_valid_backward :
+                              (state_backward == `B_MIX3)  ?   mix_valid_backward :
+                              (state_backward == `B_TANH2) ?  tanh_valid_backward :
+                              (state_backward == `B_MIX2)  ?   mix_valid_backward :
+                              (state_backward == `B_TANH1) ?  tanh_valid_backward :
+                              (state_backward == `B_MIX1)  ?   mix_valid_backward :
+                              (state_backward == `B_EMB)   ?   emb_valid_backward :
+                              (state_backward == `B_FIN)   ?       state_main_run : 1'b0;
 
   // assign AXI Stream Controller (input)
   assign axis_in_run = (state_forward == `F_RECV);
@@ -227,17 +229,21 @@ module top # (
   assign dense_run_forward  = (state_forward  == `F_DENS);
   assign dense_run_backward = (state_backward == `B_DENS);
   assign dense_d_forward    = tanh_q_forward[`N*`HID_DIM*`N_LEN_W-1:0];
-  assign dense_d_backward   = d_backward_debug;
+  assign dense_d_backward   = smax_q;
 
   // assign comp_layer
   assign comp_run = (state_forward == `F_COMP);
   assign comp_d   = dense_q_forward;
 
-  
+  // assign softmax_lawe
+  assign smax_run   = (state_backward == `B_SMAX);
+  assign smax_d     = dense_q_forward;
+  assign smax_d_num = axis_in_q;
+  assign smax_d_max = comp_q;  
 
   // assign AXI Stream Controller (output)
   assign axis_out_run = (state_forward == `F_SEND);
-  assign axis_out_d   = axis_in_q;
+  assign axis_out_d   = comp_num;
 
 
   // ----------------------------------------
@@ -438,8 +444,18 @@ module top # (
     .q(comp_q)
   );
 
-
-
+  // softmax_layer
+  softmax_layer softmax_layer_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .run(smax_run),
+    .load_d_num(load_backward),
+    .d(smax_d),
+    .d_num(smax_d_num),
+    .d_max(smax_d_max),
+    .valid(smax_valid),
+    .q(smax_q)
+  );
 
   // AXI Stream Controller (output)
   axi_stream_output axi_stream_output_inst (
