@@ -129,6 +129,13 @@ module top # (
   wire [`N*`CHAR_NUM*`N_LEN-1:0] dense_q_forward;
   wire [`N*`HID_DIM*`N_LEN-1:0]  dense_q_backward;
 
+  // wire comp_layer
+  wire comp_run;
+  wire [`N*`CHAR_NUM*`N_LEN-1:0] comp_d;
+  wire comp_valid;
+  wire [`N*`CHAR_LEN-1:0] comp_num;
+  wire [`N*`N_LEN-1:0] comp_q;
+
 
   
 
@@ -157,18 +164,18 @@ module top # (
 
   // assign state_forward
   assign state_forward_run = (state_forward == `F_IDLE)  ? (state_main == `M_S1 | state_main == `M_S2) :
-                             (state_forward == `F_RECV)  ? axis_in_valid :
-                             (state_forward == `F_EMB)   ? emb_valid_forward :
-                             (state_forward == `F_MIX1)  ? mix_valid_forward :
-                             (state_forward == `F_TANH1) ? tanh_valid_forward :
-                             (state_forward == `F_MIX2)  ? mix_valid_forward :
-                             (state_forward == `F_TANH2) ? tanh_valid_forward :
-                             (state_forward == `F_MIX3)  ? mix_valid_forward :
-                             (state_forward == `F_TANH3) ? tanh_valid_forward :
+                             (state_forward == `F_RECV)  ?       axis_in_valid :
+                             (state_forward == `F_EMB)   ?   emb_valid_forward :
+                             (state_forward == `F_MIX1)  ?   mix_valid_forward :
+                             (state_forward == `F_TANH1) ?  tanh_valid_forward :
+                             (state_forward == `F_MIX2)  ?   mix_valid_forward :
+                             (state_forward == `F_TANH2) ?  tanh_valid_forward :
+                             (state_forward == `F_MIX3)  ?   mix_valid_forward :
+                             (state_forward == `F_TANH3) ?  tanh_valid_forward :
                              (state_forward == `F_DENS)  ? dense_valid_forward :
-                             (state_forward == `F_COMP)  ? 1'b1 :
-                             (state_forward == `F_SEND)  ? axis_out_valid :
-                             (state_forward == `F_FIN)   ? state_main_run : 1'b0;
+                             (state_forward == `F_COMP)  ?          comp_valid :
+                             (state_forward == `F_SEND)  ?      axis_out_valid :
+                             (state_forward == `F_FIN)   ?      state_main_run : 1'b0;
   assign state_forward_d   = (mode == `TRAIN )   ? `F_IDLE :
                              (mode == `FORWARD)  ? `F_IDLE :
                              (mode == `GEN_SIMI) ? `F_IDLE :
@@ -221,6 +228,10 @@ module top # (
   assign dense_run_backward = (state_backward == `B_DENS);
   assign dense_d_forward    = tanh_q_forward[`N*`HID_DIM*`N_LEN_W-1:0];
   assign dense_d_backward   = d_backward_debug;
+
+  // assign comp_layer
+  assign comp_run = (state_forward == `F_COMP);
+  assign comp_d   = dense_q_forward;
 
   
 
@@ -414,6 +425,17 @@ module top # (
     .valid_backward(dense_valid_backward),
     .q_forward(dense_q_forward),
     .q_backward(dense_q_backward)
+  );
+
+  // comp_layer
+  comp_layer comp_layer_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .run(comp_run),
+    .d(comp_d),
+    .valid(comp_valid),
+    .num(comp_num),
+    .q(comp_q)
   );
 
 
