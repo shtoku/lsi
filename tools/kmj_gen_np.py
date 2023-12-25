@@ -13,7 +13,7 @@ hid_dim = 24        # 潜在ベクトルの次元
 
 # 使用できる文字のリストを読み込み
 char_list = []
-with open('../data/char_list.txt' , 'r', encoding='utf-8') as file:
+with open('../data/char_list_64.txt' , 'r', encoding='utf-8') as file:
   for line in file:
     char_list.append(line.replace('\n', ''))
 
