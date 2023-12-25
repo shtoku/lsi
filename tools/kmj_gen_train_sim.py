@@ -10,9 +10,9 @@ PATH_TB = '../data/tb/train/'
 
 
 N = 10              # 最大文字数
-char_num = 200      # 文字種数
-emb_dim = 24        # 文字ベクトルの次元
-hid_dim = 24        # 潜在ベクトルの次元
+char_num = 64       # 文字種数
+emb_dim = 12        # 文字ベクトルの次元
+hid_dim = 12        # 潜在ベクトルの次元
 
 
 batch_size = 2      # ミニバッチサイズ
@@ -214,4 +214,4 @@ if __name__ == '__main__':
 
 # fixed sample ver
 # batch_size: 2, lr: 0.001
-# 52.89280700683594 0
+# 41.45857238769531 0
