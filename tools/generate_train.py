@@ -9,9 +9,9 @@ PATH_BIN192 = '../data/parameter/train/binary192/'
 
 
 N = 10              # 最大文字数
-char_num = 200      # 文字種数
-emb_dim = 24        # 文字ベクトルの次元
-hid_dim = 24        # 潜在ベクトルの次元
+char_num = 64       # 文字種数
+emb_dim = 12        # 文字ベクトルの次元
+hid_dim = 12        # 潜在ベクトルの次元
 
 
 # 固定小数点の桁数
