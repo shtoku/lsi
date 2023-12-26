@@ -25,7 +25,7 @@ module mix_backward_q #(
   reg  [`DATA_N*`N_LEN-1:0] mix_dot_d;
 
   // reg counter
-  reg  [1:0] count1;
+  reg  count1;
 
 
   // ----------------------------------------

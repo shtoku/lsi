@@ -39,7 +39,7 @@ module mix_backward_grad #(
   // reg counter
   reg  [6:0] count1, count1_delay1, count1_delay2, count1_delay3;
   reg  [4:0] count2, count2_delay1, count2_delay2;
-  reg  [1:0] count3;
+  reg  count3;
   reg  [4:0] count4;
 
   // grad_w (d_forward.T, d_backward)

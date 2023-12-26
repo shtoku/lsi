@@ -69,7 +69,7 @@ module mix_transpose #(
         end else if (count1 == `HID_DIM - 1) begin
           count1 <= 0;
           count2 <= count2 + 1;
-          raddr  <= raddr - (`HID_DIM*`HID_DIM/`DATA_N - `DATA_N + 1);
+          raddr  <= raddr - (`HID_DIM*`HID_DIM/`DATA_N - `HID_DIM/`DATA_N - 1);
         end else begin
           count1 <= count1 + 1;
           count2 <= count2;
@@ -132,7 +132,7 @@ module mix_transpose #(
         end else if (count4 == `DATA_N - 1) begin
           count4 <= 0;
           count5 <= count5 + 1;
-          waddr_buf <= waddr_buf - (`HID_DIM - `DATA_N + 1);
+          waddr_buf <= waddr_buf - (`HID_DIM - `HID_DIM/`DATA_N - 1);
         end else begin
           count4 <= count4 + 1;
           count5 <= count5;

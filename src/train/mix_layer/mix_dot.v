@@ -25,21 +25,21 @@ module mix_dot (
   reg [`N_LEN-1:0] add1_array [0:2];
 
   // reg wait and add
-  reg [`N_LEN-1:0] midrslt1_array [0:3];
-  reg [`N_LEN-1:0] midrslt2_array [0:1];
+  reg [`N_LEN-1:0] midrslt1_array [0:1];
+  // reg [`N_LEN-1:0] midrslt2_array [0:1];
   reg [`N_LEN-1:0] midrslt3_array;
 
   // reg ouput buffer
   reg [`N_LEN-1:0] outrslt_array [0:`HID_DIM-1];
 
   // reg counter
-  reg [1:0] count1;
+  reg count1;
   reg [7:0] count2, count3, count4;
 
   
   // ----------------------------------------
   // assign valid
-  assign valid = run & (count2 == 102);
+  assign valid = run & (count2 == 29);
 
   // convert shape (`DATA_N, `N_LEN) <- (`DATA_N*`N_LEN)
   generate
@@ -105,27 +105,27 @@ module mix_dot (
   always @(posedge clk, negedge rst_n) begin
     if (!rst_n) begin
       count1 <= 0;
-      for (n = 0; n < 4; n = n + 1) begin
+      for (n = 0; n < 2; n = n + 1) begin
         midrslt1_array[n] <= 0;
       end
-      for (n = 0; n < 2; n = n + 1) begin
-        midrslt2_array[n] <= 0;
-      end
+      // for (n = 0; n < 2; n = n + 1) begin
+      //   midrslt2_array[n] <= 0;
+      // end
       midrslt3_array <= 0;
     end else if(run) begin
       count1 <= count1 + 1;
       midrslt1_array[count1] <= add1_array[0] + add1_array[1] + add1_array[2];  // second
-      midrslt2_array[0] <= midrslt1_array[0] + midrslt1_array[1];               // third
-      midrslt2_array[1] <= midrslt1_array[2] + midrslt1_array[3];               // third
-      midrslt3_array <= midrslt2_array[0] + midrslt2_array[1];                  // fourth
+      // midrslt2_array[0] <= midrslt1_array[0] + midrslt1_array[1];               // third
+      // midrslt2_array[1] <= midrslt1_array[2] + midrslt1_array[3];               // third
+      midrslt3_array <= midrslt1_array[0] + midrslt1_array[1];                  // fourth
     end else begin
       count1 <= 0;
-      for(n = 0; n < 4; n = n + 1) begin
+      for(n = 0; n < 2; n = n + 1) begin
         midrslt1_array[n] <= 0;
       end
-      for(n = 0; n < 2; n = n + 1) begin
-        midrslt2_array[n] <= 0;
-      end
+      // for(n = 0; n < 2; n = n + 1) begin
+      //   midrslt2_array[n] <= 0;
+      // end
       midrslt3_array <= 0;
     end
   end
@@ -140,14 +140,14 @@ module mix_dot (
         outrslt_array[n] <= 0;
       end
     end else if(run) begin
-      if (count2 == 102) begin
+      if (count2 == 29) begin
         count2 <= count2;
       end else begin
         count2 <= count2 + 1;
       end
-      if (count2 == count4 + 9)begin
+      if (count2 == count4 + 6)begin
         count3 <= count3 + 1;
-        count4 <= count4 + 4;
+        count4 <= count4 + 2;
         outrslt_array[count3] <= midrslt3_array + {{(`N_LEN-`N_LEN_W){rdata_b[`N_LEN_W-1]}}, rdata_b};
       end
     end else begin

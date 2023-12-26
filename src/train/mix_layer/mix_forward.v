@@ -22,7 +22,7 @@ module mix_forward #(
   reg  [`DATA_N*`N_LEN-1:0] mix_dot_d;
 
   // reg counter
-  reg  [1:0] count1;
+  reg  count1;
   reg  [7:0] count2, count3;
 
 
@@ -30,12 +30,12 @@ module mix_forward #(
   // function select_d 
   function [`DATA_N*`N_LEN-1:0] select_d;
     input [`HID_DIM*`N_LEN-1:0] data;
-    input [1:0] select;
+    input select;
     case (select)
       0: select_d = data[0*`DATA_N*`N_LEN +: `DATA_N*`N_LEN];
       1: select_d = data[1*`DATA_N*`N_LEN +: `DATA_N*`N_LEN];
-      2: select_d = data[2*`DATA_N*`N_LEN +: `DATA_N*`N_LEN];
-      3: select_d = data[3*`DATA_N*`N_LEN +: `DATA_N*`N_LEN];
+      // 2: select_d = data[2*`DATA_N*`N_LEN +: `DATA_N*`N_LEN];
+      // 3: select_d = data[3*`DATA_N*`N_LEN +: `DATA_N*`N_LEN];
     endcase
   endfunction
 
@@ -96,8 +96,8 @@ module mix_forward #(
       raddr_b <= 0;
     end else if (run) begin
         count2 <= count2 + 1;
-      if (count2 == count3 + 8) begin
-        count3 <= count3 + 4;
+      if (count2 == count3 + 5) begin
+        count3 <= count3 + 2;
         raddr_b <= raddr_b + 1;
       end
     end else begin
