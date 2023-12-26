@@ -1,6 +1,6 @@
 // define Network parameter
 `define N           10                // max characters of Kaomoji 
-`define CHAR_NUM    64                // character list length
+`define CHAR_NUM    72                // character list length
 `define EMB_DIM     12                // character vector length
 `define HID_DIM     12                // hidden vector length
 
