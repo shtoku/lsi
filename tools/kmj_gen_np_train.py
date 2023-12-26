@@ -8,7 +8,7 @@ PATH_DEC = '../data/parameter/train/decimal/'
 
 
 N = 10              # 最大文字数
-char_num = 64       # 文字種数
+char_num = 72       # 文字種数
 emb_dim = 12        # 文字ベクトルの次元
 hid_dim = 12        # 潜在ベクトルの次元
 
@@ -198,163 +198,163 @@ if __name__ == '__main__':
 
 # float ver
 # batch_size: 32, lr: 0.001, i_len:8
-# EPOCH:   1, Train Loss: 35.29577  Acc: 0.223, Valid Loss: 29.27290  Acc: 0.329
-# EPOCH:   2, Train Loss: 27.36655  Acc: 0.357, Valid Loss: 26.22658  Acc: 0.385
-# EPOCH:   3, Train Loss: 25.23116  Acc: 0.405, Valid Loss: 24.48280  Acc: 0.417
-# EPOCH:   4, Train Loss: 23.59202  Acc: 0.434, Valid Loss: 22.98226  Acc: 0.448
-# EPOCH:   5, Train Loss: 22.32445  Acc: 0.460, Valid Loss: 21.92510  Acc: 0.466
-# EPOCH:   6, Train Loss: 21.41113  Acc: 0.476, Valid Loss: 21.15398  Acc: 0.481
-# EPOCH:   7, Train Loss: 20.72705  Acc: 0.491, Valid Loss: 20.56796  Acc: 0.493
-# EPOCH:   8, Train Loss: 20.17416  Acc: 0.502, Valid Loss: 20.06109  Acc: 0.503
-# EPOCH:   9, Train Loss: 19.66051  Acc: 0.514, Valid Loss: 19.56320  Acc: 0.515
-# EPOCH:  10, Train Loss: 19.14194  Acc: 0.525, Valid Loss: 19.05644  Acc: 0.528
-# EPOCH:  11, Train Loss: 18.61694  Acc: 0.537, Valid Loss: 18.54738  Acc: 0.538
-# EPOCH:  12, Train Loss: 18.09270  Acc: 0.549, Valid Loss: 18.04139  Acc: 0.550
-# EPOCH:  13, Train Loss: 17.58215  Acc: 0.561, Valid Loss: 17.55396  Acc: 0.562
-# EPOCH:  14, Train Loss: 17.10977  Acc: 0.571, Valid Loss: 17.10959  Acc: 0.571
-# EPOCH:  15, Train Loss: 16.69149  Acc: 0.581, Valid Loss: 16.71716  Acc: 0.578
-# EPOCH:  16, Train Loss: 16.32440  Acc: 0.589, Valid Loss: 16.36936  Acc: 0.584
-# EPOCH:  17, Train Loss: 15.99722  Acc: 0.596, Valid Loss: 16.05545  Acc: 0.591
-# EPOCH:  18, Train Loss: 15.69959  Acc: 0.602, Valid Loss: 15.76731  Acc: 0.597
-# EPOCH:  19, Train Loss: 15.42442  Acc: 0.608, Valid Loss: 15.49974  Acc: 0.603
-# EPOCH:  20, Train Loss: 15.16713  Acc: 0.614, Valid Loss: 15.24944  Acc: 0.609
+# EPOCH:   1, Train Loss: 35.71628  Acc: 0.236, Valid Loss: 29.14088  Acc: 0.334
+# EPOCH:   2, Train Loss: 27.92831  Acc: 0.345, Valid Loss: 26.88671  Acc: 0.373
+# EPOCH:   3, Train Loss: 25.94903  Acc: 0.396, Valid Loss: 25.42030  Acc: 0.408
+# EPOCH:   4, Train Loss: 24.78276  Acc: 0.424, Valid Loss: 24.35855  Acc: 0.432
+# EPOCH:   5, Train Loss: 23.66027  Acc: 0.447, Valid Loss: 23.17865  Acc: 0.454
+# EPOCH:   6, Train Loss: 22.57292  Acc: 0.471, Valid Loss: 22.17912  Acc: 0.475
+# EPOCH:   7, Train Loss: 21.69875  Acc: 0.487, Valid Loss: 21.40326  Acc: 0.488
+# EPOCH:   8, Train Loss: 21.00769  Acc: 0.499, Valid Loss: 20.78649  Acc: 0.499
+# EPOCH:   9, Train Loss: 20.41628  Acc: 0.511, Valid Loss: 20.24228  Acc: 0.511
+# EPOCH:  10, Train Loss: 19.87379  Acc: 0.522, Valid Loss: 19.74805  Acc: 0.521
+# EPOCH:  11, Train Loss: 19.38288  Acc: 0.530, Valid Loss: 19.30690  Acc: 0.528
+# EPOCH:  12, Train Loss: 18.94537  Acc: 0.537, Valid Loss: 18.90922  Acc: 0.535
+# EPOCH:  13, Train Loss: 18.54953  Acc: 0.544, Valid Loss: 18.54322  Acc: 0.542
+# EPOCH:  14, Train Loss: 18.18408  Acc: 0.549, Valid Loss: 18.20133  Acc: 0.549
+# EPOCH:  15, Train Loss: 17.84080  Acc: 0.555, Valid Loss: 17.87744  Acc: 0.555
+# EPOCH:  16, Train Loss: 17.51401  Acc: 0.563, Valid Loss: 17.56712  Acc: 0.559
+# EPOCH:  17, Train Loss: 17.20117  Acc: 0.569, Valid Loss: 17.26898  Acc: 0.565
+# EPOCH:  18, Train Loss: 16.90201  Acc: 0.575, Valid Loss: 16.98355  Acc: 0.570
+# EPOCH:  19, Train Loss: 16.61640  Acc: 0.581, Valid Loss: 16.71143  Acc: 0.578
+# EPOCH:  20, Train Loss: 16.34398  Acc: 0.587, Valid Loss: 16.45315  Acc: 0.583
 # base     : (　・ー́　・　)
-# generate : (　*́́　・　)
+# generate : (　　　・　　　)
 # base     : (((*。_。)
-# generate : ヾ((　*)
+# generate : ヾ((^)
 # base     : (　　́_ゝ`)。。
-# generate : (　　́́　*)!
+# generate : (　　　゚`　)!
 # base     : ヽ(*　́∀`)ノ
-# generate : ヾ(*　́^*)!
+# generate : !(*　^́　)!
 # base     : (　́　)
 # generate : (　́　)
 # base     : (　゚Д゚)ノ
-# generate : (　・・゚)
+# generate : (　^　　)!
 # base     : _/(゚Д゚　)
-# generate : (^_^　)
+# generate : ヾヾ(　　́　)
 # base     : ||ヾ(　・ω|　
-# generate : !ヾ(　^́*)
+# generate : !!ヾ(　́^)　
 # base     : (　́　゚∀　゚`)
-# generate : (　̄　(́　̄　)
+# generate : (　　　　́　　))
 # base     : (゚Д゚ヾ　)
-# generate : (・・^・　)
+# generate : (*(^(　)
 # base     : !(。^。)
 # generate : !(・^・)
 # base     : (ω)
-# generate : ()
+# generate : (_)
 # base     : (o)σ
-# generate : ()!
+# generate : (　)!
 # base     : ヾ(*　▽́　*)
-# generate : (　・(　*)
+# generate : (　　́́　　)
 # base     : ヾ(=　▽́　=)ヽ
-# generate : ヾ(*　́́　*)
+# generate : !(　　ώ　*)
 # base     : (__)
-# generate : (・ω)
+# generate : (*^)
 # base     : (　*`ω　́)
-# generate : (　　^　̄)
+# generate : (　　　́　*)
 # base     : ('-'*)ノ
-# generate : (^_^*)
-# base     : (--)
-# generate : (・・)
+# generate : (　^^*)
+# base     : (-:-)
+# generate : (^∀^)
 # base     : o(　̄ー　̄;)ゞ
-# generate : !(　((　̄　)ノ
-# new_gen  : !(*(・　)
-# new_gen  : !((　^^)(
-# new_gen  : !(*(　)
-# new_gen  : (　(　)()(!
-# new_gen  : (*　(　　
-# new_gen  : !(　((　́　・)
-# new_gen  : ()ヾ^)_̄)
-# new_gen  : ^()*(∀(̄)̄
-# new_gen  : ♪()(()!)(
-# new_gen  : ヾヾ^́)!
-# new_gen  : ((_(*)
-# new_gen  : ♪)()^^
-# new_gen  : (　　(^)^)
-# new_gen  : ヾヾ)　(́　))!
-# new_gen  : (^　　̄)̄!
-# new_gen  : (^^　́^)・)
-# new_gen  : ヾヾ((_^))!
-# new_gen  : (^　^)ノ)(
-# new_gen  : !((　(́　^・)
-# new_gen  : (^・*)
-# new_gen  : !(*(́^　))
-# new_gen  : ((　・)(ω　・・
-# new_gen  : !(^^・　・
-# new_gen  : 　(^・　*)̄)
-# new_gen  : ♪̄()!)
-# new_gen  : (　(　^)・)
-# new_gen  : (　()()*∀
-# new_gen  : !(̄　^^*)
-# new_gen  : (^*)
-# new_gen  : ^()^()))(^
-# new_gen  : (̄　^・・　
-# new_gen  : (*　́・　*
-# new_gen  : !*　(́^　・
-# new_gen  : (*　・̄
-# new_gen  : ^)((́^)^・
-# new_gen  : ()*)
-# new_gen  : ヾ(　∀̄*)!!
-# new_gen  : (　∀))・・♪
-# new_gen  : ヾ(　・(^　・
-# new_gen  : (・))
-# new_gen  : 　(̄*)(　(
-# new_gen  : ()(・　)
-# new_gen  : ・　((^́^　　)
-# new_gen  : (　)・)
-# new_gen  : ヾ(　^ω・　)
-# new_gen  : ((　^)!
-# new_gen  : )(^　(^!̄
-# new_gen  : )(　　̄)(
-# new_gen  : (()(()((^
-# new_gen  : (　・)̄)
-# new_gen  : (　()^)̄((
-# new_gen  : )((　)(
-# new_gen  : (())　
-# new_gen  : ((　　)
-# new_gen  : !((　(*)^()
-# new_gen  : (　(　))(♪
-# new_gen  : )　(́^))
-# new_gen  : !・()!)!!
-# new_gen  : ((　・　
-# new_gen  : )　(^)
-# new_gen  : ♪((・　
-# new_gen  : (　(*))
-# new_gen  : (*(())(　ヾ
-# new_gen  : ́　(((　　(́^
-# new_gen  : ((　^)・ヾ
-# new_gen  : )(()()!)(
-# new_gen  : (*(　)
-# new_gen  : ^))^((　)^^
-# new_gen  : ((　())(
-# new_gen  : (　))　・　
-# new_gen  : )ヾ)̄)
+# generate : !(　　́　　　))
+# new_gen  : 　　　　^)　
+# new_gen  : ())))(́()
+# new_gen  : (()(　))
+# new_gen  : ((　　)　　*
+# new_gen  : (　　　　)
+# new_gen  : (*∀^))
+# new_gen  : (((́))
+# new_gen  : (*))()
+# new_gen  : ())))()
+# new_gen  : ())　))
+# new_gen  : ((　))))(
+# new_gen  : (^(　　(　　
+# new_gen  : )((　(ヾ̄
+# new_gen  : !(　()())
+# new_gen  : !ヾ　(　　　　)ノ
+# new_gen  : ^)((()
+# new_gen  : ()
+# new_gen  : (()^)))(ヾ
+# new_gen  : (^^　))(
+# new_gen  : ((^^^(**
+# new_gen  : (())^))(
+# new_gen  : )((
+# new_gen  : 　)
+# new_gen  : (()))
+# new_gen  : ()))
+# new_gen  : (　　　(　()
+# new_gen  : 　　(　`　
+# new_gen  : !((　∀)　)
+# new_gen  : !(　　́^)　)
+# new_gen  : (　　　∀`)
+# new_gen  : )(^　(
+# new_gen  : *　(　　)(
+# new_gen  : ★()))()
+# new_gen  : (*́・)　))
+# new_gen  : (　(^`)ノ(
+# new_gen  : (　́　́`)!
+# new_gen  : ()()(　
+# new_gen  : ^)*))(ヾ
+# new_gen  : 　(*())　!
+# new_gen  : !ヾ　　ώ　・)
+# new_gen  : ((　))))
+# new_gen  : (ε^)!
+# new_gen  : ヾ())()(ヾ
+# new_gen  : (()))
+# new_gen  : ((　(　))
+# new_gen  : )(((　(^^)
+# new_gen  : (　)　)
+# new_gen  : (())
+# new_gen  : `ε^^)
+# new_gen  : (^　^()()
+# new_gen  : !　　()　)
+# new_gen  : (^　゚)ノ!
+# new_gen  : )((▽(́́
+# new_gen  : ((　　　)　)
+# new_gen  : (　　　`)
+# new_gen  : !(((　・)ノ
+# new_gen  : (　)　)
+# new_gen  : !!((　()
+# new_gen  : !((^　)
+# new_gen  : (()))(
+# new_gen  : ((^))(
+# new_gen  : ()(((
+# new_gen  : (　　()(　・)
+# new_gen  : ()(　　))
+# new_gen  : !()(
+# new_gen  : !)((́・)
+# new_gen  : ())*)
+# new_gen  : (　()()
+# new_gen  : !!((　́　*!
+# new_gen  : !(*(^́　)
+# new_gen  : ヾ((()
+# new_gen  : ((　(　)*
+# new_gen  : (・^^)　
+# new_gen  : ()▽　))(
+# new_gen  : (・　　)　*)
+# new_gen  : 　(　　)　
+# new_gen  : ())
+# new_gen  : ()()((-　)
+# new_gen  : ((^))(
+# new_gen  : (*　-`)!
+# new_gen  : (　　^)
+# new_gen  : ♪ヾ^)*
+# new_gen  : ^()(ヾ
+# new_gen  : ヾ(^)　))(
+# new_gen  : (　^　)
+# new_gen  : )(　　))　)
+# new_gen  : ()
+# new_gen  : (・・　))
+# new_gen  : (()*)
+# new_gen  : )((*)(ヾ_
+# new_gen  : (ノ)
+# new_gen  : ((　^゚　
+# new_gen  : ()
 # new_gen  : (　))
-# new_gen  : (((()(・)(
-# new_gen  : 　)̄^^^^)(
-# new_gen  : (　())()
-# new_gen  : (　^))(̄(^̄
-# new_gen  : )()^!)
-# new_gen  : !()((́)ヾ)^
-# new_gen  : (　*́　̄)̄
-# new_gen  : (・*・)
-# new_gen  : ((　^)̄)
-# new_gen  : (　　(　̄　)
-# new_gen  : (　(・))・
-# new_gen  : ((　́(∀・)!
-# new_gen  : (　)
-# new_gen  : )(̄　)(　
-# new_gen  : ((^^))・
-# new_gen  : (　́　)̄)(
-# new_gen  : ^^　^^\ヾ
-# new_gen  : ^ヾ((▽(　(
-# new_gen  : )(*́́^*)
-# new_gen  : (・　　()!
-# new_gen  : ((　)
-# new_gen  : (ヾ()))
-# new_gen  : (**^∀̄))
-# new_gen  : (　(　　
-# new_gen  : (*^́)!
-# new_gen  : (　ヾ^^ω^　)!
-# new_gen  : (*　(　　・)
-# new_gen  : 　(　(()(()
+# new_gen  : (*・-*
+# new_gen  : ()
+# new_gen  : !ヾ(^(^)()
+# new_gen  : )(　(　!
+# new_gen  : (　(・(
+# new_gen  : (())　
