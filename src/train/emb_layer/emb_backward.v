@@ -28,6 +28,7 @@ module emb_backward #(
   reg  [`N_LEN_W-1:0] wdata_buf [0:`DATA_N-1];
 
   // reg raddr controller
+  reg  count0;
   reg  [1:0] count1;
   reg  [4:0] count2;
 
@@ -60,28 +61,29 @@ module emb_backward #(
 
 
   // ----------------------------------------
-  // raddr controller
+  // main counter
   always @(posedge clk, negedge rst_n) begin
     if (~rst_n) begin
+      count0 <= 0;
       count1 <= 0;
       count2 <= 0;
       raddr <= 0;
-    end else if (run & ~(count1 == (`EMB_DIM/`DATA_N) - 1 & count2 == `N)) begin
-      if (count1 == (`EMB_DIM/`DATA_N) - 1) begin
-        count1 <= 0;
-        count2 <= count2 + 1;
-        raddr <= (`EMB_DIM/`DATA_N) * d_forward_buf[count2];
-      end else begin
-        count1 <= count1 + 1;
-        raddr <= raddr + 1;
-      end
     end else if (run) begin
-      count1 <= count1;
-      count2 <= count2;
-      raddr <= raddr;
+      count0 <= ~count0;
+      if (count0 & ~(count1 == (`EMB_DIM/`DATA_N) - 1 & count2 == `N)) begin
+        if (count1 == (`EMB_DIM/`DATA_N) - 1) begin
+          count1 <= 0;
+          count2 <= count2 + 1;
+          raddr <= (`EMB_DIM/`DATA_N) * d_forward_buf[count2 + 1];
+        end else begin
+          count1 <= count1 + 1;
+          raddr <= raddr + 1;
+        end
+      end
     end else begin
+      count0 <= 0;
       count1 <= 0;
-      count2 <= 1;
+      count2 <= 0;
       raddr <= (`EMB_DIM/`DATA_N) * d_forward_buf[0];
     end
   end
@@ -104,7 +106,7 @@ module emb_backward #(
   always @(posedge clk, negedge rst_n) begin
     if (~rst_n) begin
       count3 <= 0;
-    end else if (run & count3 != `N*`EMB_DIM/`DATA_N - 1) begin
+    end else if (count0 & count3 != `N*`EMB_DIM/`DATA_N - 1) begin
       count3 <= count3 + 1;
     end else if (run) begin
       count3 <= count3;

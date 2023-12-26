@@ -20,8 +20,8 @@ module emb_layer_tb ();
   emb_layer emb_layer_inst (.*);
 
   // correct
-  reg  [`CHAR_LEN-1:0] d_forward_mem [0:(`BATCH_SIZE+1)*`N-1];
-  reg  [`N_LEN_W-1:0]  q_forward_mem [0:(`BATCH_SIZE+1)*`N*`EMB_DIM-1];
+  reg  [`CHAR_LEN-1:0] d_forward_mem [0:(`BATCH_SIZE+2)*`N-1];
+  reg  [`N_LEN_W-1:0]  q_forward_mem [0:(`BATCH_SIZE+2)*`N*`EMB_DIM-1];
   wire [`N*`CHAR_LEN-1:0] d_forward_buf [0:`BATCH_SIZE];
   wire [`N*`EMB_DIM*`N_LEN_W-1:0] q_forward_ans[0:`BATCH_SIZE];
   wire [`BATCH_SIZE:0] correct_forward;
