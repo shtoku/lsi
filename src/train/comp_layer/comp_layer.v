@@ -39,10 +39,10 @@ module comp_layer (
 
 
   // ----------------------------------------
-  // N instances of comparator_200
+  // N instances of comparator_72
   generate
-    for (i = 0; i < `N; i = i + 1) begin : comp_200
-      comparator_200 comp_200_inst (
+    for (i = 0; i < `N; i = i + 1) begin : comp_72
+      comparator_72 comp_72_inst (
         .clk(clk),
         .rst_n(rst_n),
         .run(run),
