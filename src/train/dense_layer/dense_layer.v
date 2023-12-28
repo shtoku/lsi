@@ -108,7 +108,7 @@ module dense_layer #(
   // assign dense_ram_v
   assign dense_ram_v_load  = (update & ~dense_optim_valid);
   assign dense_ram_v_waddr = dense_optim_waddr;
-  assign dense_ram_v_wdata = dense_optim_rdata_v;
+  assign dense_ram_v_wdata = dense_optim_wdata_v;
   assign dense_ram_v_raddr = dense_optim_raddr;
 
   // assign dense_ram_grad

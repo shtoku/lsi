@@ -36,6 +36,7 @@ module emb_layer #(
   wire [`DATA_N*`N_LEN_W-1:0] emb_forward_rdata;
 
   // wire emb_backward
+  wire emb_backward_load;
   wire [ADDR_WIDTH-1:0] emb_backward_waddr, emb_backward_raddr;
   wire [`DATA_N*`N_LEN_W-1:0] emb_backward_wdata, emb_backward_rdata;
 
@@ -85,11 +86,11 @@ module emb_layer #(
   // assign emb_ram_v
   assign emb_ram_v_load  = (update & ~valid_update);
   assign emb_ram_v_waddr = emb_optim_waddr;
-  assign emb_ram_v_wdata = emb_optim_rdata_v;
+  assign emb_ram_v_wdata = emb_optim_wdata_v;
   assign emb_ram_v_raddr = emb_optim_raddr;
 
   // assign emb_ram_grad
-  assign emb_ram_grad_load  = (zero_grad | run_backward);
+  assign emb_ram_grad_load  = (zero_grad | emb_backward_load);
   assign emb_ram_grad_waddr = (zero_grad)    ? zero_grad_addr     :
                               (run_backward) ? emb_backward_waddr : {ADDR_WIDTH{1'bX}};
   assign emb_ram_grad_wdata = (zero_grad)    ? {`DATA_N*`N_LEN_W{1'b0}} :
@@ -152,6 +153,7 @@ module emb_layer #(
     .run(run_backward),
     .d_forward(d_forward_buf_delay),
     .d_backward(d_backward),
+    .load(emb_backward_load),
     .valid(valid_backward),
     .waddr(emb_backward_waddr),
     .wdata(emb_backward_wdata),

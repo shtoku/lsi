@@ -174,7 +174,7 @@ module mix_block #(
 
   // assign mix_ram_grad_b
   assign mix_ram_grad_b_load  = (zero_grad | run_backward);
-  assign mix_ram_grad_b_waddr = (zero_grad)    ? zero_grad_addr[ADDR_WIDTH-1:2] :
+  assign mix_ram_grad_b_waddr = (zero_grad)    ? zero_grad_addr[ADDR_WIDTH-1:1] :
                                 (run_backward) ? mix_backward_waddr_grad_b      : {ADDR_WIDTH{1'bX}};
   assign mix_ram_grad_b_wdata = (zero_grad)    ? {`N_LEN_W{1'b0}}  :
                                 (run_backward) ? mix_backward_wdata_grad_b : {`N_LEN_W{1'bX}};

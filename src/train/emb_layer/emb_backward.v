@@ -8,6 +8,7 @@ module emb_backward #(
     input  wire run,
     input  wire [`N*`CHAR_LEN-1:0] d_forward,
     input  wire [`N*`EMB_DIM*`N_LEN-1:0] d_backward,
+    output wire load,
     output wire valid,
     output reg  [ADDR_WIDTH-1:0] waddr,
     output wire [`DATA_N*`N_LEN_W-1:0] wdata,
@@ -56,7 +57,8 @@ module emb_backward #(
     end
   endgenerate
 
-  // assign valid
+  // assign output
+  assign load  = run & ~valid & (count3 != 0);
   assign valid = run & (count3_delay3 == `N*`EMB_DIM/`DATA_N - 1);
 
 
