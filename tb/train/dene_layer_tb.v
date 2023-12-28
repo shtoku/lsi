@@ -33,6 +33,9 @@ module dense_layer_tb ();
   wire [`N*`HID_DIM*`N_LEN-1:0] q_backward_ans [0:`BATCH_SIZE-1];
   wire [`BATCH_SIZE-1:0] correct_backward;
 
+  wire [`N*`CHAR_NUM*`N_LEN-1:0] q_forward_ans_tmp;
+  assign q_forward_ans_tmp = q_forward_ans[0];
+
 
   // assign
   genvar i, j;

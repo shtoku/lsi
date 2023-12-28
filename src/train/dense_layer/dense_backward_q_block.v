@@ -34,10 +34,9 @@ module dense_backward_q_block #(
   reg  [`N_LEN-1:0] inner_buf [0:`CHAR_NUM/DENSE_DATA_N-1];
 
   // inner_q add
-  reg  [`N_LEN-1:0] inner_add1 [0:6];    // `CHAR_NUM/DENSE_DATA_N / 3 - 1 = 7
-  reg  [`N_LEN-1:0] inner_add2 [0:1];    // 7 / 3 = 2
+  reg  [`N_LEN-1:0] inner_add1 [0:3];    // (`CHAR_NUM/DENSE_DATA_N - 4) / 2 = 4
+  reg  [`N_LEN-1:0] inner_add2 [0:1];    // 4 / 2 = 2
   reg  [`N_LEN-1:0] inner_add3;
-  reg  [`N_LEN-1:0] inner_add4;
 
   // wire dense_inner_8
   wire [DENSE_DATA_N*`N_LEN-1:0]   inner_d1;
@@ -143,29 +142,27 @@ module dense_backward_q_block #(
 
   // inner_add1
   generate
-    for (i = 0; i < 7; i = i + 1) begin
+    for (i = 0; i < 4; i = i + 1) begin
       always @(posedge clk, negedge rst_n) begin
         if (~rst_n) begin
           inner_add1[i] <= 0;
         end else begin
-          inner_add1[i] <= inner_buf[3*i] + inner_buf[3*i+1] + inner_buf[3*i+2];
+          inner_add1[i] <= inner_buf[2*i] + inner_buf[2*i+1];
         end
       end
     end
   endgenerate
 
-  // inner_add2, 3, 4
+  // inner_add2, 3
   always @(posedge clk, negedge rst_n) begin
     if (~rst_n) begin
       inner_add2[0] <= 0;
       inner_add2[1] <= 0;
       inner_add3    <= 0;
-      inner_add4    <= 0;
     end else begin
-      inner_add2[0] <= inner_add1[0] + inner_add1[1] + inner_add1[2];
-      inner_add2[1] <= inner_add1[3] + inner_add1[4] + inner_add1[5];
-      inner_add3    <= inner_add2[0] + inner_add2[1] + inner_add1[6];
-      inner_add4    <= inner_add3    + inner_buf[21] + inner_buf[22];
+      inner_add2[0] <= inner_add1[0] + inner_add1[1];
+      inner_add2[1] <= inner_add1[2] + inner_add1[3] + inner_buf[8];
+      inner_add3    <= inner_add2[0] + inner_add2[1] + inner_buf[9];
     end
   end
 
@@ -176,17 +173,17 @@ module dense_backward_q_block #(
         q_buf[j] <= 0;
       end
     end else if (run) begin
-      q_buf[q_buf_index] <= inner_add4 + inner_buf[23] + inner_q;
+      q_buf[q_buf_index] <= inner_add3 + inner_buf[10] + inner_q;
     end
   end
 
 
   // ----------------------------------------
-  // dense_inner_8
-  dense_inner_8 #(
+  // dense_inner_6
+  dense_inner_6 #(
     .DATA_WIDTH1(`N_LEN),
     .DATA_WIDTH2(`N_LEN_W)
-  ) dense_inner_8_inst (
+  ) dense_inner_6_inst (
     .clk(clk),
     .rst_n(rst_n),
     .d1(inner_d1),

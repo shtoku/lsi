@@ -142,17 +142,17 @@ module dense_forward_block #(
         q_buf[j] <= 0;
       end
     end else if (run) begin
-      q_buf[q_buf_index] <= inner_buf[0] + inner_buf[1] + inner_q;
+      q_buf[q_buf_index] <= inner_buf[0] + inner_q;
     end
   end
 
 
   // ----------------------------------------
-  // dense_inner_8
-  dense_inner_8 #(
+  // dense_inner_6
+  dense_inner_6 #(
     .DATA_WIDTH1(`N_LEN),
     .DATA_WIDTH2(`N_LEN_W)
-  ) dense_inner_8_inst (
+  ) dense_inner_6_inst (
     .clk(clk),
     .rst_n(rst_n),
     .d1(inner_d1),

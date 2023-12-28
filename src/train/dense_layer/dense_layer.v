@@ -2,7 +2,7 @@
 
 module dense_layer #(
     parameter integer ADDR_WIDTH   = 10,   // log2(`HID_DIM*`CHAR_NUM/DATA_N) < 10
-    parameter integer DENSE_DATA_N = 8     // 1 time read, read 8 data.
+    parameter integer DENSE_DATA_N = 6     // 1 time read, read 6 data.
   ) (
     input  wire clk,
     input  wire rst_n,
@@ -192,7 +192,8 @@ module dense_layer #(
 
   // dense_optim
   dense_optim #(
-    .ADDR_WIDTH(ADDR_WIDTH)
+    .ADDR_WIDTH(ADDR_WIDTH),
+    .DENSE_DATA_N(DENSE_DATA_N)
   ) dense_optim_inst (
     .clk(clk),
     .rst_n(rst_n),
@@ -209,7 +210,7 @@ module dense_layer #(
 
   // dense_ram_wt
   ram #(
-    .FILENAME("../../data/parameter/train/binary192/dense_layer_W_out_T.txt"),
+    .FILENAME("../../data/parameter/train/binary108/dense_layer_W_out_T.txt"),
     .ADDR_WIDTH(ADDR_WIDTH),
     .DATA_WIDTH(DENSE_DATA_N*`N_LEN),
     .DATA_DEPTH(`HID_DIM*`CHAR_NUM/DENSE_DATA_N)
@@ -224,7 +225,7 @@ module dense_layer #(
 
   // dense_ram_w
   ram #(
-    .FILENAME("../../data/parameter/train/binary192/dense_layer_W_out.txt"),
+    .FILENAME("../../data/parameter/train/binary108/dense_layer_W_out.txt"),
     .ADDR_WIDTH(ADDR_WIDTH),
     .DATA_WIDTH(DENSE_DATA_N*`N_LEN),
     .DATA_DEPTH(`HID_DIM*`CHAR_NUM/DENSE_DATA_N)
@@ -239,7 +240,7 @@ module dense_layer #(
 
   // dense_ram_v
   ram #(
-    .FILENAME("../../data/parameter/train/binary192/zeros_like_W_out.txt"),
+    .FILENAME("../../data/parameter/train/binary108/zeros_like_W_out.txt"),
     .ADDR_WIDTH(ADDR_WIDTH),
     .DATA_WIDTH(DENSE_DATA_N*`N_LEN),
     .DATA_DEPTH(`HID_DIM*`CHAR_NUM/DENSE_DATA_N)
@@ -254,7 +255,7 @@ module dense_layer #(
 
   // dense_ram_grad
   ram #(
-    .FILENAME("../../data/parameter/train/binary192/zeros_like_W_out.txt"),
+    .FILENAME("../../data/parameter/train/binary108/zeros_like_W_out.txt"),
     .ADDR_WIDTH(ADDR_WIDTH),
     .DATA_WIDTH(DENSE_DATA_N*`N_LEN),
     .DATA_DEPTH(`HID_DIM*`CHAR_NUM/DENSE_DATA_N)
