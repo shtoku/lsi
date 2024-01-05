@@ -141,9 +141,6 @@ module top_tb ();
       // write data to slv_reg0. next=1, set=0, run=0, rst_n=1.
       write_slv(4'b0000, 4'b1001);
       #10;
-      // write data to slv_reg0. next=0, set=0, run=0, rst_n=1.
-      write_slv(4'b0000, 4'b0001);
-      #10;
       run_mode(`TRAIN);
       #10;
       for (m = 0; m < `BATCH_SIZE; m = m + 1) begin
