@@ -15,7 +15,7 @@ emb_dim = 12        # 文字ベクトルの次元
 hid_dim = 12        # 潜在ベクトルの次元
 
 
-batch_size = 2      # ミニバッチサイズ
+batch_size = 32     # ミニバッチサイズ
 n_epochs = 10       # エポック数
 lr = 1e-3           # 学習率
 
@@ -178,7 +178,6 @@ def output_backward(y, t, net):
 
 
 if __name__ == '__main__':
-  remove_file()
   dataloader_train, _  = create_batch(batch_size)
 
   net = Network()
@@ -190,12 +189,30 @@ if __name__ == '__main__':
   losses_train = []
   acc_train = 0
 
+  # when batch_size == 2
+  # remove_file()
+  # for batch in dataloader_train[:4]:
+  #   net.zero_grads()
+  #   for x in batch:
+  #     y = output_forward(x, net)
+  #     loss = crossEntropyLoss(y, x)
+  #     output_backward(y, x, net)
+  #     losses_train.append(loss)
+  #     acc_train += (y.argmax(axis=-1) == x).sum()
+  #   optim.update(net.params, net.grads)
+
+
+  # batch_size != 2
+  os.remove(PATH_TB + 'emb_layer/emb_layer_forward_in.txt')
+  os.remove(PATH_TB + 'comp_layer/comp_layer_out.txt')
   for batch in dataloader_train[:4]:
     net.zero_grads()
     for x in batch:
-      y = output_forward(x, net)
+      output_file(PATH_TB + 'emb_layer/emb_layer_forward_in.txt', x, i_len=8, f_len=0)
+      y = net.forward(x)
+      output_file(PATH_TB + 'comp_layer/comp_layer_out.txt', y.max(axis=-1).flatten())
       loss = crossEntropyLoss(y, x)
-      output_backward(y, x, net)
+      net.gradient(y, x)
       losses_train.append(loss)
       acc_train += (y.argmax(axis=-1) == x).sum()
     optim.update(net.params, net.grads)
@@ -204,5 +221,5 @@ if __name__ == '__main__':
 
 
 # fixed sample ver
-# batch_size: 2, lr: 0.001
-# 42.757137298583984 0
+# batch_size: 32, lr: 0.001
+# 42.74571192264557 25
