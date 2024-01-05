@@ -27,19 +27,19 @@ module state_main_tb ();
 
 
   assign state_main_run = (state_main_q == `M_IDLE)   ? run :
-                          (state_main_q == `M_S1)     ? (state_forward_q  == `F_FIN) :
-                          (state_main_q == `M_S2)     ? (state_forward_q  == `F_FIN) & (state_backward_q == `B_FIN) :
-                          (state_main_q == `M_S3)     ? (state_backward_q == `B_FIN) :
+                          (state_main_q == `M_FF)     ? (state_forward_q  == `F_FIN) :
+                          (state_main_q == `M_FB)     ? (state_forward_q  == `F_FIN) & (state_backward_q == `B_FIN) :
+                          (state_main_q == `M_LB)     ? (state_backward_q == `B_FIN) :
                           (state_main_q == `M_UPDATE) ? 1'b1 :
                           (state_main_q == `M_FIN)    ? next_batch : 1'b0;
   assign state_main_mode = mode;
   
-  assign state_forward_run = (state_forward_q == `F_IDLE) ? (state_main_q == `M_S1 | state_main_q == `M_S2) :
+  assign state_forward_run = (state_forward_q == `F_IDLE) ? (state_main_q == `M_FF | state_main_q == `M_FB) :
                              (state_forward_q == `F_FIN)  ? state_main_run : 1'b1;
   assign state_forward_set = set;
   assign state_forward_d = `F_IDLE;
   
-  assign state_backward_run = (state_backward_q == `B_IDLE) ? (state_main_q == `M_S2 | state_main_q == `M_S3) :
+  assign state_backward_run = (state_backward_q == `B_IDLE) ? (state_main_q == `M_FB | state_main_q == `M_LB) :
                               (state_backward_q == `B_FIN)  ? state_main_run : 1'b1;
 
 
@@ -75,7 +75,7 @@ module state_main_tb ();
     rst_n=0; run=0; set=0; next_batch=1; mode=`TRAIN; #10;
     rst_n=1; run=0; set=1; #10;
     rst_n=1; run=1; set=0; #10;    
-    #1000;
+    #3000;
     $finish;
   end
 

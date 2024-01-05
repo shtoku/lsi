@@ -16,8 +16,8 @@
 `define DATA_N      6                 // read ram 1 time, read 6 data.
 
 // define traing parameter
-`define BATCH_SIZE  2                 // mini batch size
-`define BATCH_SHIFT 1                 // log2(BATCH_SIZE), used for division.
+`define BATCH_SIZE  32                // mini batch size
+`define BATCH_SHIFT 5                 // log2(BATCH_SIZE), used for division.
 `define MOMENTUM    `N_LEN_W'h0E666   // momentum=0.9
 `define LR          `N_LEN_W'h00041   // learning rate=0.001
 
@@ -31,9 +31,9 @@
 // define state_main
 `define STATE_LEN   4
 `define M_IDLE      `STATE_LEN'd0     // main idle
-`define M_S1        `STATE_LEN'd1     // main step 1. forward1
-`define M_S2        `STATE_LEN'd2     // main step 2. forward2 and backward1
-`define M_S3        `STATE_LEN'd3     // main step 3. backward2
+`define M_FF        `STATE_LEN'd1     // main first forward
+`define M_FB        `STATE_LEN'd2     // main forward and backward
+`define M_LB        `STATE_LEN'd3     // main last backward
 `define M_UPDATE    `STATE_LEN'd4     // main update parameter
 `define M_FIN       `STATE_LEN'd5     // main finish
 
