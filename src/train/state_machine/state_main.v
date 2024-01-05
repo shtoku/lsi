@@ -28,7 +28,7 @@ module state_main (
         case (q)
           `M_IDLE  : q <= `M_FF;
           `M_FF    : q <= `M_FIN;
-          `M_FIN   : q <= `M_FIN;
+          `M_FIN   : q <= `M_IDLE;
           default  : q <= `STATE_LEN'bX; 
         endcase
       end

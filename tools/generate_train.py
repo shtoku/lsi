@@ -5,6 +5,7 @@ import kmj_gen_np as kgn
 PATH_DEC = '../data/parameter/train/decimal/'
 PATH_BIN18 = '../data/parameter/train/binary18/'
 PATH_BIN108 = '../data/parameter/train/binary108/'
+PATH_BIN144 = '../data/parameter/train/binary144/'
 PATH_BIN192 = '../data/parameter/train/binary192/'
 
 
@@ -129,8 +130,8 @@ def generate_hard():
 
   W_out = kgn.read_param(PATH_DEC + 'dense_layer_W_out.txt')
   W_out = convert_dec_to_bin(W_out, i_len, f_len).reshape(hid_dim, char_num)
-  output_param_6(PATH_BIN108 + 'dense_layer_W_out.txt', W_out)
-  output_param_6(PATH_BIN108 + 'dense_layer_W_out_T.txt', W_out.T)
+  output_param_6(PATH_BIN144 + 'dense_layer_W_out.txt', W_out)
+  output_param_6(PATH_BIN144 + 'dense_layer_W_out_T.txt', W_out.T)
 
 
 # 初期値用のゼロファイルを作成する関数
@@ -149,7 +150,7 @@ def generate_zeros():
   
   W_out = np.zeros((hid_dim, char_num))
   W_out = convert_dec_to_bin(W_out.flatten(), i_len, f_len)
-  output_param_6(PATH_BIN108 + 'zeros_like_W_out.txt', W_out)
+  output_param_6(PATH_BIN144 + 'zeros_like_W_out.txt', W_out)
 
 
 # テーブル用のファイルの作成する関数

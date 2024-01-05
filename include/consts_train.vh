@@ -16,8 +16,8 @@
 `define DATA_N      6                 // read ram 1 time, read 6 data.
 
 // define traing parameter
-`define BATCH_SIZE  32                // mini batch size
-`define BATCH_SHIFT 5                 // log2(BATCH_SIZE), used for division.
+`define BATCH_SIZE  2                 // mini batch size
+`define BATCH_SHIFT 1                 // log2(BATCH_SIZE), used for division.
 `define MOMENTUM    `N_LEN_W'h0E666   // momentum=0.9
 `define LR          `N_LEN_W'h00041   // learning rate=0.001
 

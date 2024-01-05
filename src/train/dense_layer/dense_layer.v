@@ -210,7 +210,7 @@ module dense_layer #(
 
   // dense_ram_wt
   ram #(
-    .FILENAME("../../data/parameter/train/binary108/dense_layer_W_out_T.txt"),
+    .FILENAME("../../data/parameter/train/binary144/dense_layer_W_out_T.txt"),
     .ADDR_WIDTH(ADDR_WIDTH),
     .DATA_WIDTH(DENSE_DATA_N*`N_LEN),
     .DATA_DEPTH(`HID_DIM*`CHAR_NUM/DENSE_DATA_N)
@@ -225,7 +225,7 @@ module dense_layer #(
 
   // dense_ram_w
   ram #(
-    .FILENAME("../../data/parameter/train/binary108/dense_layer_W_out.txt"),
+    .FILENAME("../../data/parameter/train/binary144/dense_layer_W_out.txt"),
     .ADDR_WIDTH(ADDR_WIDTH),
     .DATA_WIDTH(DENSE_DATA_N*`N_LEN),
     .DATA_DEPTH(`HID_DIM*`CHAR_NUM/DENSE_DATA_N)
@@ -240,7 +240,7 @@ module dense_layer #(
 
   // dense_ram_v
   ram #(
-    .FILENAME("../../data/parameter/train/binary108/zeros_like_W_out.txt"),
+    .FILENAME("../../data/parameter/train/binary144/zeros_like_W_out.txt"),
     .ADDR_WIDTH(ADDR_WIDTH),
     .DATA_WIDTH(DENSE_DATA_N*`N_LEN),
     .DATA_DEPTH(`HID_DIM*`CHAR_NUM/DENSE_DATA_N)
@@ -255,7 +255,7 @@ module dense_layer #(
 
   // dense_ram_grad
   ram #(
-    .FILENAME("../../data/parameter/train/binary108/zeros_like_W_out.txt"),
+    .FILENAME("../../data/parameter/train/binary144/zeros_like_W_out.txt"),
     .ADDR_WIDTH(ADDR_WIDTH),
     .DATA_WIDTH(DENSE_DATA_N*`N_LEN),
     .DATA_DEPTH(`HID_DIM*`CHAR_NUM/DENSE_DATA_N)

@@ -160,6 +160,10 @@ module top_tb ();
     recieve_data();
     #30;
 
+    // write data to slv_reg0. next=1, set=0, run=0, rst_n=1.
+    write_slv(4'b0000, 4'b1001);
+    #30;
+
     $finish;
   end
 
