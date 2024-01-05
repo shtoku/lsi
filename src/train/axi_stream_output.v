@@ -71,8 +71,8 @@ module axi_stream_output (
   // fifo instance
   fifo #(
     .WIDTH(1+`CHAR_LEN),
-    .SIZE(256),
-    .LOG_SIZE(8)
+    .SIZE(1024),
+    .LOG_SIZE(10)
   ) fifo_inst (
     .clk(ACLK),
     .rst_n(ARESETN),

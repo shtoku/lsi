@@ -151,21 +151,21 @@ module top # (
   // assign load_backward, update, zero_grad
   assign load_backward = state_main_run;
   assign update        = (state_main == `M_UPDATE);
-  assign zero_grad     = (state_main == `M_S1);
+  assign zero_grad     = (state_main == `M_FF);
 
   // assign AXI LITE Controller
   assign finish = {(state_backward == `B_FIN), (state_forward  == `F_FIN), (state_main == `M_FIN)};
 
   // assign state_main
   assign state_main_run = (state_main == `M_IDLE)   ? run :
-                          (state_main == `M_S1)     ? (state_forward  == `F_FIN) & (&valid_zero_grad):
-                          (state_main == `M_S2)     ? (state_forward  == `F_FIN) & (state_backward == `B_FIN) :
-                          (state_main == `M_S3)     ? (state_backward == `B_FIN) :
+                          (state_main == `M_FF)     ? (state_forward  == `F_FIN) & (&valid_zero_grad):
+                          (state_main == `M_FB)     ? (state_forward  == `F_FIN) & (state_backward == `B_FIN) :
+                          (state_main == `M_LB)     ? (state_backward == `B_FIN) :
                           (state_main == `M_UPDATE) ? (&valid_update) :
                           (state_main == `M_FIN)    ? next : 1'b0;
 
   // assign state_forward
-  assign state_forward_run = (state_forward == `F_IDLE)  ? (state_main == `M_S1 | state_main == `M_S2) :
+  assign state_forward_run = (state_forward == `F_IDLE)  ? (state_main == `M_FF | state_main == `M_FB) :
                              (state_forward == `F_RECV)  ?       axis_in_valid :
                              (state_forward == `F_EMB)   ?   emb_valid_forward :
                              (state_forward == `F_MIX1)  ?   mix_valid_forward :
@@ -184,7 +184,7 @@ module top # (
                              (mode == `GEN_NEW ) ? `F_MIX3 : `F_IDLE;
   
   // assign state_backward
-  assign state_backward_run = (state_backward == `B_IDLE)  ? (state_main == `M_S2 | state_main == `M_S3) :
+  assign state_backward_run = (state_backward == `B_IDLE)  ? (state_main == `M_FB | state_main == `M_LB) :
                               (state_backward == `B_SMAX)  ?           smax_valid :
                               (state_backward == `B_DENS)  ? dense_valid_backward :
                               (state_backward == `B_TANH3) ?  tanh_valid_backward :
