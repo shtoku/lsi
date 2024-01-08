@@ -7,8 +7,8 @@ module forward_mix_input (
     input  wire [`MODE_LEN-1:0] mode,
     input  wire [`N*`EMB_DIM*`N_LEN_W-1:0] d_emb,
     input  wire [`HID_DIM*`HID_DIM*`N_LEN_W-1:0] d_tanh,
-    // input  wire [`HID_DIM*`N_LEN_W-1:0] d_rand,
-    // input  wire valid_rand,
+    input  wire [`HID_DIM*`N_LEN_W-1:0] d_rand,
+    input  wire valid_rand,
     output reg  valid,
     output wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] q
   );
@@ -43,15 +43,15 @@ module forward_mix_input (
   endgenerate
 
   // assign load
-  assign load = (state == `F_MIX1) | (state == `F_MIX2) | ((state == `F_MIX3) /* & valid_rand */);
+  assign load = (state == `F_MIX1) | (state == `F_MIX2) | ((state == `F_MIX3) & valid_rand);
   
   // assign hid_vec
   generate
     for (i = 0; i < `HID_DIM; i = i + 1) begin
       assign hid_vec[i] = (mode == `TRAIN   ) ? d_tanh[i*`HID_DIM*`N_LEN_W +: `N_LEN_W] :
                           (mode == `FORWARD ) ? d_tanh[i*`HID_DIM*`N_LEN_W +: `N_LEN_W] :
-                          // (mode == `GEN_SIMI) ? d_tanh[i*`HID_DIM*`N_LEN_W +: `N_LEN_W] + {d_rand[(i+1)*`N_LEN_W-1], d_rand[(i+1)*`N_LEN_W-1 : i*`N_LEN_W+1]} :
-                          // (mode == `GEN_NEW ) ? d_rand[i*`N_LEN_W +: `N_LEN_W] :
+                          (mode == `GEN_SIMI) ? d_tanh[i*`HID_DIM*`N_LEN_W +: `N_LEN_W] + {{2{d_rand[(i+1)*`N_LEN_W-1]}}, d_rand[i*`N_LEN_W+2 +: `N_LEN_W-2]} :
+                          (mode == `GEN_NEW ) ? d_rand[i*`N_LEN_W +: `N_LEN_W] :
                           d_tanh[i*`HID_DIM*`N_LEN_W +: `N_LEN_W];
     end
   endgenerate

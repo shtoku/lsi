@@ -108,9 +108,9 @@ module top_tb ();
 
 
   initial begin
-    $readmemb("../../data/tb/train/emb_layer/emb_layer_forward_in.txt", d_forward_mem);
+    $readmemb("../../data/tb/train/generate/generate_in.txt", d_forward_mem);
     // $readmemb("../../data/tb/train/softmax_layer/softmax_layer_out.txt", d_backward_mem);
-    $readmemb("../../data/tb/train/comp_layer/comp_layer_out.txt", q_forward_mem);
+    $readmemb("../../data/tb/train/generate/gen_new_out.txt", q_forward_mem);
     // $readmemb("../../data/tb/train/mix_layer/mix_layer1_backward_out.txt", q_backward_mem);
   end
 
@@ -151,7 +151,7 @@ module top_tb ();
     #10;
 
     // repeat l times.
-    for (l = 1; l < BATCH_NUM - 1; l = l + 1) begin
+    for (l = 1; l < BATCH_NUM - 2; l = l + 1) begin
       send_data(l);
       #10;
 
@@ -176,20 +176,18 @@ module top_tb ();
     recieve_data();
     #10;
 
-    // check update
-    send_data(l);
-    #10;
-    // write data to slv_reg0. next=1, set=0, run=0, rst_n=1.
-    write_slv(4'b0000, 4'b1001);
-    #10;
-    run_mode(`FORWARD);
-    #10;
-    recieve_data();
-    #30;
-
-    // write data to slv_reg0. next=1, set=0, run=0, rst_n=1.
-    write_slv(4'b0000, 4'b1001);
-    #30;
+    // check generate
+    for (l = l; l < BATCH_NUM; l = l + 1) begin
+      send_data(l);
+      #10;
+      // write data to slv_reg0. next=1, set=0, run=0, rst_n=1.
+      write_slv(4'b0000, 4'b1001);
+      #10;
+      run_mode(`GEN_NEW);
+      #10;
+      recieve_data();
+      #30;
+    end
 
     $finish;
   end

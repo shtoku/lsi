@@ -91,9 +91,16 @@ module top # (
   wire emb_valid_forward, emb_valid_backward;
   wire [`N*`EMB_DIM*`N_LEN_W-1:0] emb_q_forward;
 
+  // wire rand_layer
+  wire rand_run;
+  wire rand_valid;
+  wire [`HID_DIM*`N_LEN_W-1:0] rand_q;
+
   // wire forward_mix_input
   wire [`N*`EMB_DIM*`N_LEN_W-1:0] forward_mix_in_d_emb;
   wire [`HID_DIM*`HID_DIM*`N_LEN_W-1:0] forward_mix_in_d_tanh;
+  wire [`HID_DIM*`N_LEN_W-1:0] forward_mix_in_d_rand;
+  wire forward_mix_in_valid_rand;
   wire forward_mix_in_valid;
   wire [`HID_DIM*`HID_DIM*`N_LEN-1:0] forward_mix_in_q;
 
@@ -205,9 +212,14 @@ module top # (
   assign emb_d_forward    = axis_in_q;
   assign emb_d_backward   = mix_q_backward;
 
+  // assign rand_layer
+  assign rand_run = ((mode == `GEN_SIMI | mode == `GEN_NEW) & (state_forward == `F_MIX3));
+
   // assign forward_mix_input
-  assign forward_mix_in_d_emb = emb_q_forward;
-  assign forward_mix_in_d_tanh = tanh_q_forward;
+  assign forward_mix_in_d_emb      = emb_q_forward;
+  assign forward_mix_in_d_tanh     = tanh_q_forward;
+  assign forward_mix_in_d_rand     = rand_q;
+  assign forward_mix_in_valid_rand = (mode == `GEN_SIMI | mode == `GEN_NEW) ? rand_valid : 1'b1;
 
   // assign mix_layer
   assign mix_run_forward  = forward_mix_in_valid;
@@ -352,6 +364,15 @@ module top # (
     .q_forward(emb_q_forward)
   );
 
+  // rand_layer
+  rand_layer rand_layer_inst (
+    .clk(clk),
+    .rst_n(rst_n),
+    .run(rand_run),
+    .valid(rand_valid),
+    .q(rand_q)
+  );
+
   // forward_mix_input
   forward_mix_input forward_mix_input_inst (
     .clk(clk),
@@ -360,6 +381,8 @@ module top # (
     .mode(mode),
     .d_emb(forward_mix_in_d_emb),
     .d_tanh(forward_mix_in_d_tanh),
+    .d_rand(forward_mix_in_d_rand),
+    .valid_rand(forward_mix_in_valid_rand),
     .valid(forward_mix_in_valid),
     .q(forward_mix_in_q)
   );
