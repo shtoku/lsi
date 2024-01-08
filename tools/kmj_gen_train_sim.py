@@ -4,6 +4,7 @@ import glob
 import kmj_gen_np as kgn
 from kmj_gen_train import Network
 from layers import *
+from xorshift_train import XorShift
 
 
 PATH_TB = '../data/tb/train/'
@@ -217,9 +218,68 @@ if __name__ == '__main__':
   #     acc_train += (y.argmax(axis=-1) == x).sum()
   #   optim.update(net.params, net.grads)
   
+
+  # generate similar sample
+  net = Network()
+  optim = Momentum(lr=lr)
+  losses_train = []
+  acc_train = 0
+  
+  # os.remove(PATH_TB + 'generate/generate_in.txt')
+  # os.remove(PATH_TB + 'generate/gen_simi_out.txt')
+  # os.remove(PATH_TB + 'generate/gen_new_out.txt')
+  for batch in dataloader_train[:2]:
+    net.zero_grads()
+    for x in batch:
+      output_file(PATH_TB + 'generate/generate_in.txt', x, i_len=8, f_len=0)
+      y = net.forward(x)
+      output_file(PATH_TB + 'generate/gen_simi_out.txt', y.max(axis=-1).flatten())
+      output_file(PATH_TB + 'generate/gen_new_out.txt',  y.max(axis=-1).flatten())
+      loss = crossEntropyLoss(y, x)
+      net.gradient(y, x)
+      losses_train.append(loss)
+      acc_train += (y.argmax(axis=-1) == x).sum()
+    optim.update(net.params, net.grads)
+  
+  xors = XorShift(6568)
+  for batch in dataloader_train[2:4]:
+    for x in batch:
+      output_file(PATH_TB + 'generate/generate_in.txt', x, i_len=8, f_len=0)
+
+      # generate similar
+      x = net.layers['Emb_Layer'].forward(x)
+      x = np.concatenate([x, np.zeros((hid_dim-N, hid_dim))], axis=0)
+      x = net.layers['Mix_Layer1'].forward(x)
+      x = net.layers['Tanh_Layer1'].forward(x)
+      x = net.layers['Mix_Layer2'].forward(x)
+      x = net.layers['Tanh_Layer2'].forward(x)
+
+      
+      noise = np.empty((hid_dim,))
+      z = np.empty((hid_dim,))
+      for i in range(hid_dim):
+        rand = xors()
+        noise[i] = rand / 4   # generate similar
+        z[i] = rand           # generate new
+      noise = convert_fixed(noise)
+      z = convert_fixed(z)
+
+      x = x[:, 0] + noise
+      x = np.full((hid_dim, hid_dim), x).T
+      x = net.layers['Mix_Layer3'].forward(x)
+      x = net.layers['Tanh_Layer3'].forward(x)
+      x = x[:N, :]
+      y = net.layers['Dense_Layer'].forward(x)
+
+      output_file(PATH_TB + 'generate/gen_simi_out.txt', y.max(axis=-1).flatten())
+
+      # generate new
+      x = np.full((hid_dim, hid_dim), z).T
+      x = net.layers['Mix_Layer3'].forward(x)
+      x = net.layers['Tanh_Layer3'].forward(x)
+      x = x[:N, :]
+      y = net.layers['Dense_Layer'].forward(x)
+    
+      output_file(PATH_TB + 'generate/gen_new_out.txt', y.max(axis=-1).flatten())
+  
   print(np.mean(losses_train), acc_train)
-
-
-# fixed sample ver
-# batch_size: 2, lr: 0.001
-# 42.757137298583984 0
