@@ -27,7 +27,7 @@ module state_main (
       end else begin
         case (q)
           `M_IDLE  : q <= `M_FF;
-          `M_FF    : q <= `M_FIN;
+          `M_FF    : q <= (count != `BATCH_SIZE) ? `M_FF : `M_FIN;
           `M_FIN   : q <= `M_IDLE;
           default  : q <= `STATE_LEN'bX; 
         endcase

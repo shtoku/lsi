@@ -467,6 +467,7 @@ module top # (
     .M_AXIS_TREADY(M_AXIS_TREADY),
     .run(axis_out_run),
     .d(axis_out_d),
+    .state(state_main),
     .valid(axis_out_valid)
   );
 

@@ -13,6 +13,7 @@ module axi_stream_output (
 
     input  wire run,
     input  wire [`N*`CHAR_LEN-1:0] d,
+    input  wire [`STATE_LEN-1:0] state,
     output wire valid
   );
 
@@ -26,7 +27,8 @@ module axi_stream_output (
   wire fifo_empty, fifo_full;
 
   // reg/wire write fifo controller
-  reg  [3:0] count;
+  reg  [3:0] count1;
+  reg  [9:0] count2;
   wire [`CHAR_LEN-1:0] d_buf [0:`N-1];
 
 
@@ -37,11 +39,11 @@ module axi_stream_output (
   assign M_AXIS_TVALID = ~fifo_empty;
 
   // assign valid
-  assign valid = (count == `N);
+  assign valid = (count1 == `N);
 
   // assign fifo_out
-  assign fifo_data_w = {(count == `N - 1), d_buf[count]};
-  assign fifo_we     = run & ~fifo_full & (count != `N);
+  assign fifo_data_w = {(count2 == `BATCH_SIZE*`N - 1), d_buf[count1]};
+  assign fifo_we     = run & ~fifo_full & (count1 != `N);
   assign fifo_re     = M_AXIS_TVALID & M_AXIS_TREADY;
 
   // convert shape (N, CHAR_LEN) <- (N*CHAR_LEN, )
@@ -56,13 +58,26 @@ module axi_stream_output (
   // write fifo controller
   always @(posedge ACLK, negedge ARESETN) begin
     if (~ARESETN) begin
-      count <= 4'b0;
+      count1 <= 4'b0;
     end else if (fifo_we) begin
-      count <= count + 1;
+      count1 <= count1 + 1;
     end else if (run) begin
-      count <= count;
+      count1 <= count1;
     end else begin
-      count <= 4'b0;
+      count1 <= 4'b0;
+    end
+  end
+
+  // 
+  always @(posedge ACLK, negedge ARESETN) begin
+    if (~ARESETN) begin
+      count2 <= 4'b0;
+    end else if (fifo_we) begin
+      count2 <= count2 + 1;
+    end else if (state == `M_FIN) begin
+      count2 <= 4'b0;
+    end else begin
+      count2 <= count2;
     end
   end
 

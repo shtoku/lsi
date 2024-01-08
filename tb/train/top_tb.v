@@ -143,10 +143,8 @@ module top_tb ();
       #10;
       run_mode(`TRAIN);
       #10;
-      for (m = 0; m < `BATCH_SIZE; m = m + 1) begin
-        recieve_data();
-        #10;
-      end   
+      recieve_data();
+      #10;
     end
 
     // check update
