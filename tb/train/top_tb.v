@@ -134,18 +134,47 @@ module top_tb ();
 
     ARESETN=1; #10;
 
+    // run TRAIN
+    // write data to slv_reg1. mode=mode.
+    write_slv(4'b0100, `TRAIN);
+    #10;
+
+    // write data to slv_reg0. next=0, set=1, run=0, rst_n=1.
+    write_slv(4'b0000, 4'b0101);
+    #20;
+
+    send_data(0);
+    #10;
+
+    // write data to slv_reg0. next=0, set=0, run=1, rst_n=1.
+    write_slv(4'b0000, 4'b0011);
+    #10;
+
     // repeat l times.
-    for (l = 0; l < BATCH_NUM - 1; l = l + 1) begin
+    for (l = 1; l < BATCH_NUM - 1; l = l + 1) begin
       send_data(l);
       #10;
+
+      wait_finish();
+      #10;
+
       // write data to slv_reg0. next=1, set=0, run=0, rst_n=1.
       write_slv(4'b0000, 4'b1001);
       #10;
-      run_mode(`TRAIN);
+
+      // write data to slv_reg0. next=0, set=0, run=1, rst_n=1.
+      write_slv(4'b0000, 4'b0011);
       #10;
+
       recieve_data();
       #10;
     end
+
+    wait_finish();
+    #10;
+
+    recieve_data();
+    #10;
 
     // check update
     send_data(l);
@@ -189,6 +218,18 @@ module top_tb ();
     end
   endtask
 
+  task wait_finish;
+    begin
+      // read data from slv_reg2 and wait until finish==1.
+      S_AXI_ARADDR=4'b1000; S_AXI_ARVALID=1;
+      S_AXI_RREADY=1;
+      #20;
+      wait(S_AXI_RDATA[0] == 1) #5;
+      S_AXI_ARVALID=0;
+      S_AXI_RREADY=0;
+    end
+  endtask
+
   task run_mode;
     input [`MODE_LEN-1:0] mode;
     begin
@@ -198,19 +239,13 @@ module top_tb ();
 
       // write data to slv_reg0. next=0, set=1, run=0, rst_n=1.
       write_slv(4'b0000, 4'b0101);
-      #150;
+      #20;
 
       // write data to slv_reg0. next=0, set=0, run=1, rst_n=1.
       write_slv(4'b0000, 4'b0011);
       #10;
 
-      // read data from slv_reg2 and wait until finish==1.
-      S_AXI_ARADDR=4'b1000; S_AXI_ARVALID=1;
-      S_AXI_RREADY=1;
-      #20;
-      wait(S_AXI_RDATA[0] == 1) #5;
-      S_AXI_ARVALID=0;
-      S_AXI_RREADY=0;
+      wait_finish();
       #10;
     end
   endtask
