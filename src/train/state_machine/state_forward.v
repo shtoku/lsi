@@ -4,16 +4,12 @@ module state_forward (
     input  wire clk,
     input  wire rst_n,
     input  wire run,
-    input  wire set,
-    input  wire [`STATE_LEN-1:0] d,
     output reg  [`STATE_LEN-1:0] q
   );
   
   always @(posedge clk, negedge rst_n) begin
     if (~rst_n)
       q <= `F_IDLE;
-    else if (set)
-      q <= d;
     else if (run) begin
       case (q)
         `F_IDLE  : q <= `F_RECV;

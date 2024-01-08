@@ -18,7 +18,6 @@ module axi_lite_controller #
 		output wire clk,
 		output wire rst_n,
 		output wire run,
-		output wire set,
 		output wire next,
 		input  wire [2:0] finish,
 		output wire [`MODE_LEN-1:0] mode,
@@ -428,10 +427,9 @@ module axi_lite_controller #
   assign clk     = S_AXI_ACLK;
 	assign rst_n   = slv_reg0[0];
 	assign run 	   = slv_reg0[1];
-	assign set     = slv_reg0[2];
-	assign next		 = slv_reg0[3];
+	assign next		 = slv_reg0[2];
 	assign mode    = slv_reg1[`MODE_LEN-1:0];
-	assign led_out = {finish[0], set, run, rst_n};
+	assign led_out = {finish[0], next, run, rst_n};
 
 	// User logic ends
 

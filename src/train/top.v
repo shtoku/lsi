@@ -61,7 +61,6 @@ module top # (
   wire clk;
   wire rst_n;
   wire run;
-  wire set;
   wire next;
   wire [2:0] finish;
   wire [`MODE_LEN-1:0] mode;
@@ -72,7 +71,6 @@ module top # (
 
   // wire state_forward
   wire state_forward_run;
-  wire [`STATE_LEN-1:0] state_forward_d;
   wire [`STATE_LEN-1:0] state_forward;
 
   // wire state_backward
@@ -185,10 +183,6 @@ module top # (
                              (state_forward == `F_COMP)  ?          comp_valid :
                              (state_forward == `F_SEND)  ?      axis_out_valid :
                              (state_forward == `F_FIN)   ?      state_main_run : 1'b0;
-  assign state_forward_d   = (mode == `TRAIN )   ? `F_IDLE :
-                             (mode == `FORWARD)  ? `F_IDLE :
-                             (mode == `GEN_SIMI) ? `F_IDLE :
-                             (mode == `GEN_NEW ) ? `F_MIX3 : `F_IDLE;
   
   // assign state_backward
   assign state_backward_run = (state_backward == `B_IDLE)  ? (state_main == `M_FB | state_main == `M_LB) :
@@ -278,7 +272,6 @@ module top # (
     .clk(clk),
     .rst_n(rst_n),
     .run(run),
-    .set(set),
     .next(next),
     .finish(finish),
     .mode(mode),
@@ -320,8 +313,6 @@ module top # (
     .clk(clk),
     .rst_n(rst_n),
     .run(state_forward_run),
-    .set(set),
-    .d(state_forward_d),
     .q(state_forward)
   );
 

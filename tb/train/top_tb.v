@@ -137,17 +137,13 @@ module top_tb ();
     // run TRAIN
     // write data to slv_reg1. mode=mode.
     write_slv(4'b0100, `TRAIN);
-    #10;
-
-    // write data to slv_reg0. next=0, set=1, run=0, rst_n=1.
-    write_slv(4'b0000, 4'b0101);
     #20;
 
     send_data(0);
     #10;
 
-    // write data to slv_reg0. next=0, set=0, run=1, rst_n=1.
-    write_slv(4'b0000, 4'b0011);
+    // write data to slv_reg0. next=0, run=1, rst_n=1.
+    write_slv(4'b0000, 3'b011);
     #10;
 
     // repeat l times.
@@ -158,12 +154,12 @@ module top_tb ();
       wait_finish();
       #10;
 
-      // write data to slv_reg0. next=1, set=0, run=0, rst_n=1.
-      write_slv(4'b0000, 4'b1001);
+      // write data to slv_reg0. next=1 run=0, rst_n=1.
+      write_slv(4'b0000, 3'b101);
       #10;
 
-      // write data to slv_reg0. next=0, set=0, run=1, rst_n=1.
-      write_slv(4'b0000, 4'b0011);
+      // write data to slv_reg0. next=0, run=1, rst_n=1.
+      write_slv(4'b0000, 3'b011);
       #10;
 
       recieve_data();
@@ -180,8 +176,8 @@ module top_tb ();
     for (l = l; l < BATCH_NUM; l = l + 1) begin
       send_data(l);
       #10;
-      // write data to slv_reg0. next=1, set=0, run=0, rst_n=1.
-      write_slv(4'b0000, 4'b1001);
+      // write data to slv_reg0. next=1, run=0, rst_n=1.
+      write_slv(4'b0000, 3'b101);
       #10;
       run_mode(`GEN_NEW);
       #10;
@@ -233,14 +229,10 @@ module top_tb ();
     begin
       // write data to slv_reg1. mode=mode.
       write_slv(4'b0100, mode);
-      #10;
-
-      // write data to slv_reg0. next=0, set=1, run=0, rst_n=1.
-      write_slv(4'b0000, 4'b0101);
       #20;
 
-      // write data to slv_reg0. next=0, set=0, run=1, rst_n=1.
-      write_slv(4'b0000, 4'b0011);
+      // write data to slv_reg0. next=0, run=1, rst_n=1.
+      write_slv(4'b0000, 3'b011);
       #10;
 
       wait_finish();
