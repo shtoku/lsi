@@ -15,7 +15,7 @@ emb_dim = 12        # 文字ベクトルの次元
 hid_dim = 12        # 潜在ベクトルの次元
 
 
-batch_size = 2      # ミニバッチサイズ
+batch_size = 32      # ミニバッチサイズ
 n_epochs = 35       # エポック数
 lr = 1e-3           # 学習率
 
