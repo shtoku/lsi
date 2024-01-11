@@ -1,20 +1,19 @@
 `include "consts_train.vh"
 
 module dense_optim #(
-    parameter integer ADDR_WIDTH   = 10,   // log2(`HID_DIM*`CHAR_NUM/DATA_N) < 10
-    parameter integer DENSE_DATA_N = 8     // 1 time read, read 8 data.
+    parameter integer ADDR_WIDTH   = 10   // log2(`HID_DIM*`CHAR_NUM/DATA_N) < 10
   ) (
     input  wire clk,
     input  wire rst_n,
     input  wire run,
     output wire valid,
     output reg  [ADDR_WIDTH-1:0] waddr,
-    output wire [DENSE_DATA_N*`N_LEN-1:0] wdata_w,
-    output wire [DENSE_DATA_N*`N_LEN-1:0] wdata_v,
+    output wire [`DATA_N*`N_LEN-1:0] wdata_w,
+    output wire [`DATA_N*`N_LEN-1:0] wdata_v,
     output reg  [ADDR_WIDTH-1:0] raddr,
-    input  wire [DENSE_DATA_N*`N_LEN-1:0] rdata_w,
-    input  wire [DENSE_DATA_N*`N_LEN-1:0] rdata_v,
-    input  wire [DENSE_DATA_N*`N_LEN-1:0] rdata_grad
+    input  wire [`DATA_N*`N_LEN-1:0] rdata_w,
+    input  wire [`DATA_N*`N_LEN-1:0] rdata_v,
+    input  wire [`DATA_N*`N_LEN-1:0] rdata_grad
   );
 
 
@@ -22,16 +21,16 @@ module dense_optim #(
   genvar i;
 
   // reg/wire rdata/wdata buffer
-  wire [`N_LEN-1:0] rdata_w_buf [0:DENSE_DATA_N-1];
-  reg  [`N_LEN-1:0] rdata_w_buf_delay [0:DENSE_DATA_N-1];
-  wire [`N_LEN-1:0] rdata_v_buf [0:DENSE_DATA_N-1];
-  wire [`N_LEN-1:0] rdata_grad_buf [0:DENSE_DATA_N-1];
-  reg  [`N_LEN-1:0] wdata_w_buf [0:DENSE_DATA_N-1];
-  reg  [`N_LEN-1:0] wdata_v_buf [0:DENSE_DATA_N-1];
+  wire [`N_LEN-1:0] rdata_w_buf [0:`DATA_N-1];
+  reg  [`N_LEN-1:0] rdata_w_buf_delay [0:`DATA_N-1];
+  wire [`N_LEN-1:0] rdata_v_buf [0:`DATA_N-1];
+  wire [`N_LEN-1:0] rdata_grad_buf [0:`DATA_N-1];
+  reg  [`N_LEN-1:0] wdata_w_buf [0:`DATA_N-1];
+  reg  [`N_LEN-1:0] wdata_v_buf [0:`DATA_N-1];
 
   // reg multiply momentum, lr buffer
-  reg  [`N_LEN-1:0] mul_mtm_buf [0:DENSE_DATA_N-1];
-  reg  [`N_LEN-1:0] mul_lr_buf  [0:DENSE_DATA_N-1];
+  reg  [`N_LEN-1:0] mul_mtm_buf [0:`DATA_N-1];
+  reg  [`N_LEN-1:0] mul_lr_buf  [0:`DATA_N-1];
 
   // reg waddr controller
   reg  [ADDR_WIDTH-1:0] raddr_delay1, raddr_delay2, raddr_delay3;
@@ -39,8 +38,8 @@ module dense_optim #(
 
   // ----------------------------------------
   generate
-    // covert shape (DENSE_DATA_N, `N_LEN) <-> (DENSE_DATA_N*`N_LEN,)
-    for (i = 0; i < DENSE_DATA_N; i = i + 1) begin
+    // covert shape (`DATA_N, `N_LEN) <-> (`DATA_N*`N_LEN,)
+    for (i = 0; i < `DATA_N; i = i + 1) begin
       assign rdata_w_buf[i]    = rdata_w[i*`N_LEN +: `N_LEN];
       assign rdata_v_buf[i]    = rdata_v[i*`N_LEN +: `N_LEN];
       assign rdata_grad_buf[i] = rdata_grad[i*`N_LEN +: `N_LEN];
@@ -50,7 +49,7 @@ module dense_optim #(
   endgenerate
 
   // assign valid
-  assign valid = run & (raddr_delay3 == `HID_DIM*`CHAR_NUM/DENSE_DATA_N - 1);
+  assign valid = run & (raddr_delay3 == `HID_DIM*`CHAR_NUM/`DATA_N - 1);
 
 
   // fucntion fixed multiply 
@@ -71,7 +70,7 @@ module dense_optim #(
   always @(posedge clk, negedge rst_n) begin
     if (~rst_n) begin
       raddr <= 0;
-    end else if (run & (raddr != (`HID_DIM*`CHAR_NUM/DENSE_DATA_N) - 1)) begin
+    end else if (run & (raddr != (`HID_DIM*`CHAR_NUM/`DATA_N) - 1)) begin
       raddr <= raddr + 1;
     end else if (run) begin
       raddr <= raddr;
@@ -82,7 +81,7 @@ module dense_optim #(
 
   // rdata_w delay
   generate
-    for (i = 0; i < DENSE_DATA_N; i = i + 1) begin
+    for (i = 0; i < `DATA_N; i = i + 1) begin
       always @(posedge clk, negedge rst_n) begin
         if (~rst_n) begin
           rdata_w_buf_delay[i] <= 0;
@@ -95,7 +94,7 @@ module dense_optim #(
 
   // calculate momentum*rdata_v and lr*rdata_v
   generate
-    for (i = 0; i < DENSE_DATA_N; i = i + 1) begin
+    for (i = 0; i < `DATA_N; i = i + 1) begin
       always @(posedge clk, negedge rst_n) begin
         if (~rst_n) begin
           mul_mtm_buf[i] <= 0;
@@ -110,7 +109,7 @@ module dense_optim #(
 
   // calculate rdata_w + momentum*rdata_v - lr*rdata_v
   generate
-    for (i = 0; i < DENSE_DATA_N; i = i + 1) begin
+    for (i = 0; i < `DATA_N; i = i + 1) begin
       always @(posedge clk, negedge rst_n) begin
         if (~rst_n) begin
           wdata_w_buf[i] <= 0;

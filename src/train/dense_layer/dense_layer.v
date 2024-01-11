@@ -1,8 +1,7 @@
 `include "consts_train.vh"
 
 module dense_layer #(
-    parameter integer ADDR_WIDTH   = 10,   // log2(`HID_DIM*`CHAR_NUM/DATA_N) < 10
-    parameter integer DENSE_DATA_N = 6     // 1 time read, read 6 data.
+    parameter integer ADDR_WIDTH   = 10   // log2(`HID_DIM*`CHAR_NUM/DATA_N) < 10
   ) (
     input  wire clk,
     input  wire rst_n,
@@ -31,45 +30,45 @@ module dense_layer #(
 
   // wire dense_forward
   wire [ADDR_WIDTH-1:0]          dense_forward_raddr;
-  wire [DENSE_DATA_N*`N_LEN-1:0] dense_forward_rdata;
+  wire [`DATA_N*`N_LEN-1:0] dense_forward_rdata;
 
   // wire dense_backward
   wire [ADDR_WIDTH-1:0]          dense_backward_waddr;
-  wire [DENSE_DATA_N*`N_LEN-1:0] dense_backward_wdata;
+  wire [`DATA_N*`N_LEN-1:0] dense_backward_wdata;
   wire [ADDR_WIDTH-1:0]          dense_backward_raddr_w, dense_backward_raddr_grad;
-  wire [DENSE_DATA_N*`N_LEN-1:0] dense_backward_rdata_w, dense_backward_rdata_grad;
+  wire [`DATA_N*`N_LEN-1:0] dense_backward_rdata_w, dense_backward_rdata_grad;
 
   // wire dense_optim
   wire dense_optim_valid;
   wire [ADDR_WIDTH-1:0] dense_optim_waddr, dense_optim_raddr;
-  wire [DENSE_DATA_N*`N_LEN-1:0] dense_optim_wdata_w, dense_optim_wdata_v;
-  wire [DENSE_DATA_N*`N_LEN-1:0] dense_optim_rdata_w, dense_optim_rdata_v, dense_optim_rdata_grad;
+  wire [`DATA_N*`N_LEN-1:0] dense_optim_wdata_w, dense_optim_wdata_v;
+  wire [`DATA_N*`N_LEN-1:0] dense_optim_rdata_w, dense_optim_rdata_v, dense_optim_rdata_grad;
 
   // wire dense_ram_wt
   wire dense_ram_wt_load;
   wire [ADDR_WIDTH-1:0]          dense_ram_wt_waddr, dense_ram_wt_raddr;
-  wire [DENSE_DATA_N*`N_LEN-1:0] dense_ram_wt_wdata, dense_ram_wt_rdata;
+  wire [`DATA_N*`N_LEN-1:0] dense_ram_wt_wdata, dense_ram_wt_rdata;
 
   // wire dense_ram_w
   wire dense_ram_w_load;
   wire [ADDR_WIDTH-1:0]          dense_ram_w_waddr, dense_ram_w_raddr;
-  wire [DENSE_DATA_N*`N_LEN-1:0] dense_ram_w_wdata, dense_ram_w_rdata;
+  wire [`DATA_N*`N_LEN-1:0] dense_ram_w_wdata, dense_ram_w_rdata;
 
   // wire dense_ram_v
   wire dense_ram_v_load;
   wire [ADDR_WIDTH-1:0]          dense_ram_v_waddr, dense_ram_v_raddr;
-  wire [DENSE_DATA_N*`N_LEN-1:0] dense_ram_v_wdata, dense_ram_v_rdata;
+  wire [`DATA_N*`N_LEN-1:0] dense_ram_v_wdata, dense_ram_v_rdata;
 
   // wire dense_ram_grad
   wire dense_ram_grad_load;
   wire [ADDR_WIDTH-1:0]          dense_ram_grad_waddr, dense_ram_grad_raddr;
-  wire [DENSE_DATA_N*`N_LEN-1:0] dense_ram_grad_wdata, dense_ram_grad_rdata;
+  wire [`DATA_N*`N_LEN-1:0] dense_ram_grad_wdata, dense_ram_grad_rdata;
 
   // wire dense_transpose
   wire dense_transpose_run;
   wire dense_transpose_valid;
   wire [ADDR_WIDTH-1:0]          dense_transpose_waddr, dense_transpose_raddr;
-  wire [DENSE_DATA_N*`N_LEN-1:0] dense_transpose_wdata, dense_transpose_rdata;
+  wire [`DATA_N*`N_LEN-1:0] dense_transpose_wdata, dense_transpose_rdata;
 
 
   // ----------------------------------------
@@ -77,7 +76,7 @@ module dense_layer #(
   assign valid_update = (update & dense_transpose_valid);
 
   // assign valid_zero_grad
-  assign valid_zero_grad = (zero_grad & zero_grad_addr == `HID_DIM*`CHAR_NUM/DENSE_DATA_N);
+  assign valid_zero_grad = (zero_grad & zero_grad_addr == `HID_DIM*`CHAR_NUM/`DATA_N);
 
   // assign dense_forward
   assign dense_forward_rdata = dense_ram_wt_rdata;
@@ -115,8 +114,8 @@ module dense_layer #(
   assign dense_ram_grad_load  = (zero_grad | run_backward);
   assign dense_ram_grad_waddr = (zero_grad)    ? zero_grad_addr       :
                                 (run_backward) ? dense_backward_waddr : {ADDR_WIDTH{1'bX}};
-  assign dense_ram_grad_wdata = (zero_grad)    ? {DENSE_DATA_N*`N_LEN{1'b0}} :
-                                (run_backward) ? dense_backward_wdata        : {DENSE_DATA_N*`N_LEN{1'bX}};
+  assign dense_ram_grad_wdata = (zero_grad)    ? {`DATA_N*`N_LEN{1'b0}} :
+                                (run_backward) ? dense_backward_wdata        : {`DATA_N*`N_LEN{1'bX}};
   assign dense_ram_grad_raddr = (run_backward) ? dense_backward_raddr_grad  :
                                 (update)       ? dense_optim_raddr          : {ADDR_WIDTH{1'bX}};
 
@@ -157,8 +156,7 @@ module dense_layer #(
   // ----------------------------------------
   // dense_forward
   dense_forward #(
-    .ADDR_WIDTH(ADDR_WIDTH),
-    .DENSE_DATA_N(DENSE_DATA_N)
+    .ADDR_WIDTH(ADDR_WIDTH)
   ) dense_forward_inst (
     .clk(clk), 
     .rst_n(rst_n), 
@@ -172,8 +170,7 @@ module dense_layer #(
 
   // dense_backward
   dense_backward #(
-    .ADDR_WIDTH(ADDR_WIDTH),
-    .DENSE_DATA_N(DENSE_DATA_N)
+    .ADDR_WIDTH(ADDR_WIDTH)
   ) dense_backward_inst (
     .clk(clk),
     .rst_n(rst_n),
@@ -192,8 +189,7 @@ module dense_layer #(
 
   // dense_optim
   dense_optim #(
-    .ADDR_WIDTH(ADDR_WIDTH),
-    .DENSE_DATA_N(DENSE_DATA_N)
+    .ADDR_WIDTH(ADDR_WIDTH)
   ) dense_optim_inst (
     .clk(clk),
     .rst_n(rst_n),
@@ -212,8 +208,8 @@ module dense_layer #(
   ram #(
     .FILENAME("../../data/parameter/train/binary144/dense_layer_W_out_T.txt"),
     .ADDR_WIDTH(ADDR_WIDTH),
-    .DATA_WIDTH(DENSE_DATA_N*`N_LEN),
-    .DATA_DEPTH(`HID_DIM*`CHAR_NUM/DENSE_DATA_N)
+    .DATA_WIDTH(`DATA_N*`N_LEN),
+    .DATA_DEPTH(`HID_DIM*`CHAR_NUM/`DATA_N)
   ) dense_ram_wt (
     .clk(clk),
     .load(dense_ram_wt_load),
@@ -227,8 +223,8 @@ module dense_layer #(
   ram #(
     .FILENAME("../../data/parameter/train/binary144/dense_layer_W_out.txt"),
     .ADDR_WIDTH(ADDR_WIDTH),
-    .DATA_WIDTH(DENSE_DATA_N*`N_LEN),
-    .DATA_DEPTH(`HID_DIM*`CHAR_NUM/DENSE_DATA_N)
+    .DATA_WIDTH(`DATA_N*`N_LEN),
+    .DATA_DEPTH(`HID_DIM*`CHAR_NUM/`DATA_N)
   ) dense_ram_w (
     .clk(clk),
     .load(dense_ram_w_load),
@@ -242,8 +238,8 @@ module dense_layer #(
   ram #(
     .FILENAME("../../data/parameter/train/binary144/zeros_like_W_out.txt"),
     .ADDR_WIDTH(ADDR_WIDTH),
-    .DATA_WIDTH(DENSE_DATA_N*`N_LEN),
-    .DATA_DEPTH(`HID_DIM*`CHAR_NUM/DENSE_DATA_N)
+    .DATA_WIDTH(`DATA_N*`N_LEN),
+    .DATA_DEPTH(`HID_DIM*`CHAR_NUM/`DATA_N)
   ) dense_ram_v (
     .clk(clk),
     .load(dense_ram_v_load),
@@ -257,8 +253,8 @@ module dense_layer #(
   ram #(
     .FILENAME("../../data/parameter/train/binary144/zeros_like_W_out.txt"),
     .ADDR_WIDTH(ADDR_WIDTH),
-    .DATA_WIDTH(DENSE_DATA_N*`N_LEN),
-    .DATA_DEPTH(`HID_DIM*`CHAR_NUM/DENSE_DATA_N)
+    .DATA_WIDTH(`DATA_N*`N_LEN),
+    .DATA_DEPTH(`HID_DIM*`CHAR_NUM/`DATA_N)
   ) dense_ram_grad (
     .clk(clk),
     .load(dense_ram_grad_load),
@@ -270,8 +266,7 @@ module dense_layer #(
 
   // dense_transpose
   dense_transpose #(
-    .ADDR_WIDTH(ADDR_WIDTH),
-    .DENSE_DATA_N(DENSE_DATA_N)
+    .ADDR_WIDTH(ADDR_WIDTH)
   ) dense_transpose_inst (
     .clk(clk),
     .rst_n(rst_n),

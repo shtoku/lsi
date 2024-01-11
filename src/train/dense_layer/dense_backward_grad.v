@@ -1,8 +1,7 @@
 `include "consts_train.vh"
 
 module dense_backward_grad #(
-    parameter integer ADDR_WIDTH   = 10,   // log2(`HID_DIM*`CHAR_NUM/DATA_N) < 10
-    parameter integer DENSE_DATA_N = 8     // 1 time read, read 8 data.
+    parameter integer ADDR_WIDTH   = 10   // log2(`HID_DIM*`CHAR_NUM/DATA_N) < 10
   ) (
     input  wire clk,
     input  wire rst_n,
@@ -11,9 +10,9 @@ module dense_backward_grad #(
     input  wire [`N*`CHAR_NUM*`N_LEN_W-1:0] d_backward,
     output wire valid,
     output wire [ADDR_WIDTH-1:0] waddr,
-    output wire [DENSE_DATA_N*`N_LEN-1:0] wdata,
+    output wire [`DATA_N*`N_LEN-1:0] wdata,
     output wire [ADDR_WIDTH-1:0] raddr,
-    input  wire [DENSE_DATA_N*`N_LEN-1:0] rdata
+    input  wire [`DATA_N*`N_LEN-1:0] rdata
   );
 
 
@@ -24,11 +23,11 @@ module dense_backward_grad #(
   // wire input buffer
   wire [`N*`N_LEN_W-1:0] d_forward_buf_t [0:`HID_DIM-1];
   wire [`N*`N_LEN_W-1:0] d_backward_buf_t [0:`CHAR_NUM-1];
-  wire [`N*`N_LEN_W-1:0] d_backward_buf_t_split [0:`CHAR_NUM/DENSE_DATA_N-1][0:DENSE_DATA_N-1];
+  wire [`N*`N_LEN_W-1:0] d_backward_buf_t_split [0:`CHAR_NUM/`DATA_N-1][0:`DATA_N-1];
 
   // reg/wire wdata/rdata buffer
-  reg  [`N_LEN-1:0] wdata_buf [0:DENSE_DATA_N-1];
-  wire [`N_LEN-1:0] rdata_buf [0:DENSE_DATA_N-1];
+  reg  [`N_LEN-1:0] wdata_buf [0:`DATA_N-1];
+  wire [`N_LEN-1:0] rdata_buf [0:`DATA_N-1];
 
   // reg counter
   reg  [4:0] count1;
@@ -36,15 +35,15 @@ module dense_backward_grad #(
   reg  [ADDR_WIDTH-1:0] count3, count3_delay [0:5];
 
   // rdata delay
-  reg  [DENSE_DATA_N*`N_LEN-1:0] rdata_delay1, rdata_delay2, rdata_delay3;
+  reg  [`DATA_N*`N_LEN-1:0] rdata_delay1, rdata_delay2, rdata_delay3;
 
   // wire dense_inner_10
-  wire [`N_LEN-1:0] inner_q [0:DENSE_DATA_N-1];
+  wire [`N_LEN-1:0] inner_q [0:`DATA_N-1];
 
   
   // ----------------------------------------
   // assign valid
-  assign valid = run & (count3_delay[5] == `HID_DIM*`CHAR_NUM/DENSE_DATA_N - 1);
+  assign valid = run & (count3_delay[5] == `HID_DIM*`CHAR_NUM/`DATA_N - 1);
 
   // assign addr
   assign waddr = count3_delay[4];
@@ -62,15 +61,15 @@ module dense_backward_grad #(
       end
     end
 
-    // split d_backward_buf_t per DENSE_DATA_N
-    for (i = 0; i < `CHAR_NUM/DENSE_DATA_N; i = i + 1) begin
-      for (j = 0; j < DENSE_DATA_N; j = j + 1) begin
-        assign d_backward_buf_t_split[i][j] = d_backward_buf_t[i*DENSE_DATA_N + j];
+    // split d_backward_buf_t per `DATA_N
+    for (i = 0; i < `CHAR_NUM/`DATA_N; i = i + 1) begin
+      for (j = 0; j < `DATA_N; j = j + 1) begin
+        assign d_backward_buf_t_split[i][j] = d_backward_buf_t[i*`DATA_N + j];
       end
     end
 
-    // convert shape (DENSE_DATA_N, `N_LEN) <-> (DENSE_DATA_N*`N_LEN)
-    for (i = 0; i < DENSE_DATA_N; i = i + 1) begin
+    // convert shape (`DATA_N, `N_LEN) <-> (`DATA_N*`N_LEN)
+    for (i = 0; i < `DATA_N; i = i + 1) begin
       assign wdata[i*`N_LEN +: `N_LEN] = wdata_buf[i];
       assign rdata_buf[i] = rdata_delay3[i*`N_LEN +: `N_LEN];
     end
@@ -84,8 +83,8 @@ module dense_backward_grad #(
       count1 <= 0;
       count2 <= 0;
     end else if (run) begin
-      if ((count1 != `CHAR_NUM/DENSE_DATA_N - 1) | (count2 != `HID_DIM - 1)) begin
-        if (count1 == `CHAR_NUM/DENSE_DATA_N - 1) begin
+      if ((count1 != `CHAR_NUM/`DATA_N - 1) | (count2 != `HID_DIM - 1)) begin
+        if (count1 == `CHAR_NUM/`DATA_N - 1) begin
           count1 <= 0;
           count2 <= count2 + 1;
         end else begin
@@ -104,7 +103,7 @@ module dense_backward_grad #(
     if (~rst_n) begin
       count3 <= 0;
     end else if (run) begin
-      if (count3 != `HID_DIM*`CHAR_NUM/DENSE_DATA_N - 1) begin
+      if (count3 != `HID_DIM*`CHAR_NUM/`DATA_N - 1) begin
         count3 <= count3 + 1;
       end 
     end else begin
@@ -142,7 +141,7 @@ module dense_backward_grad #(
 
   // wdata_buf controller
   generate
-    for (i = 0; i < DENSE_DATA_N; i = i + 1) begin
+    for (i = 0; i < `DATA_N; i = i + 1) begin
       always @(posedge clk, negedge rst_n) begin
         if (~rst_n) begin
           wdata_buf[i] <= 0;
@@ -157,7 +156,7 @@ module dense_backward_grad #(
   // ----------------------------------------
   // dense_inner_10
   generate
-    for (i = 0; i < DENSE_DATA_N; i = i + 1) begin : inner_10
+    for (i = 0; i < `DATA_N; i = i + 1) begin : inner_10
       dense_inner_10 #(
         .DATA_WIDTH1(`N_LEN_W),
         .DATA_WIDTH2(`N_LEN_W),

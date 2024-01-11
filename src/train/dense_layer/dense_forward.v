@@ -1,8 +1,7 @@
 `include "consts_train.vh"
 
 module dense_forward #(
-    parameter integer ADDR_WIDTH   = 10,   // log2(`HID_DIM*`CHAR_NUM/DATA_N) < 10
-    parameter integer DENSE_DATA_N = 8     // 1 time read, read 8 data.
+    parameter integer ADDR_WIDTH   = 10   // log2(`HID_DIM*`CHAR_NUM/DATA_N) < 10
   ) (
     input  wire clk, 
     input  wire rst_n, 
@@ -11,7 +10,7 @@ module dense_forward #(
     output wire valid,
     output wire [`N*`CHAR_NUM*`N_LEN-1:0] q,
     output reg  [ADDR_WIDTH-1:0] raddr,
-    input  wire [DENSE_DATA_N*`N_LEN-1:0] rdata
+    input  wire [`DATA_N*`N_LEN-1:0] rdata
   );
 
 
@@ -45,7 +44,7 @@ module dense_forward #(
     if (~rst_n) begin
       raddr <= 0;
     end else if (run) begin
-      if (raddr != `HID_DIM*`CHAR_NUM/DENSE_DATA_N - 1) begin
+      if (raddr != `HID_DIM*`CHAR_NUM/`DATA_N - 1) begin
         raddr <= raddr + 1;
       end 
     end else begin
@@ -58,9 +57,7 @@ module dense_forward #(
   // dense_forward_block
   generate
     for (i = 0; i < `N; i = i + 1) begin : dense_forward_block
-      dense_forward_block #(
-        .DENSE_DATA_N(DENSE_DATA_N)
-      ) dense_forward_block_inst (
+      dense_forward_block dense_forward_block_inst (
         .clk(clk),
         .rst_n(rst_n),
         .run(run),

@@ -1,15 +1,13 @@
 `include "consts_train.vh"
 
-module dense_backward_q_block #(
-    parameter integer DENSE_DATA_N = 8     // 1 time read, read 8 data.
-  ) (
+module dense_backward_q_block (
     input  wire clk,
     input  wire rst_n,
     input  wire run,
     input  wire [`CHAR_NUM*`N_LEN_W-1:0] d,
     output wire valid,
     output wire [`HID_DIM*`N_LEN-1:0] q,
-    input  wire [DENSE_DATA_N*`N_LEN-1:0] rdata
+    input  wire [`DATA_N*`N_LEN-1:0] rdata
   );
 
 
@@ -18,7 +16,7 @@ module dense_backward_q_block #(
   integer j;
 
   // wire input/output buffer
-  wire [DENSE_DATA_N*`N_LEN_W-1:0] d_buf [0:`CHAR_NUM/DENSE_DATA_N-1];
+  wire [`DATA_N*`N_LEN_W-1:0] d_buf [0:`CHAR_NUM/`DATA_N-1];
   reg  [`N_LEN-1:0] q_buf [0:`HID_DIM-1];
 
   // reg counter
@@ -31,27 +29,27 @@ module dense_backward_q_block #(
 
   // inner index/buffer
   reg  [4:0] inner_buf_index, inner_buf_index_delay;
-  reg  [`N_LEN-1:0] inner_buf [0:`CHAR_NUM/DENSE_DATA_N-1];
+  reg  [`N_LEN-1:0] inner_buf [0:`CHAR_NUM/`DATA_N-1];
 
   // inner_q add
-  reg  [`N_LEN-1:0] inner_add1 [0:3];    // (`CHAR_NUM/DENSE_DATA_N - 4) / 2 = 4
+  reg  [`N_LEN-1:0] inner_add1 [0:3];    // (`CHAR_NUM/`DATA_N - 4) / 2 = 4
   reg  [`N_LEN-1:0] inner_add2 [0:1];    // 4 / 2 = 2
   reg  [`N_LEN-1:0] inner_add3;
 
   // wire dense_inner_8
-  wire [DENSE_DATA_N*`N_LEN-1:0]   inner_d1;
-  wire [DENSE_DATA_N*`N_LEN_W-1:0] inner_d2;
+  wire [`DATA_N*`N_LEN-1:0]   inner_d1;
+  wire [`DATA_N*`N_LEN_W-1:0] inner_d2;
   wire [`N_LEN-1:0] inner_q;
 
   
   // ----------------------------------------
   // assign valid
-  assign valid = run & (q_buf_index_delay == `HID_DIM - 1) & (inner_buf_index_delay == `CHAR_NUM/DENSE_DATA_N - 1);
+  assign valid = run & (q_buf_index_delay == `HID_DIM - 1) & (inner_buf_index_delay == `CHAR_NUM/`DATA_N - 1);
 
   generate
-    // convert shape (`CHAR_NUM/DENSE_DATA_N, DENSE_DATA_N*`N_LEN_W) <- (`CHAR_NUM*`N_LEN_W,)
-    for (i = 0; i < `CHAR_NUM/DENSE_DATA_N; i = i + 1) begin
-      assign d_buf[i] = d[i*DENSE_DATA_N*`N_LEN_W +: DENSE_DATA_N*`N_LEN_W];
+    // convert shape (`CHAR_NUM/`DATA_N, `DATA_N*`N_LEN_W) <- (`CHAR_NUM*`N_LEN_W,)
+    for (i = 0; i < `CHAR_NUM/`DATA_N; i = i + 1) begin
+      assign d_buf[i] = d[i*`DATA_N*`N_LEN_W +: `DATA_N*`N_LEN_W];
     end
     // convert shape (`HID_DIM*`N_LEN) <- (`CHAR_NUM, `N_LEN)
     for (i = 0; i < `HID_DIM; i = i + 1) begin
@@ -71,8 +69,8 @@ module dense_backward_q_block #(
       count1 <= 0;
       count2 <= 0;
     end else if (run) begin
-      if ((count1 != `CHAR_NUM/DENSE_DATA_N - 1) | (count2 != `HID_DIM - 1)) begin
-        if (count1 == `CHAR_NUM/DENSE_DATA_N - 1) begin
+      if ((count1 != `CHAR_NUM/`DATA_N - 1) | (count2 != `HID_DIM - 1)) begin
+        if (count1 == `CHAR_NUM/`DATA_N - 1) begin
           count1 <= 0;
           count2 <= count2 + 1;
         end else begin
@@ -115,7 +113,7 @@ module dense_backward_q_block #(
   // inner_buf controller
   always @(posedge clk, negedge rst_n) begin
     if (~rst_n) begin
-      for (j = 0; j < `CHAR_NUM/DENSE_DATA_N; j = j + 1) begin
+      for (j = 0; j < `CHAR_NUM/`DATA_N; j = j + 1) begin
         inner_buf[j] <= 0;
       end
     end else begin

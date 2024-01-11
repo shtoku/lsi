@@ -1,8 +1,7 @@
 `include "consts_train.vh"
 
 module dense_backward #(
-    parameter integer ADDR_WIDTH   = 10,   // log2(`HID_DIM*`CHAR_NUM/DATA_N) < 10
-    parameter integer DENSE_DATA_N = 8     // 1 time read, read 8 data.
+    parameter integer ADDR_WIDTH   = 10   // log2(`HID_DIM*`CHAR_NUM/DATA_N) < 10
   ) (
     input  wire clk,
     input  wire rst_n,
@@ -12,11 +11,11 @@ module dense_backward #(
     output wire valid,
     output wire [`N*`HID_DIM*`N_LEN-1:0] q,
     output wire [ADDR_WIDTH-1:0] waddr,
-    output wire [DENSE_DATA_N*`N_LEN-1:0] wdata,
+    output wire [`DATA_N*`N_LEN-1:0] wdata,
     output wire [ADDR_WIDTH-1:0] raddr_w,
     output wire [ADDR_WIDTH-1:0] raddr_grad,
-    input  wire [DENSE_DATA_N*`N_LEN-1:0] rdata_w,
-    input  wire [DENSE_DATA_N*`N_LEN-1:0] rdata_grad
+    input  wire [`DATA_N*`N_LEN-1:0] rdata_w,
+    input  wire [`DATA_N*`N_LEN-1:0] rdata_grad
   );
 
   wire valid_backward_q;
@@ -27,8 +26,7 @@ module dense_backward #(
 
   // dense_backward_q
   dense_backward_q #(
-    .ADDR_WIDTH(ADDR_WIDTH),
-    .DENSE_DATA_N(DENSE_DATA_N)
+    .ADDR_WIDTH(ADDR_WIDTH)
   ) dense_backward_q_inst (
     .clk(clk),
     .rst_n(rst_n),
@@ -42,8 +40,7 @@ module dense_backward #(
 
   // dense_backward_grad
   dense_backward_grad #(
-    .ADDR_WIDTH(ADDR_WIDTH),
-    .DENSE_DATA_N(DENSE_DATA_N)
+    .ADDR_WIDTH(ADDR_WIDTH)
   ) dense_backward_grad_inst (
     .clk(clk),
     .rst_n(rst_n),
