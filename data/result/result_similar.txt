@@ -1,0 +1,104 @@
+kmj_gen_v5_3 
+EPOCH: 100, Train Acc: 0.699, Valid Acc: 0.691, Time: 14.263
+
+similar
+base     : ヾ(*　∀́　*)ノ
+
+generate : ヾ(̄　∀゚́*)ノ
+generate : ヾ(*　∀́　*)ノ
+generate : (*　∀́　*)
+generate : ヾ(*　∀゚゚*)ノ
+generate : ヾ(*　ώ　))
+generate : ヾ(*　∀́　*)ノ
+generate : ヾ(*　∀́　*)
+generate : (*　∀́　*)
+generate : ヾ(*　∀̄　*)
+generate : ヾ(*　∀́　*)
+generate : ヾ(*　∀`　*)
+generate : (*　ω・　*)
+generate : ヾ(*　ώ　*)
+generate : ヾ(*　∀́　*)ノ
+generate : ヾ(*　_　　*)ノ
+generate : ヾ(*　∀́**)
+generate : ヾ(*　_́　*)
+generate : ヾ(*　∀́　*)ノ
+generate : ヾ(̄　ω　　*)ノ
+generate : ヾ(*　∀́　*)ノ
+generate : ヾ(*　∀̄　))ノ
+generate : ヾ(*　∀゚　*)ノ
+generate : (*　ώ　*)
+generate : ヾ(*　∀́　*)
+generate : ヾ(*　∀́　*)
+generate : ヾ(*　∀́　*)ノ
+generate : ヾ(*　́　*)
+generate : ヾ(*　∀́　*)
+generate : ヾ(*　ω゚　*)ノ
+generate : ヾ(*́▽́　*)
+generate : ヾ(*́∀́　*)
+generate : (*　ώ　*)
+generate : ヾ(*　∀́　*)ノ
+generate : ヾ(*　▽́　*)
+generate : ヾ(*　▽́　*)ノ
+generate : ヾ(*　ώ　*)
+generate : ヾ(*　ώ　*)
+generate : ヾ(*　∀́　*)ノ
+generate : ヾ(*　-́　*)ノ
+generate : ヾ(*　∀`　*)
+generate : ヾ(*　∀́　*)
+generate : ヾ(*　∀́　*)
+generate : (*゚ω゚　*)
+generate : ヾ(*　▽̄　*)
+generate : (*;∀`*　)
+generate : (*　▽́　*)
+generate : ヾ(*　∀́　*)
+generate : ヾ(*　ω・　*)ノ
+generate : ヾ(*゚∀́**)
+generate : ヾ(*　∀́　*)ノ
+generate : (*　∀́　*)
+generate : (*　_́　*)ノ
+generate : ヾ(*　Д́　*)ノ
+generate : ヾ(*　́́　*)ノ
+generate : ヾ(*　∀゚́*)♪
+generate : ヾ(*　∀̄　*)
+generate : ヾ(*　ώ　*)ノ
+generate : (*　́　*)
+generate : ヾ(*　∀́　*)ノ
+generate : ヾ(*　ώ　*)
+generate : ヾ(*　_゚　))
+generate : ヾ(*　▽　　*)ノ
+generate : ヾ(*　ω̄　*)
+generate : ヾ(*　▽゚́*)
+generate : ヾ(*　∀゚́　)
+generate : ヾ(*　∀゚　*)ノ
+generate : ヾ(*　∀́　*)
+generate : ヾ(*　∀゚　*)ノ
+generate : ヾ(*　∀́　*)
+generate : ヾ(*　∀゚　*)ノ
+generate : ヾ(*　Д́　*)
+generate : ヾ(*　∀^**)
+generate : (*　∀́　*)ノ
+generate : ヾ(*　∀`　*)
+generate : (*　ω^　*)
+generate : ヾ(*　∀̄　*)ノ
+generate : ヾ(*　∀゚　))
+generate : ヾ(*　́́　*)ノ
+generate : ヾ(*　∀́　*)ノ
+generate : ヾ(*　∀́　*)ノ
+generate : (*　ω-　))♪
+generate : ヾ(*　∀́　*)
+generate : ヾ(*　∀́　*)ノ
+generate : ヾ(*　_́　))
+generate : ヾ(　　∀　　*)ノ
+generate : ヾ(*　́́　*)ノ
+generate : ヾ(*　▽́　*)ノ
+generate : ヾ(*　∀゚　*)
+generate : ヾ(*　ώ　*)
+generate : ヾ(*　▽゚́*)
+generate : ヾ(*;∀́　*)ノ
+generate : ヾ(*　▽́　*)ノ
+generate : ヾ(*　∀́　*)
+generate : ヾ(*　∀́　))
+generate : ヾ(*　∀゚̄*)ノ
+generate : ヾ(*　Д́　*)
+
+

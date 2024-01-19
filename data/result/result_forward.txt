@@ -1,0 +1,66 @@
+kmj_gen_v5_3 
+EPOCH: 100, Train Acc: 0.699, Valid Acc: 0.691, Time: 14.263
+
+forward
+train data
+base     : (・_・)
+generate : (・_・)
+base     : (　ώ　)
+generate : (　∀́　)
+base     : ゝ(;　▽́　)ノ
+generate : ヾ(̄　▽́　)ノ
+base     : (σ・ω・)、?
+generate : (。・ω・)ノ
+base     : ヾ(●>д<)ノ
+generate : ヾ(*≧▽^)ノ
+base     : o(*^▽^*)o
+generate : ヾ(*^▽^*)ノ
+base     : (　́∀`*)
+generate : (　́∀`*)!
+base     : !(;・o・)Σ
+generate : !(;・ω・)!
+base     : ヽ(^o^)
+generate : ヾ(^_^)
+base     : ヾ(▼▼)!!
+generate : (o(^-)
+base     : (*ゝ∀・*)
+generate : (*≧∀・*)
+base     : (　TДT)
+generate : (　'ω≦)
+base     : ヾ(>▽<)o!
+generate : ヾ(>∀;)ノ
+base     : ヾ(*'ー')o♪
+generate : ヾ(*^▽^)ノ
+
+
+test data
+base     : (　゚Д゚)ノ
+generate : (　゚∀゚)ノ
+base     : ||ヾ(　・ω|　
+generate : (ノ(　　ω・
+base     : ヾ(*　▽́　*)
+generate : !ヾ(*　∀́　*)
+base     : ヾ(=　▽́　=)ヽ
+generate : ヾ(̄　▽́　*)ノ
+base     : ('-'*)ノ
+generate : (^-^*)ノ
+base     : (-:-)
+generate : (-_-)
+base     : o(　̄ー　̄;)ゞ
+generate : ヾ(　̄Д　̄)ノ
+base     : ((o・ω・o))
+generate : (o・ω・`))
+base     : (*・_・)ノ⌒*
+generate : (*・_・)ノ)
+base     : (。・ω・。)ノ☆
+generate : (;・ω・*)ノ!
+base     : (=.=　)-~~
+generate : (!__　))!!
+base     : ☆_o(^∇^〃)
+generate : ヾ!(^-^　)
+base     : (●・▽・●)
+generate : (;・∀・*)
+base     : ゞ(・・;);;;;
+generate : !(・・;)-)ノ
+base     : (ノ∀`)σ
+generate : (。∀;)

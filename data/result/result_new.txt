@@ -1,0 +1,197 @@
+kmj_gen_v5_3 
+EPOCH: 100, Train Acc: 0.699, Valid Acc: 0.691, Time: 14.263
+
+new
+generate : )!(^-^　)))
+generate : (　^`　。)
+generate : (・_(・
+generate : )(・・)
+generate : *-)゚_゚　)ノ
+generate : ヾ(・`∀・　)
+generate : (゚^)^*゚^-!
+generate : (゚--)ノ)!・
+generate : )*^∀゚́*)
+generate : `)-)・*
+generate : ́(　̄)
+generate : (゚^^(゚)^・)
+generate : *^((　　・)!
+generate : )(　_・　)
+generate : (ヾ∀　*)・!
+generate : ̄　́　)ノ((
+generate : ヾ(≧^　^)
+generate : !・　;))・・!
+generate : (̄-́*)ノ!
+generate : (^-;)ノ
+generate : (　　_　　)!
+generate : ヾ(・))・_-)
+generate : )((゚∀^)ノ
+generate : (　_　^))・!
+generate : 　ヾ(・^*)
+generate : !-/-゚・^゚^ノ
+generate : ヾ(゚-)・　`))
+generate : )^　̄　))(
+generate : (　^ω`*)
+generate : ・ヾ(^_　))
+generate : (`^-)
+generate : !-ノ^゚^^-^!
+generate : (ノ(　̄̄))
+generate : (　̄　゚・)!
+generate : (゚ω。　*)-・(
+generate : )-・^)^*
+generate : ((・)
+generate : (`̄^∀　)ノ
+generate : (^゚^゚　
+generate : (*ヾ)`̄　)
+generate : \(　Дω
+generate : !-(^́∀;)
+generate : (・∀゚^)!
+generate : (゚・()(・)
+generate : (
+generate : *!((　∀。)
+generate : ゚((((・・
+generate : (　́`)ノ
+generate : ((　ω
+generate : !(　∀_́　))
+generate : ^ω(()(()・　
+generate : !((　∀　́)
+generate : ・・((*()・
+generate : 　　(　))!
+generate : (　_。))))　)
+generate : (́́　))!!
+generate : (　　∀　̄)
+generate : ヾ(　^　)　(
+generate : 　　　゚)
+generate : !-　゚　)!
+generate : ((・_・(
+generate : ヾ(゚-^)
+generate : ;∀・)
+generate : (゚・^_^))!!
+generate : )ノ\*ω゚　))ノ
+generate : (゚゚゚゚)-
+generate : !()゚゚ω・ヾ　)
+generate : ヾ(　-・)　)
+generate : (・ω_゚*)
+generate : ・゚-(;ノ・!・
+generate : ・ヾ^-゚)!・・!
+generate : ((_;)!
+generate : ṓ▽゚́*)
+generate : !ヾ)゚́)
+generate : (゚　^゚*)!
+generate : ・・^(^)!・
+generate : (`ノ-)ノ)!
+generate : (゚^)^　)
+generate : ()ω　)!
+generate : ・・　・)((・・
+generate : ()^　^)ノ!
+generate : (-(*-　　)　)
+generate : (　∀ω　))!!
+generate : (゚゚^　^)・!
+generate : *　(　　̄)!
+generate : *-(̄　　́)　
+generate : (♪^　-゚))!
+generate : (　∀`)・!
+generate : (́・)・・))
+generate : (*ヾ_　^o
+generate : !-　(́　゚)**
+generate : (!(　ω・)　)
+generate : )()　゚)!
+generate : ヾ(゚^(゚-)
+generate : /(　-)(・・)
+generate : (`゚́́　*)
+generate : ((́　)　
+generate : ヾ(゚-(!・・・・
+generate : ヾ(((　
+generate : *-　゚　゚)^・゚
+generate : !!(*;)・)　)
+generate : ^(^)　)・゚
+generate : 　(　　́)
+generate : )--・゚^)
+generate : (ヾ(・-)))!
+generate : ヾ(゚-))!)・!
+generate : (*・-ノノ
+generate : ・・)・・
+generate : 　)゚゚)^・(
+generate : ヾ(`゚́)-)!!
+generate : ・・(*゚*)
+generate : ヾ(---))ノ!
+generate : (_-))ノ!
+generate : (∀-̄　)
+generate : (ヾ--)
+generate : ((・ω　
+generate : ・`(̄(̄(　*
+generate : /゚゚　)
+generate : *!゚゚́)・)・!
+generate : (;-・゚)
+generate : \(^・)!
+generate : (́^)*)
+generate : \`゚-・　)!!
+generate : ヾ(-)^)ノ)!!
+generate : (`())・)!
+generate : ヾ・--(・
+generate : 　^̄　)!・(
+generate : *)(∀　́))・(
+generate : ̄`ω　*)
+generate : ・-(́(()
+generate : (́̄-　)ノ
+generate : (・ω　・・
+generate : (　́　;)・)・!
+generate : (　^))))
+generate : ・・́(́(!・*
+generate : (*-^・^)-)!
+generate : (・∀`)
+generate : *・∀　)
+generate : 　(́　))!
+generate : ̄(((　̄ω(
+generate : 　*　　　́　)
+generate : ((̄　́))
+generate : ゚(　　̄　̄)!
+generate : (　̄̄
+generate : !・(*^)))・　
+generate : (　^　
+generate : ・))((・・)
+generate : (　`_́*)
+generate : _　　)!・゚
+generate : *-゚゚゚́́ノ
+generate : 　(́　　)!・
+generate : ・^()・・・
+generate : ♪(̄　∀́　))
+generate : *)・-・・
+generate : 　*ヾ　　)
+generate : ^`　^　・)-!*
+generate : (゚́　∀　゚))
+generate : (　̄　　　)
+generate : (゚゚^　゚))・・
+generate : (^　^-!!!
+generate : ゚((́　・゚
+generate : (-・--゚́*)
+generate : ・^_*)・
+generate : (^・^・゚　　)
+generate : *!　*(!・
+generate : *∀^　))
+generate : 　(́　)))・・
+generate : (　∀　))!!
+generate : ヾ(　_̄　)
+generate : 　　　́　　)-・(
+generate : (--
+generate : *^゚^(゚(・́
+generate : (-)
+generate : (・∀-)ノ
+generate : (ヾ∀　́))!!
+generate : (　　_　)
+generate : ヾ(・))!・)・)
+generate : (*゚^　)
+generate : (゚_-・
+generate : (　^)`́　)!!
+generate : (゚・^(^!
+generate : (ヾ̄　゚́　)!
+generate : (*・(゚́))
+generate : (　。^ω゚))!
+generate : (_)
+generate : )(　^゚`)
+generate : 　ω^゚)-・(
+generate : ・ヾ・^
+generate : (・∀　　!!・
+generate : 　゚́^ω　̄)・)
+generate : (*-∀゚)*)
+generate : (　́(　
+
